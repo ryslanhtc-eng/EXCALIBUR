@@ -26,26 +26,34 @@
   "language": "ru",
   "post": {
     "target_chars": 2000,
-    "min_chars": 1700,
-    "max_chars": 2300,
+    "min_chars": 1800,
+    "max_chars": 2200,
     "allow_links": false,
-    "story_mode": true
+    "no_em_dashes": true,
+    "story_mode": true,
+    "topics_focus": "broad_audience_utility_bills_family_repair_city"
   },
   "cover": {
+    "layout": "magazine_masthead_ufa",
+    "masthead_text": "УФА",
     "accent_hex": "#2F7BFF",
     "accent_name": "blue",
     "aspect_ratio": "3:4",
     "resolution": "2K",
     "model": "gpt-image-2-image-to-image",
     "headline_words_min": 4,
-    "headline_words_max": 8
+    "headline_words_max": 8,
+    "description_required": true
   },
   "face_refs": [
     "vk-daily/refs/ruslan_selfie_blue.jpg",
     "vk-daily/refs/ruslan_selfie_black.jpg"
   ],
   "hard_bans": [
-    "metro_in_ufa_as_existing",
+    "never_mention_metro_in_any_form",
+    "em_dashes_and_en_dashes",
+    "ai_stamps",
+    "narrow_price_stats_lecture",
     "moscow_copy_paste",
     "fake_prices",
     "fake_cover_image",

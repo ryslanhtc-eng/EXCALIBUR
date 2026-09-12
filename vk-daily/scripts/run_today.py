@@ -96,10 +96,12 @@ def main() -> int:
             root=root,
             out_dir=out,
             headline=artifact["headline"],
+            description=artifact["description"],
             composition_prompt=artifact["composition"]["prompt"],
             accent=tenant["cover"]["accent_hex"],
             aspect_ratio=tenant["cover"]["aspect_ratio"],
             resolution=tenant["cover"]["resolution"],
+            date_str=run_date.strftime("%d.%m"),
         )
 
     text_only = os.environ.get("VK_DAILY_ALLOW_TEXT_ONLY", "").strip().lower() == "yes"
@@ -121,7 +123,9 @@ def main() -> int:
         "vk_group_screen_name": tenant["vk_group_screen_name"],
         "city": tenant["city"],
         "char_count": artifact["char_count"],
+        "topic": artifact["news"].get("headline_fact"),
         "cover_headline": artifact["headline"],
+        "cover_description": artifact["description"],
         "composition_id": composition_id,
         "accent_hex": tenant["cover"]["accent_hex"],
         "news_id": artifact["news"].get("id"),
@@ -162,7 +166,9 @@ def main() -> int:
 
     print(f"VK_DAILY_DATE={run_date.isoformat()}")
     print(f"VK_DAILY_STATUS={meta['status']}")
+    print(f"VK_DAILY_TOPIC={artifact['news'].get('headline_fact')}")
     print(f"VK_DAILY_HEADLINE={artifact['headline']}")
+    print(f"VK_DAILY_DESCRIPTION={artifact['description']}")
     print(f"VK_DAILY_COMPOSITION={composition_id}")
     print(f"VK_DAILY_CHARS={artifact['char_count']}")
     print(f"VK_DAILY_POST={out / 'post.txt'}")
