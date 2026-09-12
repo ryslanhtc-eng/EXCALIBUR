@@ -28,14 +28,14 @@ class ValidateTests(unittest.TestCase):
         self.banned = load_banned(self.vk)
 
     def test_headline_ok(self) -> None:
-        self.assertEqual([], validate_headline("Зима в городе: считаем платёж", self.tenant))
+        self.assertEqual([], validate_headline("Спрос упал, а цены растут", self.tenant))
 
     def test_headline_rejects_period_and_emoji(self) -> None:
-        self.assertTrue(validate_headline("Зима в городе: считаем платёж.", self.tenant))
-        self.assertTrue(validate_headline("Зима в городе: считаем платёж 😅", self.tenant))
+        self.assertTrue(validate_headline("Спрос упал, а цены растут.", self.tenant))
+        self.assertTrue(validate_headline("Спрос упал, а цены растут 😅", self.tenant))
 
     def test_description_ok(self) -> None:
-        self.assertEqual([], validate_description("Проверь теплосчётчик до квитанции."))
+        self.assertEqual([], validate_description("Что происходит с новостройками в Уфе."))
 
     def test_description_rejects_empty(self) -> None:
         self.assertTrue(validate_description(""))
@@ -58,6 +58,10 @@ class ValidateTests(unittest.TestCase):
         bad_en = ("а" * 1900) + " 2020 – 2026"
         self.assertTrue(validate_post(bad_em, self.tenant, self.banned))
         self.assertTrue(validate_post(bad_en, self.tenant, self.banned))
+
+    def test_banned_topics_rejected(self) -> None:
+        bad_topic = ("а" * 1900) + " проверим теплосчетчик в квартире"
+        self.assertTrue(validate_post(bad_topic, self.tenant, self.banned))
 
     def test_object_emoji_banned(self) -> None:
         text = ("а" * 1900) + " 🏠"
@@ -125,8 +129,8 @@ class CoverBlockerTests(unittest.TestCase):
                 meta = generate_cover(
                     root=ROOT,
                     out_dir=out,
-                    headline="Зима в городе: считаем платёж",
-                    description="Проверь теплосчётчик до квитанции.",
+                    headline="Спрос упал, а цены растут",
+                    description="Что происходит с новостройками в Уфе.",
                     composition_prompt="test",
                     accent="#2F7BFF",
                     aspect_ratio="3:4",

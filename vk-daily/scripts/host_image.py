@@ -187,7 +187,7 @@ def host_jsdelivr(image_path: Path, root: Path) -> str:
     return assert_public_image(url)
 
 
-DEFAULT_PROVIDERS = ("catbox", "github-raw", "jsdelivr", "0x0")
+DEFAULT_PROVIDERS = ("github-raw", "jsdelivr", "catbox", "0x0")
 
 
 def host_image(

@@ -46,6 +46,7 @@ def main() -> int:
     ap.add_argument("--date", default="", help="YYYY-MM-DD (default: today in Ufa)")
     ap.add_argument("--skip-cover", action="store_true")
     ap.add_argument("--force-new-composition", action="store_true")
+    ap.add_argument("--composition-id", default="magazine-cover-ufa", help="preferred composition id")
     args = ap.parse_args()
 
     root = repo_root()
@@ -68,7 +69,13 @@ def main() -> int:
     else:
         seed = f"{run_date.isoformat()}|{now.strftime('%Y-%m-%dT%H:%M')}|{uuid.uuid4()}"
 
-    artifact = generate(vk_root, run_date, seed, used)
+    artifact = generate(
+        vk_root,
+        run_date,
+        seed,
+        used,
+        preferred_composition=args.composition_id,
+    )
     composition_id = artifact["composition"]["id"]
     used.append(composition_id)
     # keep last full cycle

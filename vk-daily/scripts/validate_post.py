@@ -89,6 +89,11 @@ def validate_headline(headline: str, tenant: dict, banned: dict | None = None) -
         errors.append("cover headline must not contain links")
     errors.extend(_check_metro(raw))
     errors.extend(_check_dashes(raw))
+    if banned:
+        lowered = _norm(raw)
+        for topic in banned.get("banned_topics", []):
+            if _norm(topic) in lowered:
+                errors.append(f"banned topic found in headline: '{topic}'")
     return errors
 
 
@@ -106,6 +111,11 @@ def validate_description(description: str, tenant: dict | None = None, banned: d
         errors.append("cover description must not contain links")
     errors.extend(_check_metro(raw))
     errors.extend(_check_dashes(raw))
+    if banned:
+        lowered = _norm(raw)
+        for topic in banned.get("banned_topics", []):
+            if _norm(topic) in lowered:
+                errors.append(f"banned topic found in description: '{topic}'")
     return errors
 
 
@@ -130,6 +140,10 @@ def validate_post(text: str, tenant: dict, banned: dict) -> list[str]:
     errors.extend(_check_dashes(body))
 
     lowered = _norm(body)
+    for topic in banned.get("banned_topics", []):
+        if _norm(topic) in lowered:
+            errors.append(f"banned topic found in text: '{topic}'")
+
     for stamp in banned.get("ai_stamps", []):
         if _norm(stamp) in lowered:
             errors.append(f"AI stamp forbidden: '{stamp}'")
