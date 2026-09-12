@@ -1,0 +1,54 @@
+{
+  "tenant_id": "ruslan-mukhtarov-ufa",
+  "person_name_ru": "Руслан Мухтаров",
+  "brand_ru": "Самолет Плюс",
+  "office_ru": "Самолет Плюс Уфа / Сипайлово",
+  "vk_group_url": "https://vk.ru/samolet_plus_sipa",
+  "vk_group_screen_name": "samolet_plus_sipa",
+  "city": "Уфа",
+  "region": "Башкортостан",
+  "districts_ok": [
+    "Сипайлово",
+    "Дёма",
+    "Инорс",
+    "Черниковка",
+    "Затон",
+    "Зелёная роща",
+    "Нижегородка",
+    "Шакша",
+    "центр Уфы"
+  ],
+  "verified_office": {
+    "address": "ул. Правды, 10, Уфа (Дёмский район)",
+    "hours": "ежедневно 10:00–20:00"
+  },
+  "timezone": "Asia/Yekaterinburg",
+  "language": "ru",
+  "post": {
+    "target_chars": 2000,
+    "min_chars": 1700,
+    "max_chars": 2300,
+    "allow_links": false,
+    "story_mode": true
+  },
+  "cover": {
+    "accent_hex": "#2F7BFF",
+    "accent_name": "blue",
+    "aspect_ratio": "3:4",
+    "resolution": "2K",
+    "model": "gpt-image-2-image-to-image",
+    "headline_words_min": 4,
+    "headline_words_max": 8
+  },
+  "face_refs": [
+    "vk-daily/refs/ruslan_selfie_blue.jpg",
+    "vk-daily/refs/ruslan_selfie_black.jpg"
+  ],
+  "hard_bans": [
+    "metro_in_ufa_as_existing",
+    "moscow_copy_paste",
+    "fake_prices",
+    "fake_cover_image",
+    "links_in_post"
+  ]
+}
