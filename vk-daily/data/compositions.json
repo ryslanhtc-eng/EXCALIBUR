@@ -1,52 +1,24 @@
 {
   "compositions": [
     {
+      "id": "magazine-cover-ufa",
+      "prompt": "Center portrait of the man smiling warmly at the camera, wearing a dark textured charcoal wool coat over a dark navy turtleneck sweater. Clean neutral grey studio background with soft natural lighting."
+    },
+    {
       "id": "river-window-morning",
-      "prompt": "Medium shot of the same man by a wide apartment window at morning, pale Ufa river haze outside, no metro, no skyline of Moscow. He holds a paper floor plan. Soft daylight, light-blue crewneck optional. Blue #2F7BFF window frame accent."
+      "prompt": "Medium shot of the same man by a wide apartment window at morning, pale Ufa river haze outside. He holds a paper floor plan. Soft daylight, light-blue crewneck. Blue #2F7BFF window frame accent. Magazine typography layout with masthead УФА and bottom-left headline plus description."
     },
     {
       "id": "sipaylovo-yard-autumn",
-      "prompt": "Outdoor courtyard of typical Ufa panel/new-build houses (Sipaylovo vibe), autumn leaves, playground at distance. Man in dark jacket with a small blue #2F7BFF folder, standing three-quarter, talking to camera. Overcast, honest, not luxury."
-    },
-    {
-      "id": "kitchen-whitebox",
-      "prompt": "Unfinished new-build kitchen-living, white walls, exposed sockets, measuring tape on windowsill. Man leans on a cardboard box, casual jeans, blue #2F7BFF painter tape strip on the wall behind him."
+      "prompt": "Outdoor courtyard of typical Ufa panel/new-build houses (Sipaylovo vibe), autumn leaves. Man in dark jacket with a small blue #2F7BFF folder, standing three-quarter, talking to camera. Overcast, honest. Magazine typography layout with masthead УФА and bottom-left headline plus description."
     },
     {
       "id": "office-prints",
-      "prompt": "Small real-estate office desk, printed listings in Russian (readable short words only: Уфа, вторичка), blue mug #2F7BFF. Man sits, sleeves rolled, pointing at a number on paper. Whiteboard softly blurred behind, no metro map."
-    },
-    {
-      "id": "stairwell-keys",
-      "prompt": "Concrete stairwell of a 2010s Ufa building, daylight from a window, bunch of keys in his hand. Blue #2F7BFF door trim. Close-medium portrait, grounded, not cinematic crime lighting."
-    },
-    {
-      "id": "balcony-evening",
-      "prompt": "Narrow balcony, evening, courtyard lamps, distant nine-story houses. Man in black sweatshirt, blue #2F7BFF badge-like accent on clothing. City is Ufa residential, not Moscow high-rises."
-    },
-    {
-      "id": "car-hood-docs",
-      "prompt": "Parked modest car by panel houses, documents on the hood, man explaining with open palm. Cool daylight, blue #2F7BFF folder. No luxury SUV commercial look."
-    },
-    {
-      "id": "bus-stop-honest",
-      "prompt": "Ufa bus stop with Cyrillic route plates (bus numbers, not metro M logo). Man waiting with a blue #2F7BFF tote, winter-spring jacket. Neighbourhood realism, grey sky."
+      "prompt": "Small real-estate office desk, printed papers in Russian, blue mug #2F7BFF. Man sits, sleeves rolled, pointing at a number on paper. Clean background. Magazine typography layout with masthead УФА and bottom-left headline plus description."
     },
     {
       "id": "table-calculator",
-      "prompt": "Kitchen table top-down-ish 3/4 view: notebook with payment scribbles, calculator, tea. Man opposite camera, thinking face, blue pen #2F7BFF. Homey Ufa apartment, not a studio cyclorama."
-    },
-    {
-      "id": "newbuild-lobby",
-      "prompt": "Plain new-build entrance lobby, mailboxes, stroller, no concierge palazzo. Man holds a hard hat underarm (not wearing), blue #2F7BFF lanyard. Honest developer finish, Ufa."
-    },
-    {
-      "id": "dema-street",
-      "prompt": "Low-rise Dema street, private houses mixed with shops, man walking toward camera, light-blue sweatshirt, autumn. Blue #2F7BFF shop sign blur in background, no English."
-    },
-    {
-      "id": "window-blue-tape-collage",
-      "prompt": "Indoor portrait, large readable Cyrillic headline integrated as a printed paper taped with blue #2F7BFF painter tape beside his shoulder. Plant and grey tile hint (from blue selfie room) but new framing. Still photoreal, not meme collage overload."
+      "prompt": "Kitchen table view: notebook with payment scribbles, calculator, tea. Man opposite camera, thinking face, blue pen #2F7BFF. Homey Ufa apartment. Magazine typography layout with masthead УФА and bottom-left headline plus description."
     }
   ]
 }

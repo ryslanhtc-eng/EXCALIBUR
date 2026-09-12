@@ -33,19 +33,33 @@ def face_ref_paths(root: Path) -> list[Path]:
     return found
 
 
-def build_prompt(*, headline: str, composition_prompt: str, accent: str) -> str:
+def build_prompt(
+    *,
+    headline: str,
+    description: str,
+    composition_prompt: str,
+    accent: str,
+    date_str: str = "12.09",
+) -> str:
+    desc_part = (
+        f"Right below the headline, include a smaller readable white Cyrillic description/dek: «{description}»."
+        if description
+        else ""
+    )
     return (
-        "Photoreal editorial portrait of the SAME man as in the reference selfies. "
+        "Photoreal editorial magazine cover portrait of the SAME man as in the reference selfies. "
         "Preserve exact facial identity: short dark hair faded on sides, light grey-blue eyes, "
-        "natural smile, light stubble, no glasses, no beautifying into another person. "
-        "Outfit may change. "
-        f"Scene: {composition_prompt} "
-        f"Brand accent color {accent} only (no pink highlighter, no red sale banner). "
-        f"Large readable Cyrillic headline on the image, exactly: «{headline}». "
-        "No period, no emoji, no URLs, no phone number, no extra slogans. "
-        "Setting is Ufa, Russia residential life. "
-        "NEGATIVE: metro / subway station in Ufa, Moscow, Red Square, English poster text, "
-        "watermark, extra fingers, stock luxury realtor, neon cyberpunk, different face."
+        "natural warm smile, light stubble, no glasses, no beautifying into another person. "
+        f"Magazine cover design layout: A massive bold Cyrillic masthead title «УФА» in vibrant blue {accent} "
+        "across the upper third behind the man's head and shoulders. "
+        f"Top edge header text: «НЕДВИЖИМОСТЬ» on the top-left and «ВЫПУСК {date_str}» on the top-right. "
+        f"Scene and pose: {composition_prompt} "
+        f"In the lower-left corner, place a large bold Cyrillic headline: «{headline}» (bold white with {accent} accent). "
+        f"{desc_part} "
+        "Clean, professional editorial graphic design layout like a prestigious city lifestyle magazine. "
+        "No period at the end of headline, no emoji, no URLs, no phone numbers, no extra slogans. "
+        "NEGATIVE: metro, subway, underground station, metro map, Moscow, Red Square, English poster text, "
+        "watermark, extra fingers, cartoon, 3D render, generic corporate stock model, different person."
     )
 
 
@@ -54,10 +68,12 @@ def generate_cover(
     root: Path,
     out_dir: Path,
     headline: str,
+    description: str = "",
     composition_prompt: str,
     accent: str,
     aspect_ratio: str,
     resolution: str,
+    date_str: str = "12.09",
 ) -> dict:
     """Return cover meta. Never writes a fake raster if generation did not happen."""
     api_key = (os.environ.get("KIE_API_KEY") or "").strip()
@@ -85,7 +101,7 @@ def generate_cover(
         }
 
     try:
-        input_urls = [host_image(path) for path in refs]
+        input_urls = [host_image(path, root=root) for path in refs]
     except Exception as exc:  # noqa: BLE001
         return {
             "status": "blocked",
@@ -94,7 +110,13 @@ def generate_cover(
             "model": MODEL,
         }
 
-    prompt = build_prompt(headline=headline, composition_prompt=composition_prompt, accent=accent)
+    prompt = build_prompt(
+        headline=headline,
+        description=description,
+        composition_prompt=composition_prompt,
+        accent=accent,
+        date_str=date_str,
+    )
     try:
         task_id = create_i2i_task(
             api_key,

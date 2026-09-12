@@ -46,6 +46,7 @@ def main() -> int:
     ap.add_argument("--date", default="", help="YYYY-MM-DD (default: today in Ufa)")
     ap.add_argument("--skip-cover", action="store_true")
     ap.add_argument("--force-new-composition", action="store_true")
+    ap.add_argument("--composition-id", default="magazine-cover-ufa", help="preferred composition id")
     args = ap.parse_args()
 
     root = repo_root()
@@ -68,7 +69,13 @@ def main() -> int:
     else:
         seed = f"{run_date.isoformat()}|{now.strftime('%Y-%m-%dT%H:%M')}|{uuid.uuid4()}"
 
-    artifact = generate(vk_root, run_date, seed, used)
+    artifact = generate(
+        vk_root,
+        run_date,
+        seed,
+        used,
+        preferred_composition=args.composition_id,
+    )
     composition_id = artifact["composition"]["id"]
     used.append(composition_id)
     # keep last full cycle
@@ -96,10 +103,12 @@ def main() -> int:
             root=root,
             out_dir=out,
             headline=artifact["headline"],
+            description=artifact["description"],
             composition_prompt=artifact["composition"]["prompt"],
             accent=tenant["cover"]["accent_hex"],
             aspect_ratio=tenant["cover"]["aspect_ratio"],
             resolution=tenant["cover"]["resolution"],
+            date_str=run_date.strftime("%d.%m"),
         )
 
     text_only = os.environ.get("VK_DAILY_ALLOW_TEXT_ONLY", "").strip().lower() == "yes"
@@ -121,7 +130,9 @@ def main() -> int:
         "vk_group_screen_name": tenant["vk_group_screen_name"],
         "city": tenant["city"],
         "char_count": artifact["char_count"],
+        "topic": artifact["news"].get("headline_fact"),
         "cover_headline": artifact["headline"],
+        "cover_description": artifact["description"],
         "composition_id": composition_id,
         "accent_hex": tenant["cover"]["accent_hex"],
         "news_id": artifact["news"].get("id"),
@@ -162,7 +173,9 @@ def main() -> int:
 
     print(f"VK_DAILY_DATE={run_date.isoformat()}")
     print(f"VK_DAILY_STATUS={meta['status']}")
+    print(f"VK_DAILY_TOPIC={artifact['news'].get('headline_fact')}")
     print(f"VK_DAILY_HEADLINE={artifact['headline']}")
+    print(f"VK_DAILY_DESCRIPTION={artifact['description']}")
     print(f"VK_DAILY_COMPOSITION={composition_id}")
     print(f"VK_DAILY_CHARS={artifact['char_count']}")
     print(f"VK_DAILY_POST={out / 'post.txt'}")
