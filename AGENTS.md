@@ -110,3 +110,13 @@ python3 scripts/excalibur_blog_research_start.py --topic-id B01
 Директор: `.cursor/agents/excalibur-blog-director.md` + `director-excalibur-blog` skill — **не Task**.
 
 Полная настройка worker/automation: `CLOUD-AUTOMATION.md`.
+
+## VK daily (отдельный пайплайн)
+
+Не часть SEO-статьи. Не вызывай blog Task.
+
+- Канон + скрипт: `vk-daily/`
+- Прогон: `python3 vk-daily/scripts/run_today.py`
+- Артефакты для Grok Bot: `memory/vk-daily/latest/`
+- Обложка только при `KIE_API_KEY` (модель `gpt-image-2-image-to-image`). Иначе блокер в `meta.json`, без фейковой картинки.
+- Инструкция оркестратору: `vk-daily/README.md`

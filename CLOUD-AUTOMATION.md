@@ -128,3 +128,13 @@ Copy-Item rules\* .cursor\rules\ -Force
 ```
 
 Или добавь script `scripts/sync_cursor_cloud.ps1` при необходимости.
+
+## VK daily (не блог)
+
+Отдельный контур: `vk-daily/README.md`.
+
+```bash
+python3 vk-daily/scripts/run_today.py
+```
+
+Секрет: `KIE_API_KEY`. Публикация во ВК — внешний Grok Bot по файлам `memory/vk-daily/latest/`. Не смешивать с `Task(excalibur-blog-*)`.
