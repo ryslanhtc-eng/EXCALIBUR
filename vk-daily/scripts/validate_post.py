@@ -1,4 +1,4 @@
-"""Validate VK daily post + cover headline against tenant hard rules."""
+"""Validate VK daily post + cover headline/description against tenant hard rules."""
 from __future__ import annotations
 
 import json
@@ -25,6 +25,8 @@ EMOJI_RE = re.compile(
 )
 
 ALLOWED_EMOTION = set("😅😄😊😌🤔😬🔥💔❤")
+METRO_PATTERNS = ("метро", "metro", "подземк", "метрополитен")
+BANNED_DASHES = ("—", "–")
 
 
 def load_banned(vk_root: Path) -> dict:
@@ -50,7 +52,24 @@ def iter_emoji(text: str) -> list[str]:
     return found
 
 
-def validate_headline(headline: str, tenant: dict) -> list[str]:
+def _check_metro(text: str) -> list[str]:
+    lowered = _norm(text)
+    for pat in METRO_PATTERNS:
+        if pat in lowered:
+            return [f"hard rule violation: metro mentioned in text ('{pat}')"]
+    return []
+
+
+def _check_dashes(text: str) -> list[str]:
+    errors: list[str] = []
+    for dash in BANNED_DASHES:
+        if dash in text:
+            name = "em-dash (—)" if dash == "—" else "en-dash (–)"
+            errors.append(f"hard rule violation: {name} found in text")
+    return errors
+
+
+def validate_headline(headline: str, tenant: dict, banned: dict | None = None) -> list[str]:
     errors: list[str] = []
     raw = headline.strip()
     if not raw:
@@ -66,32 +85,27 @@ def validate_headline(headline: str, tenant: dict) -> list[str]:
         errors.append(f"cover headline must be {lo}-{hi} words, got {len(words)}")
     if iter_emoji(raw):
         errors.append("cover headline must not contain emoji")
-    if re.search(r"https?://|www\.|t\.me/", raw, re.I):
+    if re.search(r"https?://|www\.|t\.me/|vk\.(?:com|ru|me)/", raw, re.I):
         errors.append("cover headline must not contain links")
+    errors.extend(_check_metro(raw))
+    errors.extend(_check_dashes(raw))
     return errors
 
 
-def _metro_as_existing(text: str, phrases: list[str]) -> list[str]:
-    """Ban copy that treats Ufa metro as a real nearby amenity.
-
-    Allowed: explicit denial ('метро в Уфе нет', 'в Сипайлово нет метро').
-    """
+def validate_description(description: str, tenant: dict | None = None, banned: dict | None = None) -> list[str]:
     errors: list[str] = []
-    lowered = _norm(text)
-    if re.search(r"метро в уфе есть", lowered):
-        errors.append("metro-in-ufa fluff: claims metro exists")
-    for phrase in phrases:
-        p = _norm(phrase)
-        if p not in lowered:
-            continue
-        if p in {"метрополитен"} and "нет" in lowered:
-            continue
-        # denial nearby
-        idx = lowered.find(p)
-        window = lowered[max(0, idx - 40) : idx + len(p) + 40]
-        if "нет" in window or "не существует" in window or "копипаст" in window:
-            continue
-        errors.append(f"metro-in-ufa fluff: {phrase!r}")
+    raw = description.strip()
+    if not raw:
+        return ["cover description (dek) is empty"]
+    words = [w for w in raw.split() if w]
+    if len(words) < 2 or len(words) > 15:
+        errors.append(f"cover description must be 2-15 words, got {len(words)}")
+    if iter_emoji(raw):
+        errors.append("cover description must not contain emoji")
+    if re.search(r"https?://|www\.|t\.me/|vk\.(?:com|ru|me)/", raw, re.I):
+        errors.append("cover description must not contain links")
+    errors.extend(_check_metro(raw))
+    errors.extend(_check_dashes(raw))
     return errors
 
 
@@ -110,9 +124,15 @@ def validate_post(text: str, tenant: dict, banned: dict) -> list[str]:
     if not tenant["post"].get("allow_links", False):
         for pat in banned.get("link_patterns", []):
             if pat.lower() in body.lower():
-                errors.append(f"links are forbidden for now: found {pat}")
+                errors.append(f"links are forbidden: found {pat}")
 
-    errors.extend(_metro_as_existing(body, banned.get("metro_as_existing", [])))
+    errors.extend(_check_metro(body))
+    errors.extend(_check_dashes(body))
+
+    lowered = _norm(body)
+    for stamp in banned.get("ai_stamps", []):
+        if _norm(stamp) in lowered:
+            errors.append(f"AI stamp forbidden: '{stamp}'")
 
     emojis = iter_emoji(body)
     object_set = set(banned.get("object_emoji", ""))
