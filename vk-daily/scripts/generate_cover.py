@@ -85,7 +85,7 @@ def generate_cover(
         }
 
     try:
-        input_urls = [host_image(path) for path in refs]
+        input_urls = [host_image(path, root=root) for path in refs]
     except Exception as exc:  # noqa: BLE001
         return {
             "status": "blocked",

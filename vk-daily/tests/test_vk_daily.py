@@ -16,6 +16,7 @@ sys.path.insert(0, str(SCRIPTS))
 
 from generate_cover import generate_cover  # noqa: E402
 from generate_post import generate, pick_composition  # noqa: E402
+from host_image import github_raw_url, jsdelivr_url, parse_github_owner_repo  # noqa: E402
 from paths import vk_daily_root  # noqa: E402
 from validate_post import load_banned, load_tenant, validate_headline, validate_post  # noqa: E402
 
@@ -72,6 +73,28 @@ class GenerateTests(unittest.TestCase):
         used = [c["id"] for c in comps[:-1]]
         picked = pick_composition(comps, "x", used)
         self.assertEqual(picked["id"], comps[-1]["id"])
+
+
+class HostImageTests(unittest.TestCase):
+    def test_parse_github_owner_repo_strips_token(self) -> None:
+        remote = "https://x-access-token:ghs_exampletoken@github.com/ryslanhtc-eng/EXCALIBUR.git"
+        self.assertEqual(parse_github_owner_repo(remote), "ryslanhtc-eng/EXCALIBUR")
+        self.assertNotIn("ghs_", parse_github_owner_repo(remote) or "")
+
+    def test_github_raw_and_jsdelivr_urls(self) -> None:
+        selfie = ROOT / "vk-daily" / "refs" / "ruslan_selfie_blue.jpg"
+        env = {**os.environ, "GITHUB_REPOSITORY": "ryslanhtc-eng/EXCALIBUR"}
+        with patch.dict(os.environ, env, clear=True):
+            raw = github_raw_url(selfie, ROOT, ref="master")
+            cdn = jsdelivr_url(selfie, ROOT, ref="master")
+        self.assertEqual(
+            raw,
+            "https://raw.githubusercontent.com/ryslanhtc-eng/EXCALIBUR/master/vk-daily/refs/ruslan_selfie_blue.jpg",
+        )
+        self.assertEqual(
+            cdn,
+            "https://cdn.jsdelivr.net/gh/ryslanhtc-eng/EXCALIBUR@master/vk-daily/refs/ruslan_selfie_blue.jpg",
+        )
 
 
 class CoverBlockerTests(unittest.TestCase):
