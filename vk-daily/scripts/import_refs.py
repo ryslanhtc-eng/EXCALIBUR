@@ -39,16 +39,24 @@ def import_refs(root: Path | None = None, *, blue: str = "", black: str = "") ->
     blue_path = _first_existing(root, CANDIDATES_BLUE, blue)
     black_path = _first_existing(root, CANDIDATES_BLACK, black)
     copied = 0
+    dest_blue = dest_dir / "ruslan_selfie_blue.jpg"
+    dest_black = dest_dir / "ruslan_selfie_black.jpg"
     if blue_path:
-        shutil.copy2(blue_path, dest_dir / "ruslan_selfie_blue.jpg")
+        shutil.copy2(blue_path, dest_blue)
         copied += 1
         print(f"OK blue={blue_path}")
+    elif dest_blue.is_file() and dest_blue.stat().st_size > 1000:
+        copied += 1
+        print(f"OK blue already at {dest_blue}")
     else:
         print("WARN missing blue selfie", file=sys.stderr)
     if black_path:
-        shutil.copy2(black_path, dest_dir / "ruslan_selfie_black.jpg")
+        shutil.copy2(black_path, dest_black)
         copied += 1
         print(f"OK black={black_path}")
+    elif dest_black.is_file() and dest_black.stat().st_size > 1000:
+        copied += 1
+        print(f"OK black already at {dest_black}")
     else:
         print("WARN missing black selfie", file=sys.stderr)
     return 0 if copied else 1
