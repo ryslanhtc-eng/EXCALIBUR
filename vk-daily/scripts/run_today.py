@@ -84,6 +84,10 @@ def main() -> int:
     (out / "post.txt").write_text(artifact["post"] + "\n", encoding="utf-8")
 
     cover_meta: dict
+    dek = ""
+    if artifact["news"].get("angle") == "delays_ddu":
+        dek = "Проверь ДДУ и сроки до получения ключей"
+
     if args.skip_cover:
         cover_meta = {
             "status": "skipped",
@@ -100,6 +104,7 @@ def main() -> int:
             accent=tenant["cover"]["accent_hex"],
             aspect_ratio=tenant["cover"]["aspect_ratio"],
             resolution=tenant["cover"]["resolution"],
+            dek=dek,
         )
 
     text_only = os.environ.get("VK_DAILY_ALLOW_TEXT_ONLY", "").strip().lower() == "yes"
@@ -122,6 +127,7 @@ def main() -> int:
         "city": tenant["city"],
         "char_count": artifact["char_count"],
         "cover_headline": artifact["headline"],
+        "cover_description": dek or "Editorial cover with Ruslan Mukhtarov",
         "composition_id": composition_id,
         "accent_hex": tenant["cover"]["accent_hex"],
         "news_id": artifact["news"].get("id"),

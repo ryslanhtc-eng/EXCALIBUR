@@ -1,6 +1,10 @@
 {
   "compositions": [
     {
+      "id": "construction-deadline-editorial",
+      "prompt": "Editorial magazine cover portrait of the same man in modern casual jacket with blue #2F7BFF detail. Background features realistic unfinished facade with construction crane against cool overcast sky, calendar-deadline motif. Glossy editorial magazine aesthetic, confident friendly expression, no English text, no metro."
+    },
+    {
       "id": "river-window-morning",
       "prompt": "Medium shot of the same man by a wide apartment window at morning, pale Ufa river haze outside, no metro, no skyline of Moscow. He holds a paper floor plan. Soft daylight, light-blue crewneck optional. Blue #2F7BFF window frame accent."
     },
