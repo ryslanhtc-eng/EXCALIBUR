@@ -82,11 +82,23 @@ def upload_0x0(image_path: Path) -> str:
     return url
 
 
+RAW_GITHUB_REFS = {
+    "ruslan_selfie_blue.jpg": "https://raw.githubusercontent.com/ryslanhtc-eng/EXCALIBUR/master/vk-daily/refs/ruslan_selfie_blue.jpg",
+    "ruslan_selfie_black.jpg": "https://raw.githubusercontent.com/ryslanhtc-eng/EXCALIBUR/master/vk-daily/refs/ruslan_selfie_black.jpg",
+}
+
+
 def host_image(image_path: Path, providers: tuple[str, ...] = ("catbox", "0x0")) -> str:
+    name = image_path.name
+    # Fast path: if known raw GitHub URL exists, use it directly (bypasses broken/blocked catbox/0x0 in cloud)
+    if name in RAW_GITHUB_REFS:
+        return RAW_GITHUB_REFS[name]
+
     last: Exception | None = None
     for provider in providers:
         try:
             return upload_catbox(image_path) if provider == "catbox" else upload_0x0(image_path)
         except Exception as exc:  # noqa: BLE001 - try next host
             last = exc
+
     raise RuntimeError(f"could not host {image_path.name}: {last}")

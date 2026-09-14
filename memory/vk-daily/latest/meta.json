@@ -1,9 +1,9 @@
 {
   "pipeline": "vk-daily",
-  "status": "blocked",
-  "publish_ready": false,
+  "status": "ready",
+  "publish_ready": true,
   "date": "2026-09-14",
-  "generated_at": "2026-09-14T10:50:00+05:00",
+  "generated_at": "2026-09-14T11:05:00+05:00",
   "timezone": "Asia/Yekaterinburg",
   "tenant_id": "ruslan-mukhtarov-ufa",
   "person_name_ru": "Руслан Мухтаров",
@@ -32,12 +32,17 @@
     "cover_url": "memory/vk-daily/latest/cover-url.txt"
   },
   "cover": {
-    "status": "blocked",
-    "blocker": "REF_HOST",
-    "blocker_message": "❌ VK COVER BLOCKER: could not host face refs (catbox/0x0 HTTP 412/503 from Cloud sandbox). Cover not generated. Do not invent a face or publish a fake image.",
+    "status": "ok",
+    "blocker": null,
+    "blocker_message": null,
     "model": "gpt-image-2-image-to-image",
-    "intended_headline": "Вычет за ремонт вторички миф",
-    "intended_description": "ФНС одобряет вычет на отделку только в новостройке без ремонта",
+    "task_id": "c98ba219ac4996c83063608e15c55234",
+    "cover_rel": "memory/vk-daily/latest/cover.png",
+    "cover_url": "https://tempfile.aiquickdraw.com/a2/c98ba219ac4996c83063608e15c55234_1789365944592.png",
+    "cover_sniff": "png",
+    "input_urls_count": 2,
+    "headline": "Вычет за ремонт вторички миф",
+    "description": "ФНС одобряет вычет на отделку только в новостройке без ремонта",
     "visual_cue": "Glossy magazine cover layout: editorial portrait of Ruslan, blue tax folder with subtle Cyrillic FNS (ФНС) tax notice motif, #2F7BFF accent, depth typography."
   },
   "orchestrator": {
@@ -47,7 +52,5 @@
     "publish_if": "cover.status == ok and files exist",
     "skip_if_blocker": true
   },
-  "links_in_post": false,
-  "blocker": "REF_HOST",
-  "blocker_message": "❌ VK COVER BLOCKER: could not host face refs (catbox/0x0 HTTP 412/503 from Cloud sandbox). Cover not generated. Do not invent a face or publish a fake image."
+  "links_in_post": false
 }
