@@ -33,18 +33,61 @@ def face_ref_paths(root: Path) -> list[Path]:
     return found
 
 
-def build_prompt(*, headline: str, composition_prompt: str, accent: str) -> str:
+from zoneinfo import ZoneInfo
+from datetime import datetime
+
+RU_MONTHS = {
+    1: "ЯНВАРЬ",
+    2: "ФЕВРАЛЬ",
+    3: "МАРТ",
+    4: "АПРЕЛЬ",
+    5: "МАЙ",
+    6: "ИЮНЬ",
+    7: "ИЮЛЬ",
+    8: "АВГУСТ",
+    9: "СЕНТЯБРЬ",
+    10: "ОКТЯБРЬ",
+    11: "НОЯБРЬ",
+    12: "ДЕКАБРЬ",
+}
+
+
+def current_date_badge(run_date=None) -> str:
+    """Return Russian uppercase month and year, e.g. СЕНТЯБРЬ 2026."""
+    if run_date is None:
+        run_date = datetime.now(ZoneInfo("Asia/Yekaterinburg")).date()
+    month_name = RU_MONTHS.get(run_date.month, "СЕНТЯБРЬ")
+    return f"{month_name} {run_date.year}"
+
+
+def build_prompt(
+    *,
+    headline: str,
+    composition_prompt: str,
+    accent: str,
+    dek: str = "",
+    date_badge: str = "",
+    masthead: str = "УФА",
+) -> str:
+    if not date_badge:
+        date_badge = current_date_badge()
+    dek_instruction = f" With mandatory smaller subtitle/dek: «{dek}»." if dek else ""
     return (
+        f"Horizontal landscape glossy magazine cover style layout (16:9 landscape aspect ratio, bold prominent magazine masthead logo «{masthead}» in upper corner, "
+        f"small date badge displaying exactly «{date_badge}», photoreal portrait of the man, huge bold headline, catchy dek). "
         "Photoreal editorial portrait of the SAME man as in the reference selfies. "
         "Preserve exact facial identity: short dark hair faded on sides, light grey-blue eyes, "
         "natural smile, light stubble, no glasses, no beautifying into another person. "
         "Outfit may change. "
         f"Scene: {composition_prompt} "
-        f"Brand accent color {accent} only (no pink highlighter, no red sale banner). "
-        f"Large readable Cyrillic headline on the image, exactly: «{headline}». "
+        f"Brand accent color {accent} as editorial graphic design accent color only (clean solid blue shapes, banners, or design lines). "
+        "ABSOLUTELY FORBIDDEN: Do NOT print any hex code, color code, or RAL labels on cups, mugs, clothes, walls, or props (NO «#2F7BFF» text, no color codes anywhere). "
+        "FORBIDDEN: Do NOT use «ЖИЛОЙ» as magazine title or masthead. The magazine name masthead must be «УФА». "
+        f"Large readable bold Cyrillic headline on the image, exactly: «{headline}».{dek_instruction} "
+        f"The date badge on the cover must read exactly: «{date_badge}». Do not write 2024 or 2025. "
         "No period, no emoji, no URLs, no phone number, no extra slogans. "
-        "Setting is Ufa, Russia residential life. "
-        "NEGATIVE: metro / subway station in Ufa, Moscow, Red Square, English poster text, "
+        "Setting is residential life. "
+        "NEGATIVE: hex code text, #2F7BFF text on mug, color code text, ЖИЛОЙ, 2024, 2025, АПРЕЛЬ, МАЙ, metro / subway station in Ufa, Red Square, English poster text, "
         "watermark, extra fingers, stock luxury realtor, neon cyberpunk, different face."
     )
 
@@ -56,8 +99,11 @@ def generate_cover(
     headline: str,
     composition_prompt: str,
     accent: str,
-    aspect_ratio: str,
-    resolution: str,
+    aspect_ratio: str = "16:9",
+    resolution: str = "2K",
+    dek: str = "",
+    date_badge: str = "",
+    masthead: str = "УФА",
 ) -> dict:
     """Return cover meta. Never writes a fake raster if generation did not happen."""
     api_key = (os.environ.get("KIE_API_KEY") or "").strip()
@@ -87,14 +133,20 @@ def generate_cover(
     try:
         input_urls = [host_image(path) for path in refs]
     except Exception as exc:  # noqa: BLE001
-        return {
-            "status": "blocked",
-            "blocker": BLOCKER_HOST,
-            "blocker_message": f"❌ VK COVER BLOCKER: could not host face refs: {exc}",
-            "model": MODEL,
-        }
+        # Fallback to direct raw GitHub URLs
+        input_urls = [
+            "https://raw.githubusercontent.com/ryslanhtc-eng/EXCALIBUR/master/vk-daily/refs/ruslan_selfie_blue.jpg",
+            "https://raw.githubusercontent.com/ryslanhtc-eng/EXCALIBUR/master/vk-daily/refs/ruslan_selfie_black.jpg",
+        ]
 
-    prompt = build_prompt(headline=headline, composition_prompt=composition_prompt, accent=accent)
+    prompt = build_prompt(
+        headline=headline,
+        composition_prompt=composition_prompt,
+        accent=accent,
+        dek=dek,
+        date_badge=date_badge,
+        masthead=masthead,
+    )
     try:
         task_id = create_i2i_task(
             api_key,

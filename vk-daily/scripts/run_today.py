@@ -14,7 +14,7 @@ from zoneinfo import ZoneInfo
 SCRIPT_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
-from generate_cover import generate_cover  # noqa: E402
+from generate_cover import current_date_badge, generate_cover  # noqa: E402
 from generate_post import generate  # noqa: E402
 from import_refs import import_refs  # noqa: E402
 from paths import latest_dir, repo_root, runs_dir, vk_daily_root  # noqa: E402
@@ -84,6 +84,10 @@ def main() -> int:
     (out / "post.txt").write_text(artifact["post"] + "\n", encoding="utf-8")
 
     cover_meta: dict
+    dek = ""
+    if artifact["news"].get("angle") == "delays_ddu":
+        dek = "Проверь ДДУ и сроки до получения ключей"
+
     if args.skip_cover:
         cover_meta = {
             "status": "skipped",
@@ -92,14 +96,19 @@ def main() -> int:
             "model": tenant["cover"]["model"],
         }
     else:
+        date_badge = tenant["cover"].get("date_badge") or ""
+        masthead = tenant["cover"].get("masthead", "УФА")
         cover_meta = generate_cover(
             root=root,
             out_dir=out,
             headline=artifact["headline"],
             composition_prompt=artifact["composition"]["prompt"],
             accent=tenant["cover"]["accent_hex"],
-            aspect_ratio=tenant["cover"]["aspect_ratio"],
-            resolution=tenant["cover"]["resolution"],
+            aspect_ratio=tenant["cover"].get("aspect_ratio", "16:9"),
+            resolution=tenant["cover"].get("resolution", "2K"),
+            dek=dek,
+            date_badge=date_badge,
+            masthead=masthead,
         )
 
     text_only = os.environ.get("VK_DAILY_ALLOW_TEXT_ONLY", "").strip().lower() == "yes"
@@ -122,6 +131,10 @@ def main() -> int:
         "city": tenant["city"],
         "char_count": artifact["char_count"],
         "cover_headline": artifact["headline"],
+        "cover_description": dek or "Editorial cover with Ruslan Mukhtarov",
+        "masthead": masthead,
+        "date_badge": current_date_badge(run_date),
+        "aspect_ratio": tenant["cover"].get("aspect_ratio", "16:9"),
         "composition_id": composition_id,
         "accent_hex": tenant["cover"]["accent_hex"],
         "news_id": artifact["news"].get("id"),

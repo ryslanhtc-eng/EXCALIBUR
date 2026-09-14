@@ -1,6 +1,35 @@
 {
-  "updated": "2026-09-12",
+  "updated": "2026-09-14",
   "items": [
+    {
+      "id": "moscow-delays-h1-2026-metrium",
+      "date": "2026-09-14",
+      "source_name": "Метриум / проектные декларации",
+      "metric": "h1_2026_moscow_newbuild_delays",
+      "headline_fact": "В первом полугодии 2026 года в Москве вовремя сдали только 21 корпус из 182 запланированных, 89% новостроек задерживают.",
+      "numbers": {
+        "planned_buildings": 182,
+        "on_time_buildings": 21,
+        "on_time_pct": 11,
+        "delay_pct": 89,
+        "delay_mass_pct": 73,
+        "delay_business_pct": 81,
+        "delay_premium_pct": 100,
+        "premium_on_time": 0,
+        "premium_total": 19,
+        "delay_elite_pct": 94,
+        "mo_delay_pct": 82,
+        "mo_delay_objects": 97
+      },
+      "notes": [
+        "Москва и область: 89% новостроек с задержкой в первом полугодии 2026 года.",
+        "Премиум: 100% задержка, 0 из 19 вовремя.",
+        "Элит и делюкс: 94% задержка, бизнес 81%, массовый 73%.",
+        "Подмосковье: 82% корпусов с отставанием (97 объектов).",
+        "Инструмент защиты: страхование ДДУ от Самолет Плюс на случай срыва сроков."
+      ],
+      "angle": "delays_ddu"
+    },
     {
       "id": "ufa-primary-aug-2026-rbc",
       "date": "2026-09-11",

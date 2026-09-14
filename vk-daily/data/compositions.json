@@ -1,6 +1,14 @@
 {
   "compositions": [
     {
+      "id": "sipaylovo-zhukova-office",
+      "prompt": "Modern comfortable real estate office in Sipaylovo, Ufa, desk with blueprints, window daylight. Man in casual dark jacket with subtle blue #2F7BFF detail, friendly smile, no metro, honest realism."
+    },
+    {
+      "id": "construction-deadline-editorial",
+      "prompt": "Editorial magazine cover portrait of the same man in modern casual jacket with blue #2F7BFF detail. Background features realistic unfinished facade with construction crane against cool overcast sky, calendar-deadline motif. Glossy editorial magazine aesthetic, confident friendly expression, no English text, no metro, NO hex code or text printed on any props."
+    },
+    {
       "id": "river-window-morning",
       "prompt": "Medium shot of the same man by a wide apartment window at morning, pale Ufa river haze outside, no metro, no skyline of Moscow. He holds a paper floor plan. Soft daylight, light-blue crewneck optional. Blue #2F7BFF window frame accent."
     },
@@ -14,7 +22,7 @@
     },
     {
       "id": "office-prints",
-      "prompt": "Small real-estate office desk, printed listings in Russian (readable short words only: Уфа, вторичка), blue mug #2F7BFF. Man sits, sleeves rolled, pointing at a number on paper. Whiteboard softly blurred behind, no metro map."
+      "prompt": "Small real-estate office desk, printed listings in Russian (readable short words only: Уфа, вторичка), plain clean blue mug without any text or labels. Man sits, sleeves rolled, pointing at a number on paper. Whiteboard softly blurred behind, no metro map, no hex code text."
     },
     {
       "id": "stairwell-keys",
