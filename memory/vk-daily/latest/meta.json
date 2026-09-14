@@ -1,9 +1,9 @@
 {
   "pipeline": "vk-daily",
-  "status": "blocked",
-  "publish_ready": false,
-  "date": "2026-09-12",
-  "generated_at": "2026-09-12T16:08:40+05:00",
+  "status": "ready",
+  "publish_ready": true,
+  "date": "2026-09-14",
+  "generated_at": "2026-09-14T10:11:16+05:00",
   "timezone": "Asia/Yekaterinburg",
   "tenant_id": "ruslan-mukhtarov-ufa",
   "person_name_ru": "Руслан Мухтаров",
@@ -11,23 +11,49 @@
   "vk_group_url": "https://vk.ru/samolet_plus_sipa",
   "vk_group_screen_name": "samolet_plus_sipa",
   "city": "Уфа",
-  "char_count": 1861,
-  "cover_headline": "Уфа снова в тройке",
-  "composition_id": "office-prints",
+  "char_count": 1931,
+  "topic": "В Башкирии вторичку берут чаще (+14% за полугодие), а виральный миф Дзена: ремонт во вторичке вернут 13%. Вычет за отделку только у новостройки без отделки в договоре.",
+  "cover_headline": "Ремонт во вторичке не вернут",
+  "cover_description": "Когда 13 процентов всё же вернут",
+  "composition_id": "whitebox-receipts-magazine",
   "accent_hex": "#2F7BFF",
-  "news_id": "ufa-primary-aug-2026-rbc",
-  "news_source_name": "РБК Недвижимость / РБК Уфа",
+  "news_id": "bashkortostan-secondary-plus14-tax-finish-myth-2026-09-14",
+  "news_source_name": "Башинформ / Росреестр РБ; ФНС (вычет за отделку); Дзен-кластер про ремонт",
+  "anti_repeat_note": "Не брали 2026-09-13 (спрос упал / цены растут / скрытые скидки / платёж в месяц, wall-149617304_1049) и отопление/квитанции/теплосчётчики. Без слова «метро».",
+  "sources": [
+    {
+      "name": "Башинформ / Росреестр РБ",
+      "date": "2026-09-09",
+      "fact": "H1 2026: 45 913 прав по ДКП, +14% г/г; ипотека 38%→45%; заехать сразу"
+    },
+    {
+      "name": "ФНС / ст. 220 НК",
+      "date": "2026",
+      "fact": "Отделка в вычет 2 млн только если в договоре квартира без отделки"
+    },
+    {
+      "name": "Дзен (DOMEO, Сравни, ПРАВОКАРД, Все о стройке)",
+      "date": "2026-09",
+      "fact": "Вирал: вычет за ремонт во вторичке не дают"
+    }
+  ],
   "artifacts": {
     "post": "memory/vk-daily/latest/post.txt",
     "meta": "memory/vk-daily/latest/meta.json",
     "cover": "memory/vk-daily/latest/cover.png",
-    "cover_url": "memory/vk-daily/latest/cover-url.txt"
+    "cover_url": "memory/vk-daily/latest/cover-url.txt",
+    "topic_brief": "memory/vk-daily/latest/topic-brief.json"
   },
   "cover": {
-    "status": "blocked",
-    "blocker": "KIE_API_KEY",
-    "blocker_message": "❌ VK COVER BLOCKER: KIE_API_KEY is not set. Cover not generated. Do not publish a fake image.",
-    "model": "gpt-image-2-image-to-image"
+    "status": "ok",
+    "blocker": null,
+    "blocker_message": null,
+    "model": "gpt-image-2-image-to-image",
+    "task_id": "4acfe3c5344f943241073ef167299559",
+    "cover_rel": "memory/vk-daily/latest/cover.png",
+    "cover_url": "https://tempfile.aiquickdraw.com/a2/4acfe3c5344f943241073ef167299559_1789362645143.png",
+    "cover_sniff": "png",
+    "input_urls_count": 2
   },
   "orchestrator": {
     "publisher": "Grok Bot",
@@ -37,6 +63,6 @@
     "skip_if_blocker": true
   },
   "links_in_post": false,
-  "blocker": "KIE_API_KEY",
-  "blocker_message": "❌ VK COVER BLOCKER: KIE_API_KEY is not set. Cover not generated. Do not publish a fake image."
+  "topic_discovery": true,
+  "format": "news-day"
 }

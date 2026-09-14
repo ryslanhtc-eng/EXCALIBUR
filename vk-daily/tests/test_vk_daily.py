@@ -16,6 +16,7 @@ sys.path.insert(0, str(SCRIPTS))
 
 from generate_cover import generate_cover  # noqa: E402
 from generate_post import generate, pick_composition  # noqa: E402
+from host_image import parse_github_owner_repo  # noqa: E402
 from paths import vk_daily_root  # noqa: E402
 from validate_post import load_banned, load_tenant, validate_headline, validate_post  # noqa: E402
 
@@ -93,6 +94,15 @@ class CoverBlockerTests(unittest.TestCase):
             self.assertEqual(meta["blocker"], "KIE_API_KEY")
             self.assertFalse((out / "cover.png").exists())
             self.assertFalse((out / "cover-url.txt").exists())
+
+
+class HostImageTests(unittest.TestCase):
+    def test_parse_github_owner_repo(self) -> None:
+        self.assertEqual(
+            parse_github_owner_repo("https://github.com/ryslanhtc-eng/EXCALIBUR.git"),
+            "ryslanhtc-eng/EXCALIBUR",
+        )
+        self.assertIsNone(parse_github_owner_repo(""))
 
 
 if __name__ == "__main__":
