@@ -102,8 +102,8 @@ def main() -> int:
             headline=artifact["headline"],
             composition_prompt=artifact["composition"]["prompt"],
             accent=tenant["cover"]["accent_hex"],
-            aspect_ratio=tenant["cover"]["aspect_ratio"],
-            resolution=tenant["cover"]["resolution"],
+            aspect_ratio=tenant["cover"].get("aspect_ratio", "16:9"),
+            resolution=tenant["cover"].get("resolution", "2K"),
             dek=dek,
         )
 
@@ -128,6 +128,7 @@ def main() -> int:
         "char_count": artifact["char_count"],
         "cover_headline": artifact["headline"],
         "cover_description": dek or "Editorial cover with Ruslan Mukhtarov",
+        "aspect_ratio": tenant["cover"].get("aspect_ratio", "16:9"),
         "composition_id": composition_id,
         "accent_hex": tenant["cover"]["accent_hex"],
         "news_id": artifact["news"].get("id"),

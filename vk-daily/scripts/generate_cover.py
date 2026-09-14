@@ -36,17 +36,18 @@ def face_ref_paths(root: Path) -> list[Path]:
 def build_prompt(*, headline: str, composition_prompt: str, accent: str, dek: str = "") -> str:
     dek_instruction = f" With mandatory smaller subtitle/dek: «{dek}»." if dek else ""
     return (
-        "Glossy magazine cover style layout (masthead at top, big portrait, huge headline, catchy dek). "
+        "Horizontal landscape glossy magazine cover style layout (16:9 landscape aspect ratio, editorial masthead at top, portrait of the man, huge bold headline, catchy dek). "
         "Photoreal editorial portrait of the SAME man as in the reference selfies. "
         "Preserve exact facial identity: short dark hair faded on sides, light grey-blue eyes, "
         "natural smile, light stubble, no glasses, no beautifying into another person. "
         "Outfit may change. "
         f"Scene: {composition_prompt} "
-        f"Brand accent color {accent} only (no pink highlighter, no red sale banner). "
+        f"Brand accent color {accent} as editorial graphic design accent color only (clean solid blue shapes, banners, or design lines). "
+        "ABSOLUTELY FORBIDDEN: Do NOT print any hex code, color code, or RAL labels on cups, mugs, clothes, walls, or props (NO «#2F7BFF» text, no color codes anywhere). "
         f"Large readable bold Cyrillic headline on the image, exactly: «{headline}».{dek_instruction} "
         "No period, no emoji, no URLs, no phone number, no extra slogans. "
         "Setting is residential life. "
-        "NEGATIVE: metro / subway station in Ufa, Red Square, English poster text, "
+        "NEGATIVE: hex code text, #2F7BFF text on mug, color code text, metro / subway station in Ufa, Red Square, English poster text, "
         "watermark, extra fingers, stock luxury realtor, neon cyberpunk, different face."
     )
 
@@ -58,8 +59,8 @@ def generate_cover(
     headline: str,
     composition_prompt: str,
     accent: str,
-    aspect_ratio: str,
-    resolution: str,
+    aspect_ratio: str = "16:9",
+    resolution: str = "2K",
     dek: str = "",
 ) -> dict:
     """Return cover meta. Never writes a fake raster if generation did not happen."""
