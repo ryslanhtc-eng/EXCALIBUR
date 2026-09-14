@@ -37,6 +37,7 @@
     "aspect_ratio": "16:9",
     "resolution": "2K",
     "model": "gpt-image-2-image-to-image",
+    "masthead": "УФА",
     "headline_words_min": 4,
     "headline_words_max": 8
   },
