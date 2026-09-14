@@ -96,6 +96,7 @@ def main() -> int:
             root=root,
             out_dir=out,
             headline=artifact["headline"],
+            dek="ФНС одобряет вычет на отделку только в новостройке без ремонта",
             composition_prompt=artifact["composition"]["prompt"],
             accent=tenant["cover"]["accent_hex"],
             aspect_ratio=tenant["cover"]["aspect_ratio"],
@@ -122,6 +123,14 @@ def main() -> int:
         "city": tenant["city"],
         "char_count": artifact["char_count"],
         "cover_headline": artifact["headline"],
+        "cover_description": "ФНС одобряет вычет на отделку только в новостройке без ремонта",
+        "sources": [
+            {
+                "name": artifact["news"].get("source_name"),
+                "date": artifact["news"].get("date"),
+                "rule": "ст. 220 НК РФ (имущественный налоговый вычет)"
+            }
+        ],
         "composition_id": composition_id,
         "accent_hex": tenant["cover"]["accent_hex"],
         "news_id": artifact["news"].get("id"),

@@ -1,6 +1,10 @@
 {
   "compositions": [
     {
+      "id": "tax-consult-blue-folder",
+      "prompt": "Glossy magazine cover style layout. Close-up to medium editorial portrait of the same man looking directly at camera with confident warm smile, wearing a dark wool coat over a navy turtleneck. In the composition, an official blue tax folder with a subtle stylized Cyrillic tax notice motif resembling Russian tax office FNS (ФНС) forms and clean stamp graphics. Editorial masthead and clean depth typography. Brand accent color #2F7BFF. Grounded realistic interior in Ufa, soft natural window light, no metro."
+    },
+    {
       "id": "river-window-morning",
       "prompt": "Medium shot of the same man by a wide apartment window at morning, pale Ufa river haze outside, no metro, no skyline of Moscow. He holds a paper floor plan. Soft daylight, light-blue crewneck optional. Blue #2F7BFF window frame accent."
     },

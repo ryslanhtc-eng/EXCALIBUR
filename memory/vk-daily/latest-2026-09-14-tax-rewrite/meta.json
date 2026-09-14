@@ -26,10 +26,10 @@
   "news_id": "tax-deduction-renovation-myth-2026",
   "news_source_name": "ФНС России / ст. 220 НК РФ",
   "artifacts": {
-    "post": "memory/vk-daily/latest/post.txt",
-    "meta": "memory/vk-daily/latest/meta.json",
-    "cover": "memory/vk-daily/latest/cover.png",
-    "cover_url": "memory/vk-daily/latest/cover-url.txt"
+    "post": "memory/vk-daily/latest-2026-09-14-tax-rewrite/post.txt",
+    "meta": "memory/vk-daily/latest-2026-09-14-tax-rewrite/meta.json",
+    "cover": "memory/vk-daily/latest-2026-09-14-tax-rewrite/cover.png",
+    "cover_url": "memory/vk-daily/latest-2026-09-14-tax-rewrite/cover-url.txt"
   },
   "cover": {
     "status": "ok",
@@ -37,7 +37,7 @@
     "blocker_message": null,
     "model": "gpt-image-2-image-to-image",
     "task_id": "c98ba219ac4996c83063608e15c55234",
-    "cover_rel": "memory/vk-daily/latest/cover.png",
+    "cover_rel": "memory/vk-daily/latest-2026-09-14-tax-rewrite/cover.png",
     "cover_url": "https://tempfile.aiquickdraw.com/a2/c98ba219ac4996c83063608e15c55234_1789365944592.png",
     "cover_sniff": "png",
     "input_urls_count": 2,
