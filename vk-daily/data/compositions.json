@@ -45,6 +45,10 @@
       "prompt": "Low-rise Dema street, private houses mixed with shops, man walking toward camera, light-blue sweatshirt, autumn. Blue #2F7BFF shop sign blur in background, no English."
     },
     {
+      "id": "kitchen-sofa-autumn-docs",
+      "prompt": "NEW magazine cover layout, not a stairwell, not an office desk, not a whitebox kitchen: the same man sits three-quarter on a simple Ufa apartment sofa beside a kitchen, autumn window light, printed bank papers and a closed blue folder on a low table, a child's felt-pen drawing on the fridge far behind. Calm half-smile, casual dark sweater. Photoreal residential Ufa, not a luxury loft. Blue editorial graphic blocks only as magazine chrome. No hex codes, no RAL numbers, no color-code labels on any object."
+    },
+    {
       "id": "window-blue-tape-collage",
       "prompt": "Indoor portrait, large readable Cyrillic headline integrated as a printed paper taped with blue #2F7BFF painter tape beside his shoulder. Plant and grey tile hint (from blue selfie room) but new framing. Still photoreal, not meme collage overload."
     }
