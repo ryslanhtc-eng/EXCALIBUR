@@ -46,7 +46,7 @@ def build_prompt(*, headline: str, composition_prompt: str, accent: str, masthea
         f"Large readable Cyrillic headline on the image, exactly: «{headline}».{dek_part} "
         "No period at the end of headline, no emoji, no URLs, no phone number, no extra slogans. "
         "Setting is Ufa, Russia residential life. "
-        "NEGATIVE: metro / subway station in Ufa, Moscow, Red Square, English poster text, "
+        "NEGATIVE: Moscow, Red Square, English poster text, "
         "watermark, extra fingers, stock luxury realtor, neon cyberpunk, different face."
     )
 
