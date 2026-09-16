@@ -18,7 +18,7 @@
 1. Узнаваемый Руслан (лицо с refs).
 2. Крупный кириллический headline (см. `cover-headline.md`).
 3. Синий акцент: стена, бейка, скотч, кружка, папка, небо, световая полоса.
-4. Уфимский быт: двор, новострой, вторичка, стол с планировкой, Балкон на Белую, панельки Сипайлово. Без московского метро, без подземки «как будто она есть».
+4. Уфимский быт: двор, новострой, вторичка, стол с планировкой, Балкон на Белую, панельки Сипайлово. Без московских высоток, без чужих шаблонов.
 
 ## Текст на картинке
 
@@ -26,4 +26,4 @@
 
 ## Негатив
 
-метро / subway / underground station in Ufa, Moscow skyline, Red Square, extra fingers, watermark, English poster, corporate stock smile, neon cyberpunk, fake newspaper with unreadable glyphs, another person's face.
+Moscow skyline, Red Square, extra fingers, watermark, English poster, corporate stock smile, neon cyberpunk, fake newspaper with unreadable glyphs, another person's face.

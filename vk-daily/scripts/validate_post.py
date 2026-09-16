@@ -71,28 +71,15 @@ def validate_headline(headline: str, tenant: dict) -> list[str]:
     return errors
 
 
-def _metro_as_existing(text: str, phrases: list[str]) -> list[str]:
-    """Ban copy that treats Ufa metro as a real nearby amenity.
+def _metro_mention(text: str) -> list[str]:
+    """Never mention метро in posts at all — not as fact, not as denial, not as comparison.
 
-    Allowed: explicit denial ('метро в Уфе нет', 'в Сипайлово нет метро').
+    Uses word boundaries so words containing the substring (e.g. «параметров», «геометрия»)
+    do not trigger a false positive.
     """
-    errors: list[str] = []
-    lowered = _norm(text)
-    if re.search(r"метро в уфе есть", lowered):
-        errors.append("metro-in-ufa fluff: claims metro exists")
-    for phrase in phrases:
-        p = _norm(phrase)
-        if p not in lowered:
-            continue
-        if p in {"метрополитен"} and "нет" in lowered:
-            continue
-        # denial nearby
-        idx = lowered.find(p)
-        window = lowered[max(0, idx - 40) : idx + len(p) + 40]
-        if "нет" in window or "не существует" in window or "копипаст" in window:
-            continue
-        errors.append(f"metro-in-ufa fluff: {phrase!r}")
-    return errors
+    if re.search(r"\b(метро|метрополитен\w*|подземк\w*)\b", text, re.IGNORECASE):
+        return ["metro mention is forbidden (never mention metro in posts at all)"]
+    return []
 
 
 def validate_post(text: str, tenant: dict, banned: dict) -> list[str]:
@@ -112,7 +99,10 @@ def validate_post(text: str, tenant: dict, banned: dict) -> list[str]:
             if pat.lower() in body.lower():
                 errors.append(f"links are forbidden for now: found {pat}")
 
-    errors.extend(_metro_as_existing(body, banned.get("metro_as_existing", [])))
+    if "—" in body or "–" in body:
+        errors.append("em/en dashes forbidden (use regular hyphen -)")
+
+    errors.extend(_metro_mention(body))
 
     emojis = iter_emoji(body)
     object_set = set(banned.get("object_emoji", ""))

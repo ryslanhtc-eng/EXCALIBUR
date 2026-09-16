@@ -27,22 +27,30 @@ class ValidateTests(unittest.TestCase):
         self.banned = load_banned(self.vk)
 
     def test_headline_ok(self) -> None:
-        self.assertEqual([], validate_headline("Уфа снова в тройке", self.tenant))
+        self.assertEqual([], validate_headline("Семейная ипотека к первому октября", self.tenant))
 
     def test_headline_rejects_period_and_emoji(self) -> None:
-        self.assertTrue(validate_headline("Уфа снова в тройке.", self.tenant))
-        self.assertTrue(validate_headline("Уфа снова в тройке 😅", self.tenant))
+        self.assertTrue(validate_headline("Семейная ипотека к первому октября.", self.tenant))
+        self.assertTrue(validate_headline("Семейная ипотека к первому октября 😅", self.tenant))
 
     def test_links_banned(self) -> None:
         text = ("а" * 1800) + " https://vk.ru/samolet_plus_sipa"
         errs = validate_post(text, self.tenant, self.banned)
         self.assertTrue(any("links" in e for e in errs))
 
-    def test_metro_copy_banned_but_denial_ok(self) -> None:
-        bad = ("а" * 1700) + " квартира у метро в Сипайлово, отличный район"
-        good = ("а" * 1700) + " В Уфе нет метро. Копипаст про станцию закрывайте."
-        self.assertTrue(validate_post(bad, self.tenant, self.banned))
-        self.assertEqual([], validate_post(good, self.tenant, self.banned))
+    def test_metro_mention_banned(self) -> None:
+        bad1 = ("а" * 1700) + " квартира у метро в Сипайлово, отличный район"
+        bad2 = ("а" * 1700) + " В Уфе нет метро. Копипаст про станцию закрывайте."
+        bad3 = ("а" * 1700) + " станция метрополитена рядом с домом"
+        bad4 = ("а" * 1700) + " подземка не планируется"
+        good1 = ("а" * 1700) + " Честный разбор транспорта: автобус и трамвай."
+        good2 = ("а" * 1700) + " сравнение параметров и геометрия комнат важны для выбора."
+        self.assertTrue(validate_post(bad1, self.tenant, self.banned))
+        self.assertTrue(validate_post(bad2, self.tenant, self.banned))
+        self.assertTrue(validate_post(bad3, self.tenant, self.banned))
+        self.assertTrue(validate_post(bad4, self.tenant, self.banned))
+        self.assertEqual([], validate_post(good1, self.tenant, self.banned))
+        self.assertEqual([], validate_post(good2, self.tenant, self.banned))
 
     def test_object_emoji_banned(self) -> None:
         text = ("а" * 1800) + " 🏠"
@@ -54,7 +62,7 @@ class GenerateTests(unittest.TestCase):
         vk = vk_daily_root(ROOT)
         tenant = load_tenant(vk)
         banned = load_banned(vk)
-        art = generate(vk, date(2026, 9, 12), "seed-a", [])
+        art = generate(vk, date(2026, 9, 16), "seed-a", [])
         self.assertEqual([], validate_post(art["post"], tenant, banned))
         self.assertEqual([], validate_headline(art["headline"], tenant))
         self.assertGreaterEqual(art["char_count"], tenant["post"]["min_chars"])
@@ -83,10 +91,10 @@ class CoverBlockerTests(unittest.TestCase):
                 meta = generate_cover(
                     root=ROOT,
                     out_dir=out,
-                    headline="Уфа снова в тройке",
+                    headline="Семейная ипотека к первому октября",
                     composition_prompt="test",
                     accent="#2F7BFF",
-                    aspect_ratio="3:4",
+                    aspect_ratio="16:9",
                     resolution="2K",
                 )
             self.assertEqual(meta["status"], "blocked")

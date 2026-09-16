@@ -2,7 +2,7 @@
   "compositions": [
     {
       "id": "river-window-morning",
-      "prompt": "Medium shot of the same man by a wide apartment window at morning, pale Ufa river haze outside, no metro, no skyline of Moscow. He holds a paper floor plan. Soft daylight, light-blue crewneck optional. Blue #2F7BFF window frame accent."
+      "prompt": "Medium shot of the same man by a wide apartment window at morning, pale Ufa river haze outside, no skyline of Moscow. He holds a paper floor plan. Soft daylight, light-blue crewneck optional. Blue #2F7BFF window frame accent."
     },
     {
       "id": "sipaylovo-yard-autumn",
@@ -14,7 +14,7 @@
     },
     {
       "id": "office-prints",
-      "prompt": "Small real-estate office desk, printed listings in Russian (readable short words only: Уфа, вторичка), blue mug #2F7BFF. Man sits, sleeves rolled, pointing at a number on paper. Whiteboard softly blurred behind, no metro map."
+      "prompt": "Small real-estate office desk, printed listings in Russian (readable short words only: Уфа, вторичка), blue mug #2F7BFF. Man sits, sleeves rolled, pointing at a number on paper. Whiteboard softly blurred behind, city map."
     },
     {
       "id": "stairwell-keys",
@@ -30,7 +30,7 @@
     },
     {
       "id": "bus-stop-honest",
-      "prompt": "Ufa bus stop with Cyrillic route plates (bus numbers, not metro M logo). Man waiting with a blue #2F7BFF tote, winter-spring jacket. Neighbourhood realism, grey sky."
+      "prompt": "Ufa bus stop with Cyrillic route plates (bus numbers). Man waiting with a blue #2F7BFF tote, winter-spring jacket. Neighbourhood realism, grey sky."
     },
     {
       "id": "table-calculator",
