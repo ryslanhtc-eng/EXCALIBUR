@@ -59,10 +59,10 @@ Headline обложки — 4–8 слов, без точки и эмодзи, �
 
 ## 4. Обложка
 
-Только KIE `gpt-image-2-image-to-image` + `input_urls` селфи.  
+Только KIE `gpt-image-2-image-to-image` + `input_urls` селфи (и референс позы из каталога `vk-daily/refs/poses-wardrobe/` при наличии файла).  
 Нет ключа / нет refs / ошибка хоста / ошибка KIE → блокер в `meta.json`, **никакой** заглушки.
 
-Каждый run берёт новый id из `vk-daily/data/compositions.json`.
+Каждый run берёт новый id из `vk-daily/data/compositions.json` и новый референс позы/гардероба из `vk-daily/data/pose_wardrobe.json` (ротация через `used_pose_refs` в `memory/vk-daily/state.json`). Лицо всегда строго фиксируется по селфи Руслана.
 
 ## 5. Отдать Grok Bot
 

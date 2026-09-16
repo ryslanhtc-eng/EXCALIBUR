@@ -31,6 +31,31 @@ def _first_existing(root: Path, rels: tuple[str, ...], explicit: str) -> Path | 
     return None
 
 
+POSE_FILENAMES = (
+    "01-studio-navy-suit-grid.jpg",
+    "02-office-navy-suit-lifestyle-grid.jpg",
+    "03-black-suit-tie-formal-grid.jpg",
+    "04-mono-shirt-editorial-poses-grid.jpg",
+    "05-smart-casual-armchair-pose.jpg",
+    "06-work-lifestyle-desk-poses-grid.jpg",
+)
+
+
+def import_pose_refs(root: Path) -> int:
+    pose_dest = vk_daily_root(root) / "refs" / "poses-wardrobe"
+    pose_dest.mkdir(parents=True, exist_ok=True)
+    handoff_dir = root / "vk-handoff" / "poses-wardrobe"
+    copied = 0
+    for name in POSE_FILENAMES:
+        src = handoff_dir / name
+        dst = pose_dest / name
+        if src.is_file() and not dst.is_file():
+            shutil.copy2(src, dst)
+            copied += 1
+            print(f"OK pose_ref={name}")
+    return copied
+
+
 def import_refs(root: Path | None = None, *, blue: str = "", black: str = "") -> int:
     root = root or repo_root()
     dest_dir = vk_daily_root(root) / "refs"
@@ -51,7 +76,10 @@ def import_refs(root: Path | None = None, *, blue: str = "", black: str = "") ->
         print(f"OK black={black_path}")
     else:
         print("WARN missing black selfie", file=sys.stderr)
+
+    import_pose_refs(root)
     return 0 if copied else 1
+
 
 
 def main() -> int:

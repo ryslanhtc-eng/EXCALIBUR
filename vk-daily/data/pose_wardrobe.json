@@ -1,0 +1,52 @@
+{
+  "pose_wardrobe": [
+    {
+      "id": "01-studio-navy-suit-grid",
+      "filename": "01-studio-navy-suit-grid.jpg",
+      "title": "Studio Navy Suit Poses",
+      "wardrobe": "sharp tailored deep navy suit, crisp white dress shirt with open collar (no tie), leather dress watch",
+      "pose": "confident studio 3/4 pose, seated or standing, natural masculine hand posture, relaxed yet authoritative realtor presence",
+      "vibe": "editorial studio minimalism, clean soft lighting, premium agency founder tone"
+    },
+    {
+      "id": "02-office-navy-suit-lifestyle-grid",
+      "filename": "02-office-navy-suit-lifestyle-grid.jpg",
+      "title": "Office Navy Suit Lifestyle",
+      "wardrobe": "dark navy business suit, unbuttoned white spread-collar shirt, classic wrist watch",
+      "pose": "office lifestyle pose: leaning against executive chair, sitting with laptop, or standing thoughtfully by a window, genuine engaged demeanor",
+      "vibe": "modern real estate brokerage leadership, natural daylight through glass, authentic working day atmosphere"
+    },
+    {
+      "id": "03-black-suit-tie-formal-grid",
+      "filename": "03-black-suit-tie-formal-grid.jpg",
+      "title": "Black Suit Formal Tie",
+      "wardrobe": "classic black tailored suit, solid black slim tie, pristine white formal shirt, white pocket square, metal strap watch",
+      "pose": "formal pose: gently adjusting tie knot, buttoning jacket with both hands, or seated upright on a high studio stool",
+      "vibe": "high-trust legal and transactional certainty, impeccable neatness, VIP client consultation style"
+    },
+    {
+      "id": "04-mono-shirt-editorial-poses-grid",
+      "filename": "04-mono-shirt-editorial-poses-grid.jpg",
+      "title": "Monochrome Shirt Editorial",
+      "wardrobe": "fitted monochrome shirt (crisp white or deep black with unbuttoned collar), slim-cut tailored trousers (white or dark), black leather loafers",
+      "pose": "editorial wall lean, crossed-arms power stance, hands-in-pockets relaxed pose, or reversed chair pose",
+      "vibe": "contemporary architectural aesthetic, sharp clean lines, confident modern property specialist"
+    },
+    {
+      "id": "05-smart-casual-armchair-pose",
+      "filename": "05-smart-casual-armchair-pose.jpg",
+      "title": "Smart Casual Armchair",
+      "wardrobe": "tailored grey suit jacket and matching trousers paired with a clean white crewneck t-shirt and minimalist white leather sneakers",
+      "pose": "seated forward in a deep comfortable armchair, hands clasped together in front, friendly direct eye contact",
+      "vibe": "approachable yet sophisticated smart-casual, calm transparent conversation, no stiff corporate pretension"
+    },
+    {
+      "id": "06-work-lifestyle-desk-poses-grid",
+      "filename": "06-work-lifestyle-desk-poses-grid.jpg",
+      "title": "Work Lifestyle Desk & Backstage",
+      "wardrobe": "smart-casual layered look (textured sweater, vest or open-collar shirt), comfortable trousers, glasses optional on desk",
+      "pose": "active working lifestyle: writing in leather notebook, holding phone call, working over property blueprints with a coffee cup nearby",
+      "vibe": "behind-the-scenes authentic realtor work, cozy urban cafe or bright agency table, thoughtful calculation"
+    }
+  ]
+}
