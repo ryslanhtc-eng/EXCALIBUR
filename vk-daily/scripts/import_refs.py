@@ -43,12 +43,19 @@ def import_refs(root: Path | None = None, *, blue: str = "", black: str = "") ->
         shutil.copy2(blue_path, dest_dir / "ruslan_selfie_blue.jpg")
         copied += 1
         print(f"OK blue={blue_path}")
+    elif (dest_dir / "ruslan_selfie_blue.jpg").is_file():
+        print(f"OK blue already exists in refs: {dest_dir / 'ruslan_selfie_blue.jpg'}")
+        copied += 1
     else:
         print("WARN missing blue selfie", file=sys.stderr)
+
     if black_path:
         shutil.copy2(black_path, dest_dir / "ruslan_selfie_black.jpg")
         copied += 1
         print(f"OK black={black_path}")
+    elif (dest_dir / "ruslan_selfie_black.jpg").is_file():
+        print(f"OK black already exists in refs: {dest_dir / 'ruslan_selfie_black.jpg'}")
+        copied += 1
     else:
         print("WARN missing black selfie", file=sys.stderr)
     return 0 if copied else 1

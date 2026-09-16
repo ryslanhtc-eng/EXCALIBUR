@@ -112,6 +112,9 @@ def validate_post(text: str, tenant: dict, banned: dict) -> list[str]:
             if pat.lower() in body.lower():
                 errors.append(f"links are forbidden for now: found {pat}")
 
+    if "—" in body or "–" in body:
+        errors.append("em/en dashes forbidden (use regular hyphen -)")
+
     errors.extend(_metro_as_existing(body, banned.get("metro_as_existing", [])))
 
     emojis = iter_emoji(body)

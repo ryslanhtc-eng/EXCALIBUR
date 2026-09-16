@@ -27,11 +27,11 @@ class ValidateTests(unittest.TestCase):
         self.banned = load_banned(self.vk)
 
     def test_headline_ok(self) -> None:
-        self.assertEqual([], validate_headline("Уфа снова в тройке", self.tenant))
+        self.assertEqual([], validate_headline("Семейная ипотека к первому октября", self.tenant))
 
     def test_headline_rejects_period_and_emoji(self) -> None:
-        self.assertTrue(validate_headline("Уфа снова в тройке.", self.tenant))
-        self.assertTrue(validate_headline("Уфа снова в тройке 😅", self.tenant))
+        self.assertTrue(validate_headline("Семейная ипотека к первому октября.", self.tenant))
+        self.assertTrue(validate_headline("Семейная ипотека к первому октября 😅", self.tenant))
 
     def test_links_banned(self) -> None:
         text = ("а" * 1800) + " https://vk.ru/samolet_plus_sipa"
@@ -54,7 +54,7 @@ class GenerateTests(unittest.TestCase):
         vk = vk_daily_root(ROOT)
         tenant = load_tenant(vk)
         banned = load_banned(vk)
-        art = generate(vk, date(2026, 9, 12), "seed-a", [])
+        art = generate(vk, date(2026, 9, 16), "seed-a", [])
         self.assertEqual([], validate_post(art["post"], tenant, banned))
         self.assertEqual([], validate_headline(art["headline"], tenant))
         self.assertGreaterEqual(art["char_count"], tenant["post"]["min_chars"])
@@ -83,10 +83,10 @@ class CoverBlockerTests(unittest.TestCase):
                 meta = generate_cover(
                     root=ROOT,
                     out_dir=out,
-                    headline="Уфа снова в тройке",
+                    headline="Семейная ипотека к первому октября",
                     composition_prompt="test",
                     accent="#2F7BFF",
-                    aspect_ratio="3:4",
+                    aspect_ratio="16:9",
                     resolution="2K",
                 )
             self.assertEqual(meta["status"], "blocked")
