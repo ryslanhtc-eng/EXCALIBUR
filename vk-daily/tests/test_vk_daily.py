@@ -50,6 +50,17 @@ class ValidateTests(unittest.TestCase):
 
 
 class GenerateTests(unittest.TestCase):
+    def test_tax_notice_today_has_no_metro(self) -> None:
+        vk = vk_daily_root(ROOT)
+        tenant = load_tenant(vk)
+        banned = load_banned(vk)
+        art = generate(vk, date(2026, 9, 16), "seed-tax", [])
+        self.assertEqual(art["news"]["id"], "fns-property-tax-notice-sep-2026")
+        self.assertEqual([], validate_post(art["post"], tenant, banned))
+        self.assertEqual([], validate_headline(art["headline"], tenant))
+        self.assertNotIn("метро", art["post"].lower())
+        self.assertNotIn("http://", art["post"].lower())
+
     def test_today_post_fits_contract(self) -> None:
         vk = vk_daily_root(ROOT)
         tenant = load_tenant(vk)

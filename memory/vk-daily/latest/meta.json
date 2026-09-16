@@ -1,9 +1,9 @@
 {
   "pipeline": "vk-daily",
-  "status": "blocked",
-  "publish_ready": false,
-  "date": "2026-09-12",
-  "generated_at": "2026-09-12T16:08:40+05:00",
+  "status": "ready",
+  "publish_ready": true,
+  "date": "2026-09-16",
+  "generated_at": "2026-09-16T10:26:41+05:00",
   "timezone": "Asia/Yekaterinburg",
   "tenant_id": "ruslan-mukhtarov-ufa",
   "person_name_ru": "Руслан Мухтаров",
@@ -11,12 +11,20 @@
   "vk_group_url": "https://vk.ru/samolet_plus_sipa",
   "vk_group_screen_name": "samolet_plus_sipa",
   "city": "Уфа",
-  "char_count": 1861,
-  "cover_headline": "Уфа снова в тройке",
-  "composition_id": "office-prints",
+  "topic": "Налоговые уведомления ФНС: налог на квартиру за 2025 год",
+  "topic_id": "fns-property-tax-notice-sep-2026",
+  "angle": "tax_notice",
+  "char_count": 1905,
+  "cover_headline": "Не платите чужую квартиру",
+  "cover_dek": "ФНС шлёт уведомления в конце сентября. Сверьте кадастр и льготы",
+  "cover_masthead": "УФА LIFE / СЕНТЯБРЬ 2026",
+  "composition_id": "magazine-tax-kitchen-landscape",
   "accent_hex": "#2F7BFF",
-  "news_id": "ufa-primary-aug-2026-rbc",
-  "news_source_name": "РБК Недвижимость / РБК Уфа",
+  "aspect_ratio": "16:9",
+  "news_id": "fns-property-tax-notice-sep-2026",
+  "news_source_name": "ФНС России",
+  "news_source_note": "Промостраница ФНС «Налоговое уведомление 2026»; региональные ИФНС 01.09.2026: рассылка в конце сентября, оплата не позднее 1 декабря 2026; автодоставка в Госуслуги с 1 августа (ФЗ-425 от 28.11.2025).",
+  "selection_reason": "Свежий осенний повод с пользой «сохранить и сверить»: уведомления уже в пути, срок 1 декабря. Не пересекается с постами 13–15.09 (цены Уфы, вычет за отделку, ДДУ/задержки, ипотечные каникулы ФЗ-229) и не про отопление/теплосчётчик.",
   "artifacts": {
     "post": "memory/vk-daily/latest/post.txt",
     "meta": "memory/vk-daily/latest/meta.json",
@@ -24,10 +32,19 @@
     "cover_url": "memory/vk-daily/latest/cover-url.txt"
   },
   "cover": {
-    "status": "blocked",
-    "blocker": "KIE_API_KEY",
-    "blocker_message": "❌ VK COVER BLOCKER: KIE_API_KEY is not set. Cover not generated. Do not publish a fake image.",
-    "model": "gpt-image-2-image-to-image"
+    "status": "ok",
+    "blocker": null,
+    "blocker_message": null,
+    "model": "gpt-image-2-image-to-image",
+    "task_id": "d99e784c5d94ccbb1ed8e5b8478d6647",
+    "cover_rel": "memory/vk-daily/latest/cover.png",
+    "cover_url": "https://tempfile.aiquickdraw.com/h/d99e784c5d94ccbb1ed8e5b8478d6647_1789536325.png",
+    "cover_sniff": "png",
+    "input_urls_count": 2,
+    "input_urls": [
+      "https://raw.githubusercontent.com/ryslanhtc-eng/EXCALIBUR/master/vk-daily/refs/ruslan_selfie_blue.jpg",
+      "https://raw.githubusercontent.com/ryslanhtc-eng/EXCALIBUR/master/vk-daily/refs/ruslan_selfie_black.jpg"
+    ]
   },
   "orchestrator": {
     "publisher": "Grok Bot",
@@ -36,7 +53,5 @@
     "publish_if": "cover.status == ok and files exist",
     "skip_if_blocker": true
   },
-  "links_in_post": false,
-  "blocker": "KIE_API_KEY",
-  "blocker_message": "❌ VK COVER BLOCKER: KIE_API_KEY is not set. Cover not generated. Do not publish a fake image."
+  "links_in_post": false
 }

@@ -33,7 +33,28 @@ def face_ref_paths(root: Path) -> list[Path]:
     return found
 
 
-def build_prompt(*, headline: str, composition_prompt: str, accent: str) -> str:
+def build_prompt(*, headline: str, composition_prompt: str, accent: str, dek: str = "") -> str:
+    magazine = "magazine cover" in composition_prompt.lower() or "HORIZONTAL" in composition_prompt
+    dek_line = dek.strip() or "ФНС шлёт уведомления в конце сентября. Сверьте кадастр и льготы"
+    if magazine:
+        return (
+            "Glossy editorial magazine COVER, landscape horizontal spread, print finish like "
+            "DARK / Gilded / INSPIRATION. Not a phone snapshot, not vertical 3:4, not Instagram 9:16. "
+            "Photoreal portrait of the SAME man as in the reference selfies. "
+            "Preserve exact facial identity: short dark hair faded on sides, light grey-blue eyes, "
+            "natural smile showing upper teeth, light stubble, oval face, no glasses, no beautifying into another person. "
+            "Outfit may change: dark navy knit or tailored jacket with a small cobalt-blue accent, not a stock realtor. "
+            f"Scene: {composition_prompt} "
+            "Layout: left text stack + large face on the right third. "
+            "Masthead in elegant serif: УФА LIFE. Under it small caps: СЕНТЯБРЬ 2026. "
+            f"Huge bold readable Cyrillic headline exactly: «{headline}». "
+            f"One-line dek under the headline: «{dek_line}». "
+            "Thin gold hairline, cream/ivory paper, cobalt blue accent lighting. "
+            "No hex codes, no RAL numbers painted on objects. No extra slogans, no URLs, no phone, no emoji, no English poster. "
+            "Setting is Ufa, Russia residential life, September 2026. "
+            "NEGATIVE: metro / subway / underground station, Moscow skyline, Red Square, vertical portrait crop, "
+            "watermark, extra fingers, neon cyberpunk, unreadable glyphs, different face."
+        )
     return (
         "Photoreal editorial portrait of the SAME man as in the reference selfies. "
         "Preserve exact facial identity: short dark hair faded on sides, light grey-blue eyes, "
@@ -58,6 +79,7 @@ def generate_cover(
     accent: str,
     aspect_ratio: str,
     resolution: str,
+    dek: str = "",
 ) -> dict:
     """Return cover meta. Never writes a fake raster if generation did not happen."""
     api_key = (os.environ.get("KIE_API_KEY") or "").strip()
@@ -94,7 +116,12 @@ def generate_cover(
             "model": MODEL,
         }
 
-    prompt = build_prompt(headline=headline, composition_prompt=composition_prompt, accent=accent)
+    prompt = build_prompt(
+        headline=headline,
+        composition_prompt=composition_prompt,
+        accent=accent,
+        dek=dek,
+    )
     try:
         task_id = create_i2i_task(
             api_key,
