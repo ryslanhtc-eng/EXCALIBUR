@@ -41,10 +41,16 @@ class ValidateTests(unittest.TestCase):
     def test_metro_mention_banned(self) -> None:
         bad1 = ("а" * 1700) + " квартира у метро в Сипайлово, отличный район"
         bad2 = ("а" * 1700) + " В Уфе нет метро. Копипаст про станцию закрывайте."
-        good = ("а" * 1700) + " Честный разбор транспорта: автобус и трамвай."
+        bad3 = ("а" * 1700) + " станция метрополитена рядом с домом"
+        bad4 = ("а" * 1700) + " подземка не планируется"
+        good1 = ("а" * 1700) + " Честный разбор транспорта: автобус и трамвай."
+        good2 = ("а" * 1700) + " сравнение параметров и геометрия комнат важны для выбора."
         self.assertTrue(validate_post(bad1, self.tenant, self.banned))
         self.assertTrue(validate_post(bad2, self.tenant, self.banned))
-        self.assertEqual([], validate_post(good, self.tenant, self.banned))
+        self.assertTrue(validate_post(bad3, self.tenant, self.banned))
+        self.assertTrue(validate_post(bad4, self.tenant, self.banned))
+        self.assertEqual([], validate_post(good1, self.tenant, self.banned))
+        self.assertEqual([], validate_post(good2, self.tenant, self.banned))
 
     def test_object_emoji_banned(self) -> None:
         text = ("а" * 1800) + " 🏠"

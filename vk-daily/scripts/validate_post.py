@@ -72,8 +72,12 @@ def validate_headline(headline: str, tenant: dict) -> list[str]:
 
 
 def _metro_mention(text: str) -> list[str]:
-    """Never mention метро in posts at all — not as fact, not as denial, not as comparison."""
-    if re.search(r"\bметро\b|\bметрополитен|\bподземк", text, re.IGNORECASE):
+    """Never mention метро in posts at all — not as fact, not as denial, not as comparison.
+
+    Uses word boundaries so words containing the substring (e.g. «параметров», «геометрия»)
+    do not trigger a false positive.
+    """
+    if re.search(r"\b(метро|метрополитен\w*|подземк\w*)\b", text, re.IGNORECASE):
         return ["metro mention is forbidden (never mention metro in posts at all)"]
     return []
 
