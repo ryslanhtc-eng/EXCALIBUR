@@ -57,10 +57,17 @@ class GenerateTests(unittest.TestCase):
         art = generate(vk, date(2026, 9, 12), "seed-a", [])
         self.assertEqual([], validate_post(art["post"], tenant, banned))
         self.assertEqual([], validate_headline(art["headline"], tenant))
+        self.assertTrue(bool(art.get("dek")))
         self.assertGreaterEqual(art["char_count"], tenant["post"]["min_chars"])
         self.assertLessEqual(art["char_count"], tenant["post"]["max_chars"])
         self.assertNotIn("http://", art["post"].lower())
         self.assertNotIn("https://", art["post"].lower())
+
+    def test_mortgage_window_headline_valid(self) -> None:
+        vk = vk_daily_root(ROOT)
+        tenant = load_tenant(vk)
+        headline = "Семейная ипотека без паники до октября"
+        self.assertEqual([], validate_headline(headline, tenant))
 
     def test_composition_changes_with_seed(self) -> None:
         comps = json.loads((ROOT / "vk-daily/data/compositions.json").read_text(encoding="utf-8"))["compositions"]

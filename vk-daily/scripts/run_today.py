@@ -98,6 +98,7 @@ def main() -> int:
             headline=artifact["headline"],
             composition_prompt=artifact["composition"]["prompt"],
             accent=tenant["cover"]["accent_hex"],
+            dek=artifact.get("dek", ""),
             aspect_ratio=tenant["cover"]["aspect_ratio"],
             resolution=tenant["cover"]["resolution"],
         )
@@ -122,6 +123,7 @@ def main() -> int:
         "city": tenant["city"],
         "char_count": artifact["char_count"],
         "cover_headline": artifact["headline"],
+        "cover_dek": artifact.get("dek", ""),
         "composition_id": composition_id,
         "accent_hex": tenant["cover"]["accent_hex"],
         "news_id": artifact["news"].get("id"),
