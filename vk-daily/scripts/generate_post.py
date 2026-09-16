@@ -31,10 +31,19 @@ def pick_news(items: list[dict], today: date) -> dict:
 
 def pick_composition(compositions: list[dict], seed: str, used: list[str]) -> dict:
     unused = [c for c in compositions if c.get("id") not in used]
-    pool = unused or compositions
+    pool = unused if unused else [c for c in compositions if not used or c.get("id") != used[-1]] or compositions
     digest = hashlib.sha256(seed.encode("utf-8")).hexdigest()
     idx = int(digest, 16) % len(pool)
     return pool[idx]
+
+
+def pick_pose_wardrobe(pose_refs: list[dict], seed: str, used: list[str]) -> dict:
+    unused = [p for p in pose_refs if p.get("id") not in used]
+    pool = unused if unused else [p for p in pose_refs if not used or p.get("id") != used[-1]] or pose_refs
+    digest = hashlib.sha256((seed + "|pose").encode("utf-8")).hexdigest()
+    idx = int(digest, 16) % len(pool)
+    return pool[idx]
+
 
 
 def _headlines_for(news: dict) -> list[str]:
@@ -160,13 +169,22 @@ def render_post(news: dict, tenant: dict) -> str:
     return _fit_length(raw, int(spec["min_chars"]), int(spec["max_chars"]))
 
 
-def generate(vk_root: Path, today: date, seed: str, used_compositions: list[str]) -> dict[str, Any]:
+def generate(
+    vk_root: Path,
+    today: date,
+    seed: str,
+    used_compositions: list[str],
+    used_pose_refs: list[str] | None = None,
+) -> dict[str, Any]:
     tenant = load_tenant(vk_root)
     banned = load_banned(vk_root)
     news_bank = _load_json(vk_root / "data" / "news-bank.json")
     compositions = _load_json(vk_root / "data" / "compositions.json")["compositions"]
+    pose_file = vk_root / "data" / "pose_wardrobe.json"
+    pose_catalog: list[dict] = _load_json(pose_file).get("pose_wardrobe", []) if pose_file.is_file() else []
     news = pick_news(news_bank["items"], today)
     composition = pick_composition(compositions, seed, used_compositions)
+    pose_ref = pick_pose_wardrobe(pose_catalog, seed, used_pose_refs or []) if pose_catalog else {}
     headline = pick_headline(news, seed, tenant)
     post = render_post(news, tenant)
 
@@ -180,5 +198,7 @@ def generate(vk_root: Path, today: date, seed: str, used_compositions: list[str]
         "headline": headline,
         "news": news,
         "composition": composition,
+        "pose_wardrobe": pose_ref,
         "char_count": len(post),
     }
+

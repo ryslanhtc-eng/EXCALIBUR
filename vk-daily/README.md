@@ -44,6 +44,10 @@ python3 vk-daily/scripts/run_today.py
 - `vk-daily/refs/ruslan_selfie_blue.jpg`
 - `vk-daily/refs/ruslan_selfie_black.jpg`
 
+Каталог референсов поз и гардероба (ротация по кругу, лицо только с селфи):
+
+- `vk-daily/refs/poses-wardrobe/` (6 стилей, см. `README.md` в папке)
+
 ```bash
 python3 vk-daily/scripts/import_refs.py --blue /path/blue.jpg --black /path/black.jpg
 ```

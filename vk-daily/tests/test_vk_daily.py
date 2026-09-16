@@ -15,7 +15,7 @@ SCRIPTS = ROOT / "vk-daily" / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 
 from generate_cover import generate_cover  # noqa: E402
-from generate_post import generate, pick_composition  # noqa: E402
+from generate_post import generate, pick_composition, pick_pose_wardrobe  # noqa: E402
 from paths import vk_daily_root  # noqa: E402
 from validate_post import load_banned, load_tenant, validate_headline, validate_post  # noqa: E402
 
@@ -73,6 +73,25 @@ class GenerateTests(unittest.TestCase):
         picked = pick_composition(comps, "x", used)
         self.assertEqual(picked["id"], comps[-1]["id"])
 
+    def test_pose_wardrobe_rotation(self) -> None:
+        catalog = json.loads((ROOT / "vk-daily/data/pose_wardrobe.json").read_text(encoding="utf-8"))["pose_wardrobe"]
+        self.assertEqual(len(catalog), 6)
+        used = [p["id"] for p in catalog[:-1]]
+        picked = pick_pose_wardrobe(catalog, "seed-pose", used)
+        self.assertEqual(picked["id"], catalog[-1]["id"])
+
+        # When all were used, should not pick immediately previous
+        all_used = [p["id"] for p in catalog]
+        next_picked = pick_pose_wardrobe(catalog, "seed-pose-next", all_used)
+        self.assertNotEqual(next_picked["id"], all_used[-1])
+
+    def test_generate_includes_pose_wardrobe(self) -> None:
+        vk = vk_daily_root(ROOT)
+        art = generate(vk, date(2026, 9, 12), "seed-test", [], [])
+        self.assertIn("pose_wardrobe", art)
+        self.assertTrue(art["pose_wardrobe"].get("id"))
+
+
 
 class CoverBlockerTests(unittest.TestCase):
     def test_missing_key_does_not_write_cover(self) -> None:
@@ -88,6 +107,12 @@ class CoverBlockerTests(unittest.TestCase):
                     accent="#2F7BFF",
                     aspect_ratio="3:4",
                     resolution="2K",
+                    pose_wardrobe={
+                        "id": "01-studio-navy-suit-grid",
+                        "wardrobe": "navy suit",
+                        "pose": "studio pose",
+                        "vibe": "minimalist",
+                    },
                 )
             self.assertEqual(meta["status"], "blocked")
             self.assertEqual(meta["blocker"], "KIE_API_KEY")

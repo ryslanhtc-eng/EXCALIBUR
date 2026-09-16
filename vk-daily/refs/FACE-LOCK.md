@@ -17,7 +17,19 @@
 
 ## Свободно
 
-Одежда, жест, локация, свет — по `compositions.json`. Толстовки с селфи копировать не обязательно.
+Одежда, жест, локация, свет — по `compositions.json` и каталогу `vk-daily/refs/poses-wardrobe/`. Толстовки с селфи копировать не обязательно.
+
+## Каталог поз и гардероба (poses-wardrobe)
+
+В `vk-daily/refs/poses-wardrobe/` находится каталог референсов поз и одежды (6 стилей):
+1. `01-studio-navy-suit-grid.jpg`
+2. `02-office-navy-suit-lifestyle-grid.jpg`
+3. `03-black-suit-tie-formal-grid.jpg`
+4. `04-mono-shirt-editorial-poses-grid.jpg`
+5. `05-smart-casual-armchair-pose.jpg`
+6. `06-work-lifestyle-desk-poses-grid.jpg`
+
+ВАЖНО: Лица моделей из этих референсов игнорируются! Лицо всегда фиксируется исключительно по селфи Руслана. Референсы задают только позу, гардероб и атмосферу кадра, ротируясь каждый запуск (`used_pose_refs` в `memory/vk-daily/state.json`).
 
 ## Для KIE i2i
 

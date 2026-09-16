@@ -25,14 +25,15 @@ STATE_REL = Path("memory/vk-daily/state.json")
 
 def _load_state(path: Path) -> dict:
     if not path.is_file():
-        return {"used_compositions": []}
+        return {"used_compositions": [], "used_pose_refs": []}
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError:
-        return {"used_compositions": []}
+        return {"used_compositions": [], "used_pose_refs": []}
     if not isinstance(data, dict):
-        return {"used_compositions": []}
+        return {"used_compositions": [], "used_pose_refs": []}
     data.setdefault("used_compositions", [])
+    data.setdefault("used_pose_refs", [])
     return data
 
 
@@ -63,18 +64,29 @@ def main() -> int:
     state_path = root / STATE_REL
     state = _load_state(state_path)
     used = list(state.get("used_compositions") or [])
+    used_pose = list(state.get("used_pose_refs") or [])
     if args.force_new_composition:
         seed = f"{run_date.isoformat()}|{now.isoformat()}|{uuid.uuid4()}"
     else:
         seed = f"{run_date.isoformat()}|{now.strftime('%Y-%m-%dT%H:%M')}|{uuid.uuid4()}"
 
-    artifact = generate(vk_root, run_date, seed, used)
+    artifact = generate(vk_root, run_date, seed, used, used_pose)
     composition_id = artifact["composition"]["id"]
     used.append(composition_id)
     # keep last full cycle
     comps_n = len(json.loads((vk_root / "data" / "compositions.json").read_text(encoding="utf-8"))["compositions"])
     if len(used) > comps_n:
         used = used[-comps_n:]
+
+    pose_wardrobe = artifact.get("pose_wardrobe") or {}
+    pose_ref_id = pose_wardrobe.get("id")
+    if pose_ref_id:
+        used_pose.append(pose_ref_id)
+        pose_catalog_path = vk_root / "data" / "pose_wardrobe.json"
+        if pose_catalog_path.is_file():
+            poses_n = len(json.loads(pose_catalog_path.read_text(encoding="utf-8")).get("pose_wardrobe", []))
+            if poses_n and len(used_pose) > poses_n:
+                used_pose = used_pose[-poses_n:]
 
     out = latest_dir(root)
     if out.exists():
@@ -90,6 +102,7 @@ def main() -> int:
             "blocker": "SKIP_COVER",
             "blocker_message": "cover step skipped (--skip-cover)",
             "model": tenant["cover"]["model"],
+            "pose_ref_id": pose_ref_id,
         }
     else:
         cover_meta = generate_cover(
@@ -100,6 +113,7 @@ def main() -> int:
             accent=tenant["cover"]["accent_hex"],
             aspect_ratio=tenant["cover"]["aspect_ratio"],
             resolution=tenant["cover"]["resolution"],
+            pose_wardrobe=pose_wardrobe,
         )
 
     text_only = os.environ.get("VK_DAILY_ALLOW_TEXT_ONLY", "").strip().lower() == "yes"
@@ -123,6 +137,7 @@ def main() -> int:
         "char_count": artifact["char_count"],
         "cover_headline": artifact["headline"],
         "composition_id": composition_id,
+        "pose_ref_id": pose_ref_id,
         "accent_hex": tenant["cover"]["accent_hex"],
         "news_id": artifact["news"].get("id"),
         "news_source_name": artifact["news"].get("source_name"),
@@ -156,8 +171,10 @@ def main() -> int:
             shutil.copy2(src, run_copy / name)
 
     state["used_compositions"] = used
+    state["used_pose_refs"] = used_pose
     state["last_run"] = meta["generated_at"]
     state["last_composition_id"] = composition_id
+    state["last_pose_ref_id"] = pose_ref_id
     _write_json(state_path, state)
 
     print(f"VK_DAILY_DATE={run_date.isoformat()}")
