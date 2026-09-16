@@ -1,52 +1,44 @@
 {
   "compositions": [
     {
-      "id": "river-window-morning",
-      "prompt": "Medium shot of the same man by a wide apartment window at morning, pale Ufa river haze outside, no metro, no skyline of Moscow. He holds a paper floor plan. Soft daylight, light-blue crewneck optional. Blue #2F7BFF window frame accent."
+      "id": "belaya-embankment-golden-hour",
+      "prompt": "Medium shot of Ruslan standing at the scenic Belaya river embankment in Ufa during warm golden hour. Dressed as a premium real estate agent in a tailored charcoal wool coat over a navy dress shirt. Wide view of the Belaya river, rolling green hills, and distant bridges behind him. Confident warm smile with cheek dimples, holding a neat plain blue leather document folder without any printed text. Calm expensive editorial vibe, soft natural sunset lighting."
     },
     {
-      "id": "sipaylovo-yard-autumn",
-      "prompt": "Outdoor courtyard of typical Ufa panel/new-build houses (Sipaylovo vibe), autumn leaves, playground at distance. Man in dark jacket with a small blue #2F7BFF folder, standing three-quarter, talking to camera. Overcast, honest, not luxury."
+      "id": "city-center-lenina-morning",
+      "prompt": "Medium portrait of Ruslan walking on a pedestrian promenade in historic central Ufa (Lenina street area), clean morning daylight. Styled in a sharp dark wool overcoat and fine black turtleneck. Elegant urban architecture of central Ufa softly blurred in the background, no landmarks of Moscow. Natural warm smile, polished real estate broker look."
     },
     {
-      "id": "kitchen-whitebox",
-      "prompt": "Unfinished new-build kitchen-living, white walls, exposed sockets, measuring tape on windowsill. Man leans on a cardboard box, casual jeans, blue #2F7BFF painter tape strip on the wall behind him."
+      "id": "modern-residential-facade",
+      "prompt": "Medium portrait of Ruslan in front of a contemporary premium residential complex in Ufa with stylish brick and glass facade and landscaped autumn trees. Wearing a tailored charcoal blazer and crisp white dress shirt. Warm friendly smile, sophisticated real estate advisor aesthetic, honest architectural depth."
     },
     {
-      "id": "office-prints",
-      "prompt": "Small real-estate office desk, printed listings in Russian (readable short words only: Уфа, вторичка), blue mug #2F7BFF. Man sits, sleeves rolled, pointing at a number on paper. Whiteboard softly blurred behind, no metro map."
+      "id": "ufa-skyline-terrace",
+      "prompt": "Ruslan on an elevated rooftop terrace overlooking the expansive Ufa city skyline and autumn park greenery. Dressed in a tailored navy wool overcoat, open collar dress shirt. Modern city panorama under clear evening sky, tranquil and prestigious editorial look."
     },
     {
-      "id": "stairwell-keys",
-      "prompt": "Concrete stairwell of a 2010s Ufa building, daylight from a window, bunch of keys in his hand. Blue #2F7BFF door trim. Close-medium portrait, grounded, not cinematic crime lighting."
+      "id": "gostiny-dvor-plaza",
+      "prompt": "Ruslan standing near the renovated historic and modern plaza of Gostiny Dvor in central Ufa, clear autumn afternoon. Elegant dark wool coat, white collared shirt underneath. Premium editorial style, holding a slim leather tablet portfolio. Dignified calm expensive vibe."
     },
     {
-      "id": "balcony-evening",
-      "prompt": "Narrow balcony, evening, courtyard lamps, distant nine-story houses. Man in black sweatshirt, blue #2F7BFF badge-like accent on clothing. City is Ufa residential, not Moscow high-rises."
+      "id": "modern-courtyard-autumn",
+      "prompt": "Ruslan in a beautifully landscaped modern courtyard of a new business-class Ufa residential block, golden autumn foliage and clean contemporary paving. Wearing an elegant tailored overcoat over a dark fine-knit sweater. Warm approachable expression, natural daylight."
     },
     {
-      "id": "car-hood-docs",
-      "prompt": "Parked modest car by panel houses, documents on the hood, man explaining with open palm. Cool daylight, blue #2F7BFF folder. No luxury SUV commercial look."
+      "id": "salavat-amphitheater-belaya",
+      "prompt": "Ruslan at the scenic overlook above the Belaya river valley near Congress Hall in Ufa, expansive river bend and distant hills in background. Dressed in a tailored wool coat and collared shirt. Soft daylight, authentic Ufa landscape, refined real-estate professional look."
     },
     {
-      "id": "bus-stop-honest",
-      "prompt": "Ufa bus stop with Cyrillic route plates (bus numbers, not metro M logo). Man waiting with a blue #2F7BFF tote, winter-spring jacket. Neighbourhood realism, grey sky."
+      "id": "sales-office-panoramic-view",
+      "prompt": "Ruslan standing inside a light-filled premium real-estate sales office with floor-to-ceiling panoramic glass windows looking out at Ufa city center streets. Wearing a sharp tailored blazer and open-collar dress shirt. Architectural scale model visible in soft background blur. Calm expensive vibe."
     },
     {
-      "id": "table-calculator",
-      "prompt": "Kitchen table top-down-ish 3/4 view: notebook with payment scribbles, calculator, tea. Man opposite camera, thinking face, blue pen #2F7BFF. Homey Ufa apartment, not a studio cyclorama."
+      "id": "park-boulevard-walk",
+      "prompt": "Ruslan walking along a clean, modern Ufa park boulevard flanked by contemporary residential buildings, soft afternoon light. Wearing a structured dark overcoat and dark turtleneck. Calm, trustworthy and polished editorial portrait."
     },
     {
-      "id": "newbuild-lobby",
-      "prompt": "Plain new-build entrance lobby, mailboxes, stroller, no concierge palazzo. Man holds a hard hat underarm (not wearing), blue #2F7BFF lanyard. Honest developer finish, Ufa."
-    },
-    {
-      "id": "dema-street",
-      "prompt": "Low-rise Dema street, private houses mixed with shops, man walking toward camera, light-blue sweatshirt, autumn. Blue #2F7BFF shop sign blur in background, no English."
-    },
-    {
-      "id": "window-blue-tape-collage",
-      "prompt": "Indoor portrait, large readable Cyrillic headline integrated as a printed paper taped with blue #2F7BFF painter tape beside his shoulder. Plant and grey tile hint (from blue selfie room) but new framing. Still photoreal, not meme collage overload."
+      "id": "belaya-bridge-viewpoint",
+      "prompt": "Medium shot of Ruslan on the high riverbank viewpoint overlooking the Belaya river bridges in Ufa, sunset glow reflecting on the water. Wearing a classic charcoal coat. Friendly smile with cheek dimples, refined magazine cover framing."
     }
   ]
 }

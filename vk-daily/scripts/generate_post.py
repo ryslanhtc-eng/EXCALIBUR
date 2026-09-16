@@ -54,6 +54,7 @@ def _headlines_for(news: dict) -> list[str]:
         ]
     if angle == "mortgage_window":
         return [
+            "Семейная ипотека без паники до октября",
             "Платёж считают до октября",
             "Семейная не ждёт чуда",
             "Окно по семейной уже узкое",
@@ -69,6 +70,17 @@ def pick_headline(news: dict, seed: str, tenant: dict) -> str:
         if not validate_headline(candidate, tenant):
             return candidate
     raise RuntimeError("no valid cover headline")
+
+
+def pick_dek(news: dict) -> str:
+    angle = news.get("angle") or ""
+    if angle == "mortgage_window":
+        return "Минфин оставил прежние правила: что проверить семье в Уфе"
+    if angle == "price_pulse":
+        return "РБК подвёл итоги месяца: что происходит с первичкой"
+    if angle == "avg_ticket":
+        return "Башинформ оценил средний чек: сравнение лотов без иллюзий"
+    return "Честный разбор рынка недвижимости без лишнего шума"
 
 
 def _price_pulse_body(news: dict) -> str:
@@ -175,9 +187,12 @@ def generate(vk_root: Path, today: date, seed: str, used_compositions: list[str]
     if errors:
         raise RuntimeError("post validation failed: " + "; ".join(errors))
 
+    dek = pick_dek(news)
+
     return {
         "post": post,
         "headline": headline,
+        "dek": dek,
         "news": news,
         "composition": composition,
         "char_count": len(post),
