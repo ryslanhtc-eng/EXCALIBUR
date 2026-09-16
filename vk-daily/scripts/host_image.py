@@ -8,6 +8,8 @@ from __future__ import annotations
 import urllib.request
 from pathlib import Path
 
+from paths import repo_root
+
 
 def _mime(path: Path) -> str:
     suffix = path.suffix.lower()
@@ -82,11 +84,39 @@ def upload_0x0(image_path: Path) -> str:
     return url
 
 
-def host_image(image_path: Path, providers: tuple[str, ...] = ("catbox", "0x0")) -> str:
+def github_raw_url(image_path: Path, *, branch: str = "master") -> str | None:
+    """Public raw.githubusercontent.com URL for a file already in this repo."""
+    try:
+        rel = image_path.resolve().relative_to(repo_root().resolve()).as_posix()
+    except ValueError:
+        return None
+    return f"https://raw.githubusercontent.com/ryslanhtc-eng/EXCALIBUR/{branch}/{rel}"
+
+
+def upload_github_raw(image_path: Path) -> str:
+    url = github_raw_url(image_path)
+    if not url:
+        raise RuntimeError("file is outside the repository")
+    request = urllib.request.Request(url, headers={"User-Agent": "ExcaliburVkDaily/1.0"})
+    with urllib.request.urlopen(request, timeout=30) as response:
+        ctype = (response.headers.get("content-type") or "").lower()
+        sniff = response.read(16)
+    if not (ctype.startswith("image/") or sniff[:3] in {b"\xff\xd8\xff", b"\x89PN"}):
+        raise RuntimeError(f"github raw not an image: {ctype} {sniff[:8]!r}")
+    return url
+
+
+def host_image(image_path: Path, providers: tuple[str, ...] = ("catbox", "0x0", "github-raw")) -> str:
     last: Exception | None = None
     for provider in providers:
         try:
-            return upload_catbox(image_path) if provider == "catbox" else upload_0x0(image_path)
+            if provider == "catbox":
+                return upload_catbox(image_path)
+            if provider == "0x0":
+                return upload_0x0(image_path)
+            if provider == "github-raw":
+                return upload_github_raw(image_path)
+            raise RuntimeError(f"unknown provider {provider}")
         except Exception as exc:  # noqa: BLE001 - try next host
             last = exc
     raise RuntimeError(f"could not host {image_path.name}: {last}")

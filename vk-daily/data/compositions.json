@@ -47,6 +47,10 @@
     {
       "id": "window-blue-tape-collage",
       "prompt": "Indoor portrait, large readable Cyrillic headline integrated as a printed paper taped with blue #2F7BFF painter tape beside his shoulder. Plant and grey tile hint (from blue selfie room) but new framing. Still photoreal, not meme collage overload."
+    },
+    {
+      "id": "magazine-tax-kitchen-landscape",
+      "prompt": "HORIZONTAL glossy magazine cover spread (landscape, not vertical 3:4). Dark-navy and cream paper, thin gold rule, cobalt-blue accent lighting. The same man sits three-quarter at a Ufa apartment kitchen table with a paper tax notice and a blue folder, looking into camera with a knowing half-smile. Large photoreal portrait occupies the right third. Left stack: masthead УФА LIFE, small line СЕНТЯБРЬ 2026, huge Cyrillic headline, one-line dek. Ufa autumn courtyard bokeh in the window, panel houses, no subway, no Moscow skyline. Do not print hex or RAL codes on any object."
     }
   ]
 }
