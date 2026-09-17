@@ -34,7 +34,7 @@
   "cover": {
     "accent_hex": "#2F7BFF",
     "accent_name": "blue",
-    "aspect_ratio": "3:4",
+    "aspect_ratio": "16:9",
     "resolution": "2K",
     "model": "gpt-image-2-image-to-image",
     "headline_words_min": 4,
@@ -46,7 +46,7 @@
   ],
   "pose_wardrobe_refs_dir": "vk-daily/refs/poses-wardrobe",
   "hard_bans": [
-    "metro_in_ufa_as_existing",
+    "metro_strictly_banned",
     "moscow_copy_paste",
     "fake_prices",
     "fake_cover_image",

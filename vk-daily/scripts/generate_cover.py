@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import os
 import sys
+import urllib.request
 from pathlib import Path
 
 from host_image import host_image
@@ -21,6 +22,12 @@ BLOCKER_NO_KEY = "KIE_API_KEY"
 BLOCKER_REFS = "FACE_REFS"
 BLOCKER_HOST = "REF_HOST"
 BLOCKER_KIE = "KIE_TASK"
+
+# Stable public GitHub raw URLs for reference selfies
+RAW_GITHUB_FACE_REFS = [
+    "https://raw.githubusercontent.com/ryslanhtc-eng/EXCALIBUR/master/vk-daily/refs/ruslan_selfie_blue.jpg",
+    "https://raw.githubusercontent.com/ryslanhtc-eng/EXCALIBUR/master/vk-daily/refs/ruslan_selfie_black.jpg",
+]
 
 
 def face_ref_paths(root: Path) -> list[Path]:
@@ -42,11 +49,26 @@ def pose_ref_path(root: Path, filename: str) -> Path | None:
     return None
 
 
+def resolve_face_ref_urls(root: Path, refs: list[Path]) -> list[str]:
+    """Obtain public HTTPS URLs for face refs, prioritizing raw GitHub refs."""
+    try:
+        req = urllib.request.Request(RAW_GITHUB_FACE_REFS[0], headers={"User-Agent": "ExcaliburVkDaily/1.0"})
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            if resp.status == 200:
+                return list(RAW_GITHUB_FACE_REFS)
+    except Exception:
+        pass
+
+    return [host_image(path) for path in refs]
+
+
 def build_prompt(
     *,
     headline: str,
     composition_prompt: str,
-    accent: str,
+    accent: str = "#2F7BFF",
+    dek: str = "",
+    month_date: str = "СЕНТЯБРЬ 2026",
     pose_wardrobe: dict | None = None,
 ) -> str:
     pose_desc = ""
@@ -55,25 +77,33 @@ def build_prompt(
         pose = pose_wardrobe.get("pose", "")
         vibe = pose_wardrobe.get("vibe", "")
         pose_desc = (
-            f"Outfit and styling: {wardrobe}. "
-            f"Posture and gesture: {pose}. "
-            f"Vibe: {vibe}. "
+            f"Outfit and styling reference: {wardrobe}. "
+            f"Posture and gesture reference: {pose}. "
+            f"Vibe reference: {vibe}. "
         )
 
-    return (
-        "Photoreal editorial portrait of the SAME man as in the reference selfies. "
-        "Preserve exact facial identity: short dark hair faded on sides, light grey-blue eyes, "
-        "natural smile, light stubble, no glasses, no beautifying into another person. "
-        "CRITICAL: preserve facial identity from selfies only, NEVER copy faces from pose reference models. "
-        f"{pose_desc}"
-        f"Scene: {composition_prompt} "
-        f"Brand accent color {accent} only (no pink highlighter, no red sale banner). "
-        f"Large readable Cyrillic headline on the image, exactly: «{headline}». "
-        "No period, no emoji, no URLs, no phone number, no extra slogans. "
-        "Setting is Ufa, Russia residential life. "
-        "NEGATIVE: metro / subway station in Ufa, Moscow, Red Square, English poster text, "
-        "watermark, extra fingers, stock luxury realtor, neon cyberpunk, different face, foreign model face."
-    )
+    parts = [
+        "High-end editorial magazine cover portrait (16:9 aspect ratio) of the SAME man as in the reference selfies.",
+        "Preserve exact facial identity: oval face shape, short dark hair neatly cut and faded on sides, light grey-blue eyes, natural warm confident smile showing upper teeth, cheek dimples, light neat stubble, no glasses, no beautifying into a different person.",
+        "CRITICAL: preserve facial identity from selfies only, NEVER copy faces from pose reference models.",
+        "Wardrobe & styling: styled as a top-tier premium real-estate agent in a sharp tailored dark wool coat, structured blazer or suit jacket, crisp dress shirt or dark fine-knit turtleneck. Clean, wealthy, polished editorial aesthetic with a calm expensive vibe.",
+        f"{pose_desc}",
+        "Strictly NO hoodie, NO everyday casual sweatshirt, NO sportswear, NO cheap jacket, NO home clothes.",
+        f"Location & background: beautiful, recognizable Ufa location ({composition_prompt}). Elegant architectural depth, authentic city atmosphere. Strictly NO generic gray stairwell with no place identity, NO placeless interiors, NO landmarks or skyline of Moscow or other cities.",
+        f"Typography & layout: authentic magazine cover design with large prominent bold Cyrillic masthead 'УФА' at the top left in brand blue ({accent}), and date plate '{month_date}' at top right.",
+        f"Large crisp bold Cyrillic headline on the left side: «{headline}».",
+    ]
+    if dek:
+        parts.append(f"Clear elegant Cyrillic subheadline (dek) below headline: «{dek}».")
+    parts.extend([
+        f"Brand pure blue color accent ({accent}) on graphical elements, badges, or accessories. Strictly NO hex codes (such as '#2F7BFF'), NO RGB/RAL numbers or color labels printed or written on props, folders, or clothing.",
+        "No period at end of headline, no emoji, no website URLs, no phone numbers, no subway/metro mentions.",
+        "NEGATIVE: hoodie, sweatshirt, casual windbreaker, cheap clothes, sportswear, home clothes, "
+        "gray featureless dingy stairwell, subway station, metro in Ufa, Moscow landmarks, Red Square, "
+        "printed hex code text, #2F7BFF text, RAL code text, English poster text, "
+        "watermark, distorted hands, extra fingers, cartoon, 3d render, plastic skin, neon cyberpunk, different face, foreign model face.",
+    ])
+    return " ".join(parts)
 
 
 def generate_cover(
@@ -82,9 +112,11 @@ def generate_cover(
     out_dir: Path,
     headline: str,
     composition_prompt: str,
-    accent: str,
-    aspect_ratio: str,
-    resolution: str,
+    accent: str = "#2F7BFF",
+    dek: str = "",
+    month_date: str = "СЕНТЯБРЬ 2026",
+    aspect_ratio: str = "16:9",
+    resolution: str = "2K",
     pose_wardrobe: dict | None = None,
 ) -> dict:
     """Return cover meta. Never writes a fake raster if generation did not happen."""
@@ -115,13 +147,13 @@ def generate_cover(
     pose_filename = (pose_wardrobe or {}).get("filename", "")
     pose_img = pose_ref_path(root, pose_filename) if pose_filename else None
 
-    # Input URLs: face refs are mandatory. If pose reference image is present on disk, include it for style transfer.
-    all_ref_paths = list(refs)
-    if pose_img:
-        all_ref_paths.append(pose_img)
-
     try:
-        input_urls = [host_image(path) for path in all_ref_paths]
+        input_urls = resolve_face_ref_urls(root, refs)
+        if pose_img:
+            try:
+                input_urls.append(host_image(pose_img))
+            except Exception:
+                pass
     except Exception as exc:  # noqa: BLE001
         return {
             "status": "blocked",
@@ -134,6 +166,8 @@ def generate_cover(
         headline=headline,
         composition_prompt=composition_prompt,
         accent=accent,
+        dek=dek,
+        month_date=month_date,
         pose_wardrobe=pose_wardrobe,
     )
 
@@ -169,9 +203,15 @@ def generate_cover(
             "task_id": task_id,
             "cover_rel": cover_rel,
             "cover_url": cover_url,
+            "urls": [cover_url],
             "cover_sniff": kind,
             "input_urls_count": len(input_urls),
             "pose_ref_id": (pose_wardrobe or {}).get("id"),
+            "aspect_ratio": aspect_ratio,
+            "headline": headline,
+            "dek": dek,
+            "masthead": "УФА",
+            "date_badge": month_date,
         }
     except Exception as exc:  # noqa: BLE001
         return {

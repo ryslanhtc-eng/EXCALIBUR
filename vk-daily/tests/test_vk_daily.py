@@ -38,10 +38,12 @@ class ValidateTests(unittest.TestCase):
         errs = validate_post(text, self.tenant, self.banned)
         self.assertTrue(any("links" in e for e in errs))
 
-    def test_metro_copy_banned_but_denial_ok(self) -> None:
+    def test_metro_copy_strictly_banned(self) -> None:
         bad = ("а" * 1700) + " квартира у метро в Сипайлово, отличный район"
-        good = ("а" * 1700) + " В Уфе нет метро. Копипаст про станцию закрывайте."
+        bad2 = ("а" * 1700) + " В Уфе нет метро. Копипаст про станцию закрывайте."
+        good = ("а" * 1700) + " В Уфе маршрут автобус трамвай и машина."
         self.assertTrue(validate_post(bad, self.tenant, self.banned))
+        self.assertTrue(validate_post(bad2, self.tenant, self.banned))
         self.assertEqual([], validate_post(good, self.tenant, self.banned))
 
     def test_object_emoji_banned(self) -> None:
@@ -105,7 +107,7 @@ class CoverBlockerTests(unittest.TestCase):
                     headline="Уфа снова в тройке",
                     composition_prompt="test",
                     accent="#2F7BFF",
-                    aspect_ratio="3:4",
+                    aspect_ratio="16:9",
                     resolution="2K",
                     pose_wardrobe={
                         "id": "01-studio-navy-suit-grid",
