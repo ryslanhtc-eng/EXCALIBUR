@@ -18,7 +18,7 @@ test -n "$KIE_API_KEY" && echo KIE_ok || echo KIE_missing
 - `vk-daily/tenant/news-pipeline.md`
 - `vk-daily/data/news-bank.json`
 
-Жёстко: база Уфа; метро в Уфе нет; ~2000 знаков; синий акцент; новая композиция; эмодзи только чувства; ссылок нет.
+Жёстко: база Уфа; слово «метро» строго запрещено; ~2000 знаков; синий акцент; новая композиция; эмодзи только чувства; ссылок нет.
 
 ## 1. Факты дня
 
@@ -59,10 +59,10 @@ Headline обложки — 4–8 слов, без точки и эмодзи, �
 
 ## 4. Обложка
 
-Только KIE `gpt-image-2-image-to-image` + `input_urls` селфи.  
+Только KIE `gpt-image-2-image-to-image` + `input_urls` селфи (и референс позы из каталога `vk-daily/refs/poses-wardrobe/` при наличии файла).  
 Нет ключа / нет refs / ошибка хоста / ошибка KIE → блокер в `meta.json`, **никакой** заглушки.
 
-Каждый run берёт новый id из `vk-daily/data/compositions.json`.
+Каждый run берёт новый id из `vk-daily/data/compositions.json` и новый референс позы/гардероба из `vk-daily/data/pose_wardrobe.json` (ротация через `used_pose_refs` в `memory/vk-daily/state.json`). Лицо всегда строго фиксируется по селфи Руслана.
 
 ## 5. Отдать Grok Bot
 

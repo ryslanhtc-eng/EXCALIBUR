@@ -112,7 +112,9 @@ def validate_post(text: str, tenant: dict, banned: dict) -> list[str]:
             if pat.lower() in body.lower():
                 errors.append(f"links are forbidden for now: found {pat}")
 
-    errors.extend(_metro_as_existing(body, banned.get("metro_as_existing", [])))
+    lowered = _norm(body)
+    if re.search(r"\bметро\b", lowered):
+        errors.append("metro mention strictly forbidden")
 
     emojis = iter_emoji(body)
     object_set = set(banned.get("object_emoji", ""))

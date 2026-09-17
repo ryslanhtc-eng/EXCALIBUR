@@ -25,14 +25,15 @@ STATE_REL = Path("memory/vk-daily/state.json")
 
 def _load_state(path: Path) -> dict:
     if not path.is_file():
-        return {"used_compositions": []}
+        return {"used_compositions": [], "used_pose_refs": []}
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError:
-        return {"used_compositions": []}
+        return {"used_compositions": [], "used_pose_refs": []}
     if not isinstance(data, dict):
-        return {"used_compositions": []}
+        return {"used_compositions": [], "used_pose_refs": []}
     data.setdefault("used_compositions", [])
+    data.setdefault("used_pose_refs", [])
     return data
 
 
@@ -46,6 +47,10 @@ def main() -> int:
     ap.add_argument("--date", default="", help="YYYY-MM-DD (default: today in Ufa)")
     ap.add_argument("--skip-cover", action="store_true")
     ap.add_argument("--force-new-composition", action="store_true")
+    ap.add_argument("--composition", default="", help="Force specific composition ID")
+    ap.add_argument("--pose", default="", help="Force specific pose ref ID")
+    ap.add_argument("--headline", default="", help="Force specific headline")
+    ap.add_argument("--dek", default="", help="Force specific dek")
     args = ap.parse_args()
 
     root = repo_root()
@@ -63,12 +68,30 @@ def main() -> int:
     state_path = root / STATE_REL
     state = _load_state(state_path)
     used = list(state.get("used_compositions") or [])
+    used_pose = list(state.get("used_pose_refs") or [])
     if args.force_new_composition:
         seed = f"{run_date.isoformat()}|{now.isoformat()}|{uuid.uuid4()}"
     else:
         seed = f"{run_date.isoformat()}|{now.strftime('%Y-%m-%dT%H:%M')}|{uuid.uuid4()}"
 
-    artifact = generate(vk_root, run_date, seed, used)
+    artifact = generate(vk_root, run_date, seed, used, used_pose)
+    if args.composition:
+        comps = json.loads((vk_root / "data" / "compositions.json").read_text(encoding="utf-8"))["compositions"]
+        matching_c = [c for c in comps if c.get("id") == args.composition]
+        if matching_c:
+            artifact["composition"] = matching_c[0]
+    if args.pose:
+        pose_catalog_path = vk_root / "data" / "pose_wardrobe.json"
+        if pose_catalog_path.is_file():
+            poses = json.loads(pose_catalog_path.read_text(encoding="utf-8")).get("pose_wardrobe", [])
+            matching_p = [p for p in poses if p.get("id") == args.pose]
+            if matching_p:
+                artifact["pose_wardrobe"] = matching_p[0]
+    if args.headline:
+        artifact["headline"] = args.headline
+    if args.dek:
+        artifact["dek"] = args.dek
+
     composition_id = artifact["composition"]["id"]
     used.append(composition_id)
     # keep last full cycle
@@ -76,12 +99,23 @@ def main() -> int:
     if len(used) > comps_n:
         used = used[-comps_n:]
 
+    pose_wardrobe = artifact.get("pose_wardrobe") or {}
+    pose_ref_id = pose_wardrobe.get("id")
+    if pose_ref_id:
+        used_pose.append(pose_ref_id)
+        pose_catalog_path = vk_root / "data" / "pose_wardrobe.json"
+        if pose_catalog_path.is_file():
+            poses_n = len(json.loads(pose_catalog_path.read_text(encoding="utf-8")).get("pose_wardrobe", []))
+            if poses_n and len(used_pose) > poses_n:
+                used_pose = used_pose[-poses_n:]
+
     out = latest_dir(root)
     if out.exists():
         shutil.rmtree(out)
     out.mkdir(parents=True, exist_ok=True)
 
     (out / "post.txt").write_text(artifact["post"] + "\n", encoding="utf-8")
+    (out / "post-plain.txt").write_text(artifact["post"] + "\n", encoding="utf-8")
 
     cover_meta: dict
     if args.skip_cover:
@@ -90,6 +124,7 @@ def main() -> int:
             "blocker": "SKIP_COVER",
             "blocker_message": "cover step skipped (--skip-cover)",
             "model": tenant["cover"]["model"],
+            "pose_ref_id": pose_ref_id,
         }
     else:
         cover_meta = generate_cover(
@@ -98,8 +133,11 @@ def main() -> int:
             headline=artifact["headline"],
             composition_prompt=artifact["composition"]["prompt"],
             accent=tenant["cover"]["accent_hex"],
+            dek=artifact.get("dek", ""),
+            month_date="СЕНТЯБРЬ 2026",
             aspect_ratio=tenant["cover"]["aspect_ratio"],
             resolution=tenant["cover"]["resolution"],
+            pose_wardrobe=pose_wardrobe,
         )
 
     text_only = os.environ.get("VK_DAILY_ALLOW_TEXT_ONLY", "").strip().lower() == "yes"
@@ -120,14 +158,20 @@ def main() -> int:
         "vk_group_url": tenant["vk_group_url"],
         "vk_group_screen_name": tenant["vk_group_screen_name"],
         "city": tenant["city"],
+        "masthead": cover_meta.get("masthead", "УФА"),
+        "date_badge": cover_meta.get("date_badge", "СЕНТЯБРЬ 2026"),
+        "aspect": cover_meta.get("aspect_ratio", "16:9"),
         "char_count": artifact["char_count"],
         "cover_headline": artifact["headline"],
+        "cover_dek": cover_meta.get("dek", artifact.get("dek", "")),
         "composition_id": composition_id,
+        "pose_ref_id": pose_ref_id,
         "accent_hex": tenant["cover"]["accent_hex"],
         "news_id": artifact["news"].get("id"),
         "news_source_name": artifact["news"].get("source_name"),
         "artifacts": {
             "post": "memory/vk-daily/latest/post.txt",
+            "post_plain": "memory/vk-daily/latest/post-plain.txt",
             "meta": "memory/vk-daily/latest/meta.json",
             "cover": "memory/vk-daily/latest/cover.png",
             "cover_url": "memory/vk-daily/latest/cover-url.txt",
@@ -150,14 +194,19 @@ def main() -> int:
 
     run_copy = runs_dir(root) / run_date.isoformat()
     run_copy.mkdir(parents=True, exist_ok=True)
-    for name in ("post.txt", "meta.json", "cover.png", "cover.jpg", "cover-url.txt"):
+    snapshot_copy = root / "memory" / "vk-daily" / f"latest-{run_date.isoformat()}-zadatok"
+    snapshot_copy.mkdir(parents=True, exist_ok=True)
+    for name in ("post.txt", "post-plain.txt", "meta.json", "cover.png", "cover.jpg", "cover-url.txt"):
         src = out / name
         if src.is_file():
             shutil.copy2(src, run_copy / name)
+            shutil.copy2(src, snapshot_copy / name)
 
     state["used_compositions"] = used
+    state["used_pose_refs"] = used_pose
     state["last_run"] = meta["generated_at"]
     state["last_composition_id"] = composition_id
+    state["last_pose_ref_id"] = pose_ref_id
     _write_json(state_path, state)
 
     print(f"VK_DAILY_DATE={run_date.isoformat()}")
