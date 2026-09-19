@@ -82,11 +82,50 @@ def upload_0x0(image_path: Path) -> str:
     return url
 
 
-def host_image(image_path: Path, providers: tuple[str, ...] = ("catbox", "0x0")) -> str:
+def upload_uguu(image_path: Path) -> str:
+    boundary = "----VkDailyHeroUguu"
+    chunks: list[bytes] = []
+    mime = _mime(image_path)
+    header = (
+        f"--{boundary}\r\n"
+        f'Content-Disposition: form-data; name="files[]"; filename="{image_path.name}"\r\n'
+        f"Content-Type: {mime}\r\n\r\n"
+    ).encode("utf-8")
+    chunks.append(header + image_path.read_bytes() + b"\r\n")
+    chunks.append(f"--{boundary}--\r\n".encode("utf-8"))
+    body = b"".join(chunks)
+
+    request = urllib.request.Request(
+        "https://uguu.se/upload",
+        data=body,
+        headers={
+            "Content-Type": f"multipart/form-data; boundary={boundary}",
+            "User-Agent": "ExcaliburVkDaily/1.0",
+        },
+        method="POST",
+    )
+    with urllib.request.urlopen(request, timeout=120) as response:
+        raw = response.read().decode("utf-8", errors="replace").strip()
+    import json
+    data = json.loads(raw)
+    if not data.get("success"):
+        raise RuntimeError(f"uguu upload failed: {raw[:200]}")
+    files = data.get("files") or []
+    if not files or not files[0].get("url"):
+        raise RuntimeError(f"uguu upload missing url: {raw[:200]}")
+    return files[0]["url"]
+
+
+def host_image(image_path: Path, providers: tuple[str, ...] = ("uguu", "catbox")) -> str:
     last: Exception | None = None
     for provider in providers:
         try:
-            return upload_catbox(image_path) if provider == "catbox" else upload_0x0(image_path)
+            if provider == "uguu":
+                return upload_uguu(image_path)
+            elif provider == "catbox":
+                return upload_catbox(image_path)
+            else:
+                return upload_0x0(image_path)
         except Exception as exc:  # noqa: BLE001 - try next host
             last = exc
     raise RuntimeError(f"could not host {image_path.name}: {last}")

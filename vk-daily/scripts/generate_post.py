@@ -14,7 +14,11 @@ def _load_json(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def pick_news(items: list[dict], today: date) -> dict:
+def pick_news(items: list[dict], today: date, target_id: str = "") -> dict:
+    if target_id:
+        for item in items:
+            if item.get("id") == target_id:
+                return item
     dated = []
     for item in items:
         try:
@@ -39,6 +43,14 @@ def pick_composition(compositions: list[dict], seed: str, used: list[str]) -> di
 
 def _headlines_for(news: dict) -> list[str]:
     angle = news.get("angle") or ""
+    if angle == "escrow_protection":
+        return [
+            "Страховка эскроу может вырасти до тридцати",
+            "Страховку эскроу могут поднять до тридцати",
+            "Лимит эскроу вырастет до тридцати миллионов",
+            "Эскроу готовят страховку на тридцать миллионов",
+            "Защиту эскроу планируют поднять до тридцати",
+        ]
     if angle == "price_pulse":
         return [
             "Уфа снова в тройке",
@@ -62,6 +74,11 @@ def _headlines_for(news: dict) -> list[str]:
 
 
 def pick_headline(news: dict, seed: str, tenant: dict) -> str:
+    # If approved headline is requested for escrow_protection:
+    if news.get("angle") == "escrow_protection":
+        cand = "Страховка эскроу может вырасти до тридцати"
+        if not validate_headline(cand, tenant):
+            return cand
     options = _headlines_for(news)
     digest = hashlib.sha256((seed + "|headline").encode("utf-8")).hexdigest()
     ordered = [options[int(digest, 16) % len(options)]] + options
@@ -69,6 +86,38 @@ def pick_headline(news: dict, seed: str, tenant: dict) -> str:
         if not validate_headline(candidate, tenant):
             return candidate
     raise RuntimeError("no valid cover headline")
+
+
+def _escrow_protection_body(news: dict) -> str:
+    return (
+        "В Госдуму внесли законопроект №1240316-8, который прямо касается каждого, кто сейчас "
+        "покупает или планирует брать квартиру в новостройке. Суть простая: лимит страхового "
+        "возмещения АСВ по счетам эскроу при сделках с недвижимостью и ДДУ хотят поднять с 10 до 30 "
+        "миллионов рублей. Ожидаемый срок вступления в силу в случае принятия – с 1 января 2027 года.\n\n"
+        "Почему об этой инициативе важно знать уже сегодня, не дожидаясь двадцать седьмого года.\n\n"
+        "Когда систему эскроу запускали, планка в 10 миллионов рублей казалась огромной и с запасом "
+        "перекрывала почти любую квартиру. Но за прошедшие годы уфимский рынок сильно вырос. "
+        "Сегодня качественная семейная трехкомнатная квартира в современном жилом комплексе в Уфе "
+        "легко приближается к этой отметке, а просторные лоты или покупка жилья с паркингом нередко "
+        "выходят за пределы десяти миллионов.\n\n"
+        "Получается понятная математика: если стоимость объекта составляет, к примеру, 14 или 16 "
+        "миллионов рублей, то страховка АСВ на текущий момент покрывает только первые 10 миллионов. "
+        "Всё, что сверху, при гипотетических проблемах у банка попадает в общую очередь кредиторов. "
+        "Для семьи это вполне ощутимый риск.\n\n"
+        "Законопроект предлагает повысить планку защиты в три раза, до 30 миллионов рублей. Это здравый "
+        "шаг под реальные цены. Но пока документ на стадии чтений, ориентир действует прежний.\n\n"
+        "Что делать покупателям в Уфе прямо сейчас.\n\n"
+        "Во-первых, смотреть не только на застройщика, но и на уполномоченный банк, где открывается эскроу-счет. "
+        "Надежность кредитной организации сегодня – прямой критерий безопасности ваших накоплений.\n\n"
+        "Во-вторых, если ваш бюджет покупки превышает 10 миллионов рублей, учитывайте этот порог заранее "
+        "при структурировании расчетов.\n\n"
+        "И напоминание о дорогах. В Уфе нет метро. В Сипайлово, Дёме или Зеленой роще его тоже нет. "
+        "Если в рекламе вам обещают станцию у дома, это чужой копипаст. 😅 Мы выбираем квартиры по реальным "
+        "автобусам, развязкам и школам.\n\n"
+        "Я Руслан Мухтаров, Самолет Плюс, Уфа. Помогаю находить надежные новостройки: проверяем банки, "
+        "эскроу, условия договоров и реальные риски.\n\n"
+        "Напишите в сообщения сообщества – спокойно разберем ваш проект по цифрам."
+    )
 
 
 def _price_pulse_body(news: dict) -> str:
@@ -144,13 +193,21 @@ def _fit_length(text: str, min_c: int, max_c: int) -> str:
         if len(body) > max_c:
             break
     if len(body) > max_c:
-        body = body[: max_c - 1].rsplit(" ", 1)[0]
+        # truncate cleanly at sentence end or paragraph end, not mid-sentence
+        truncated = body[:max_c]
+        last_period = max(truncated.rfind(".\n"), truncated.rfind(". "), truncated.rfind("!\n"), truncated.rfind("?"))
+        if last_period > min_c:
+            body = truncated[:last_period + 1].strip()
+        else:
+            body = body[: max_c - 1].rsplit(" ", 1)[0].strip()
     return body.strip()
 
 
 def render_post(news: dict, tenant: dict) -> str:
     angle = news.get("angle")
-    if angle == "avg_ticket":
+    if angle == "escrow_protection":
+        raw = _escrow_protection_body(news)
+    elif angle == "avg_ticket":
         raw = _avg_ticket_body(news)
     elif angle == "mortgage_window":
         raw = _mortgage_body(news)
@@ -160,12 +217,12 @@ def render_post(news: dict, tenant: dict) -> str:
     return _fit_length(raw, int(spec["min_chars"]), int(spec["max_chars"]))
 
 
-def generate(vk_root: Path, today: date, seed: str, used_compositions: list[str]) -> dict[str, Any]:
+def generate(vk_root: Path, today: date, seed: str, used_compositions: list[str], target_id: str = "") -> dict[str, Any]:
     tenant = load_tenant(vk_root)
     banned = load_banned(vk_root)
     news_bank = _load_json(vk_root / "data" / "news-bank.json")
     compositions = _load_json(vk_root / "data" / "compositions.json")["compositions"]
-    news = pick_news(news_bank["items"], today)
+    news = pick_news(news_bank["items"], today, target_id=target_id)
     composition = pick_composition(compositions, seed, used_compositions)
     headline = pick_headline(news, seed, tenant)
     post = render_post(news, tenant)
@@ -178,6 +235,7 @@ def generate(vk_root: Path, today: date, seed: str, used_compositions: list[str]
     return {
         "post": post,
         "headline": headline,
+        "dek": "Лимит АСВ по эскроу могут поднять с 10 до 30 миллионов",
         "news": news,
         "composition": composition,
         "char_count": len(post),

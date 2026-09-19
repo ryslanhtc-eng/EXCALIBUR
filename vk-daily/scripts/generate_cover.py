@@ -33,19 +33,30 @@ def face_ref_paths(root: Path) -> list[Path]:
     return found
 
 
-def build_prompt(*, headline: str, composition_prompt: str, accent: str) -> str:
+def build_prompt(
+    *,
+    headline: str,
+    composition_prompt: str,
+    accent: str,
+    masthead: str = "УФА",
+    date_badge: str = "СЕНТЯБРЬ 2026",
+    dek: str = "",
+) -> str:
+    dek_part = f" Catchy editorial dek text: «{dek}»." if dek else ""
     return (
-        "Photoreal editorial portrait of the SAME man as in the reference selfies. "
-        "Preserve exact facial identity: short dark hair faded on sides, light grey-blue eyes, "
-        "natural smile, light stubble, no glasses, no beautifying into another person. "
-        "Outfit may change. "
-        f"Scene: {composition_prompt} "
-        f"Brand accent color {accent} only (no pink highlighter, no red sale banner). "
-        f"Large readable Cyrillic headline on the image, exactly: «{headline}». "
-        "No period, no emoji, no URLs, no phone number, no extra slogans. "
-        "Setting is Ufa, Russia residential life. "
-        "NEGATIVE: metro / subway station in Ufa, Moscow, Red Square, English poster text, "
-        "watermark, extra fingers, stock luxury realtor, neon cyberpunk, different face."
+        "Photoreal glossy magazine cover (16:9 landscape aspect ratio). "
+        "SAME man as in the reference selfies (Ruslan Mukhtarov), strict facial likeness lock: "
+        "short dark hair faded on sides, light grey-blue eyes, genuine warm smile showing upper teeth, "
+        "natural skin texture, light stubble, no glasses, no beautifying into another person. "
+        "Outfit: stylish premium real-estate agent look (tailored modern suit jacket, crisp dress shirt, or elegant coat). "
+        f"Masthead top magazine logo in bold Cyrillic typography: «{masthead}». "
+        f"Date badge: «{date_badge}». "
+        f"Main art-director cover headline in large bold readable Cyrillic: «{headline}».{dek_part} "
+        "No period at the end of headline, no emoji, no URLs, no website links, no phone numbers. "
+        f"Setting and backdrop: {composition_prompt} "
+        f"Color palette: glossy editorial dark/gilded tones with brand blue accent {accent}. "
+        "NEGATIVE: metro, subway station in Ufa, Moscow skyline, Red Square, casual hoodie, casual sportswear, "
+        "extra fingers, distorted hands, watermark, English poster text, generic stock model, different face, CGI cartoon."
     )
 
 
@@ -58,6 +69,9 @@ def generate_cover(
     accent: str,
     aspect_ratio: str,
     resolution: str,
+    masthead: str = "УФА",
+    date_badge: str = "СЕНТЯБРЬ 2026",
+    dek: str = "",
 ) -> dict:
     """Return cover meta. Never writes a fake raster if generation did not happen."""
     api_key = (os.environ.get("KIE_API_KEY") or "").strip()
@@ -94,7 +108,14 @@ def generate_cover(
             "model": MODEL,
         }
 
-    prompt = build_prompt(headline=headline, composition_prompt=composition_prompt, accent=accent)
+    prompt = build_prompt(
+        headline=headline,
+        composition_prompt=composition_prompt,
+        accent=accent,
+        masthead=masthead,
+        date_badge=date_badge,
+        dek=dek,
+    )
     try:
         task_id = create_i2i_task(
             api_key,
@@ -115,6 +136,13 @@ def generate_cover(
         cover_path = out_dir / "cover.png"
         cover_path.write_bytes(data)
         (out_dir / "cover-url.txt").write_text(cover_url + "\n", encoding="utf-8")
+        try:
+            from PIL import Image
+            import io
+            with Image.open(io.BytesIO(data)) as img:
+                img.convert("RGB").save(out_dir / "cover-preview.jpg", quality=85)
+        except Exception:
+            pass
         try:
             cover_rel = cover_path.resolve().relative_to(root.resolve()).as_posix()
         except ValueError:
