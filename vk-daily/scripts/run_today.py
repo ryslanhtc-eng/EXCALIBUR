@@ -46,6 +46,7 @@ def main() -> int:
     ap.add_argument("--date", default="", help="YYYY-MM-DD (default: today in Ufa)")
     ap.add_argument("--skip-cover", action="store_true")
     ap.add_argument("--force-new-composition", action="store_true")
+    ap.add_argument("--news-id", default="", help="Specific news_id from news-bank")
     args = ap.parse_args()
 
     root = repo_root()
@@ -68,7 +69,7 @@ def main() -> int:
     else:
         seed = f"{run_date.isoformat()}|{now.strftime('%Y-%m-%dT%H:%M')}|{uuid.uuid4()}"
 
-    artifact = generate(vk_root, run_date, seed, used)
+    artifact = generate(vk_root, run_date, seed, used, target_id=args.news_id)
     composition_id = artifact["composition"]["id"]
     used.append(composition_id)
     # keep last full cycle
@@ -82,6 +83,12 @@ def main() -> int:
     out.mkdir(parents=True, exist_ok=True)
 
     (out / "post.txt").write_text(artifact["post"] + "\n", encoding="utf-8")
+    (out / "post-plain.txt").write_text(artifact["post"] + "\n", encoding="utf-8")
+
+    aspect = tenant["cover"].get("aspect_ratio", "16:9")
+    masthead = tenant["cover"].get("masthead", "УФА")
+    date_badge = tenant["cover"].get("date_badge", "СЕНТЯБРЬ 2026")
+    dek = artifact.get("dek", "Лимит АСВ по эскроу могут поднять с 10 до 30 миллионов")
 
     cover_meta: dict
     if args.skip_cover:
@@ -98,8 +105,11 @@ def main() -> int:
             headline=artifact["headline"],
             composition_prompt=artifact["composition"]["prompt"],
             accent=tenant["cover"]["accent_hex"],
-            aspect_ratio=tenant["cover"]["aspect_ratio"],
+            aspect_ratio=aspect,
             resolution=tenant["cover"]["resolution"],
+            masthead=masthead,
+            date_badge=date_badge,
+            dek=dek,
         )
 
     text_only = os.environ.get("VK_DAILY_ALLOW_TEXT_ONLY", "").strip().lower() == "yes"
@@ -122,12 +132,20 @@ def main() -> int:
         "city": tenant["city"],
         "char_count": artifact["char_count"],
         "cover_headline": artifact["headline"],
+        "cover_dek": dek,
+        "aspect": aspect,
+        "masthead": masthead,
+        "date_badge": date_badge,
+        "verified_office": tenant.get("verified_office", {}).get("address", "ул. Жукова 39/1 офис 303 Уфа Сипайлово"),
         "composition_id": composition_id,
         "accent_hex": tenant["cover"]["accent_hex"],
         "news_id": artifact["news"].get("id"),
+        "news_title": artifact["news"].get("title", artifact["news"].get("headline_fact")),
         "news_source_name": artifact["news"].get("source_name"),
+        "cover_url": cover_meta.get("cover_url"),
         "artifacts": {
             "post": "memory/vk-daily/latest/post.txt",
+            "post_plain": "memory/vk-daily/latest/post-plain.txt",
             "meta": "memory/vk-daily/latest/meta.json",
             "cover": "memory/vk-daily/latest/cover.png",
             "cover_url": "memory/vk-daily/latest/cover-url.txt",
@@ -150,7 +168,7 @@ def main() -> int:
 
     run_copy = runs_dir(root) / run_date.isoformat()
     run_copy.mkdir(parents=True, exist_ok=True)
-    for name in ("post.txt", "meta.json", "cover.png", "cover.jpg", "cover-url.txt"):
+    for name in ("post.txt", "post-plain.txt", "meta.json", "cover.png", "cover-preview.jpg", "cover.jpg", "cover-url.txt"):
         src = out / name
         if src.is_file():
             shutil.copy2(src, run_copy / name)
