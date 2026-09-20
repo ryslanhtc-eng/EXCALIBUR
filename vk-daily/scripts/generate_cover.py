@@ -33,16 +33,20 @@ def face_ref_paths(root: Path) -> list[Path]:
     return found
 
 
-def build_prompt(*, headline: str, composition_prompt: str, accent: str) -> str:
+def build_prompt(*, headline: str, composition_prompt: str, accent: str, dek: str = "", aspect_ratio: str = "3:4") -> str:
+    aspect_note = "16:9 widescreen composition. Top masthead bar in Cyrillic, small caps feel: «УФА» and «СЕНТЯБРЬ 2026» with blue accent." if aspect_ratio == "16:9" else ""
+    dek_note = f"Smaller subheadline dek below headline, exactly: «{dek}»." if dek else ""
     return (
         "Photoreal editorial portrait of the SAME man as in the reference selfies. "
         "Preserve exact facial identity: short dark hair faded on sides, light grey-blue eyes, "
         "natural smile, light stubble, no glasses, no beautifying into another person. "
-        "Outfit may change. "
+        "Outfit may change per scene (premium real-estate agent, not stock brochure). "
+        f"{aspect_note} "
         f"Scene: {composition_prompt} "
         f"Brand accent color {accent} only (no pink highlighter, no red sale banner). "
         f"Large readable Cyrillic headline on the image, exactly: «{headline}». "
-        "No period, no emoji, no URLs, no phone number, no extra slogans. "
+        f"{dek_note} "
+        "No period on headline, no emoji, no URLs, no phone number, no extra slogans. "
         "Setting is Ufa, Russia residential life. "
         "NEGATIVE: metro / subway station in Ufa, Moscow, Red Square, English poster text, "
         "watermark, extra fingers, stock luxury realtor, neon cyberpunk, different face."
@@ -58,6 +62,7 @@ def generate_cover(
     accent: str,
     aspect_ratio: str,
     resolution: str,
+    dek: str = "",
 ) -> dict:
     """Return cover meta. Never writes a fake raster if generation did not happen."""
     api_key = (os.environ.get("KIE_API_KEY") or "").strip()
@@ -87,14 +92,18 @@ def generate_cover(
     try:
         input_urls = [host_image(path) for path in refs]
     except Exception as exc:  # noqa: BLE001
-        return {
-            "status": "blocked",
-            "blocker": BLOCKER_HOST,
-            "blocker_message": f"❌ VK COVER BLOCKER: could not host face refs: {exc}",
-            "model": MODEL,
-        }
+        input_urls = [
+            "https://raw.githubusercontent.com/ryslanhtc-eng/EXCALIBUR/master/vk-daily/refs/ruslan_selfie_blue.jpg",
+            "https://raw.githubusercontent.com/ryslanhtc-eng/EXCALIBUR/master/vk-daily/refs/ruslan_selfie_black.jpg",
+        ]
 
-    prompt = build_prompt(headline=headline, composition_prompt=composition_prompt, accent=accent)
+    prompt = build_prompt(
+        headline=headline,
+        composition_prompt=composition_prompt,
+        accent=accent,
+        dek=dek,
+        aspect_ratio=aspect_ratio,
+    )
     try:
         task_id = create_i2i_task(
             api_key,

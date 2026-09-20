@@ -82,6 +82,7 @@ def main() -> int:
     out.mkdir(parents=True, exist_ok=True)
 
     (out / "post.txt").write_text(artifact["post"] + "\n", encoding="utf-8")
+    (out / "post-plain.txt").write_text(artifact["post"] + "\n", encoding="utf-8")
 
     cover_meta: dict
     if args.skip_cover:
@@ -98,8 +99,9 @@ def main() -> int:
             headline=artifact["headline"],
             composition_prompt=artifact["composition"]["prompt"],
             accent=tenant["cover"]["accent_hex"],
-            aspect_ratio=tenant["cover"]["aspect_ratio"],
+            aspect_ratio=tenant["cover"].get("aspect_ratio", "16:9"),
             resolution=tenant["cover"]["resolution"],
+            dek=artifact.get("dek", ""),
         )
 
     text_only = os.environ.get("VK_DAILY_ALLOW_TEXT_ONLY", "").strip().lower() == "yes"
@@ -122,12 +124,14 @@ def main() -> int:
         "city": tenant["city"],
         "char_count": artifact["char_count"],
         "cover_headline": artifact["headline"],
+        "cover_dek": artifact.get("dek", ""),
         "composition_id": composition_id,
         "accent_hex": tenant["cover"]["accent_hex"],
         "news_id": artifact["news"].get("id"),
         "news_source_name": artifact["news"].get("source_name"),
         "artifacts": {
             "post": "memory/vk-daily/latest/post.txt",
+            "post_plain": "memory/vk-daily/latest/post-plain.txt",
             "meta": "memory/vk-daily/latest/meta.json",
             "cover": "memory/vk-daily/latest/cover.png",
             "cover_url": "memory/vk-daily/latest/cover-url.txt",
@@ -150,7 +154,7 @@ def main() -> int:
 
     run_copy = runs_dir(root) / run_date.isoformat()
     run_copy.mkdir(parents=True, exist_ok=True)
-    for name in ("post.txt", "meta.json", "cover.png", "cover.jpg", "cover-url.txt"):
+    for name in ("post.txt", "post-plain.txt", "meta.json", "cover.png", "cover.jpg", "cover-url.txt"):
         src = out / name
         if src.is_file():
             shutil.copy2(src, run_copy / name)
