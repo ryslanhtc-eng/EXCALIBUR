@@ -1,9 +1,9 @@
 {
   "pipeline": "vk-daily",
-  "status": "blocked",
-  "publish_ready": false,
-  "date": "2026-09-12",
-  "generated_at": "2026-09-12T16:08:40+05:00",
+  "status": "ready",
+  "publish_ready": true,
+  "date": "2026-09-20",
+  "generated_at": "2026-09-20T12:08:09+05:00",
   "timezone": "Asia/Yekaterinburg",
   "tenant_id": "ruslan-mukhtarov-ufa",
   "person_name_ru": "Руслан Мухтаров",
@@ -11,23 +11,30 @@
   "vk_group_url": "https://vk.ru/samolet_plus_sipa",
   "vk_group_screen_name": "samolet_plus_sipa",
   "city": "Уфа",
-  "char_count": 1861,
-  "cover_headline": "Уфа снова в тройке",
-  "composition_id": "office-prints",
+  "char_count": 2171,
+  "cover_headline": "Сдаём квартиру без залога через страховку",
+  "cover_dek": "Август: однушки ~25,4 тыс, спрос +27%",
+  "composition_id": "bus-stop-honest",
   "accent_hex": "#2F7BFF",
-  "news_id": "ufa-primary-aug-2026-rbc",
-  "news_source_name": "РБК Недвижимость / РБК Уфа",
+  "news_id": "ufa_rent_spike_aug2026",
+  "news_source_name": "«Мир квартир» / Авито (агрегаторы по Уфе)",
   "artifacts": {
     "post": "memory/vk-daily/latest/post.txt",
+    "post_plain": "memory/vk-daily/latest/post-plain.txt",
     "meta": "memory/vk-daily/latest/meta.json",
     "cover": "memory/vk-daily/latest/cover.png",
     "cover_url": "memory/vk-daily/latest/cover-url.txt"
   },
   "cover": {
-    "status": "blocked",
-    "blocker": "KIE_API_KEY",
-    "blocker_message": "❌ VK COVER BLOCKER: KIE_API_KEY is not set. Cover not generated. Do not publish a fake image.",
-    "model": "gpt-image-2-image-to-image"
+    "status": "ok",
+    "blocker": null,
+    "blocker_message": null,
+    "model": "gpt-image-2-image-to-image",
+    "task_id": "fc0198c433f31d48edc820dcce218810",
+    "cover_rel": "memory/vk-daily/latest/cover.png",
+    "cover_url": "https://tempfile.aiquickdraw.com/gpt-image-2-kie/1789888291723-7mi8vppqoqq.png",
+    "cover_sniff": "png",
+    "input_urls_count": 2
   },
   "orchestrator": {
     "publisher": "Grok Bot",
@@ -36,7 +43,5 @@
     "publish_if": "cover.status == ok and files exist",
     "skip_if_blocker": true
   },
-  "links_in_post": false,
-  "blocker": "KIE_API_KEY",
-  "blocker_message": "❌ VK COVER BLOCKER: KIE_API_KEY is not set. Cover not generated. Do not publish a fake image."
+  "links_in_post": false
 }
