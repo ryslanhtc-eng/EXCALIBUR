@@ -33,16 +33,20 @@ def face_ref_paths(root: Path) -> list[Path]:
     return found
 
 
-def build_prompt(*, headline: str, composition_prompt: str, accent: str) -> str:
+def build_prompt(*, headline: str, dek: str, composition_prompt: str, accent: str) -> str:
+    dek_line = dek.strip() or "Уфа, честные цифры"
     return (
         "Photoreal editorial portrait of the SAME man as in the reference selfies. "
         "Preserve exact facial identity: short dark hair faded on sides, light grey-blue eyes, "
         "natural smile, light stubble, no glasses, no beautifying into another person. "
-        "Outfit may change. "
+        "Outfit may change per scene (premium real-estate agent, not stock brochure). "
+        "16:9 widescreen composition. "
+        "Top masthead bar in Cyrillic, small caps feel: «УФА» and «СЕНТЯБРЬ 2026» with blue accent. "
         f"Scene: {composition_prompt} "
         f"Brand accent color {accent} only (no pink highlighter, no red sale banner). "
         f"Large readable Cyrillic headline on the image, exactly: «{headline}». "
-        "No period, no emoji, no URLs, no phone number, no extra slogans. "
+        f"Smaller subheadline dek below headline, exactly: «{dek_line}». "
+        "No period on headline, no emoji, no URLs, no phone number, no extra slogans. "
         "Setting is Ufa, Russia residential life. "
         "NEGATIVE: metro / subway station in Ufa, Moscow, Red Square, English poster text, "
         "watermark, extra fingers, stock luxury realtor, neon cyberpunk, different face."
@@ -54,6 +58,7 @@ def generate_cover(
     root: Path,
     out_dir: Path,
     headline: str,
+    dek: str = "",
     composition_prompt: str,
     accent: str,
     aspect_ratio: str,
@@ -94,7 +99,9 @@ def generate_cover(
             "model": MODEL,
         }
 
-    prompt = build_prompt(headline=headline, composition_prompt=composition_prompt, accent=accent)
+    prompt = build_prompt(
+        headline=headline, dek=dek, composition_prompt=composition_prompt, accent=accent
+    )
     try:
         task_id = create_i2i_task(
             api_key,

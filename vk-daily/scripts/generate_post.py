@@ -14,7 +14,12 @@ def _load_json(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def pick_news(items: list[dict], today: date) -> dict:
+def pick_news(items: list[dict], today: date, news_id: str = "") -> dict:
+    if news_id:
+        for item in items:
+            if str(item.get("id")) == news_id:
+                return item
+        raise RuntimeError(f"news-bank has no item with id {news_id!r}")
     dated = []
     for item in items:
         try:
@@ -57,6 +62,13 @@ def _headlines_for(news: dict) -> list[str]:
             "Платёж считают до октября",
             "Семейная не ждёт чуда",
             "Окно по семейной уже узкое",
+        ]
+    if angle == "rent_spike":
+        return [
+            "Однушка в Уфе уже двадцать пять",
+            "Аренда подскочила за август",
+            "Спрос на съём вырос на треть",
+            "Долгосрок снова бьёт по кошельку",
         ]
     return ["Уфа считает квартирный шаг", "Честный разбор без метро"]
 
@@ -118,6 +130,37 @@ def _avg_ticket_body(news: dict) -> str:
 Руслан Мухтаров, Самолет Плюс. Напишите в сообщения сообщества, если нужен разбор вашего варианта без воды и без выдуманного метро."""
 
 
+def _rent_spike_body(news: dict) -> str:
+    numbers = news.get("numbers") or {}
+    r1 = numbers.get("rent_1k_rub", 25400)
+    r1_pct = numbers.get("rent_1k_mom_pct", 7.8)
+    r2 = numbers.get("rent_2k_rub", 32300)
+    r2_pct = numbers.get("rent_2k_mom_pct", 5.9)
+    demand = numbers.get("demand_mom_pct", 27)
+    r1_txt = f"{r1 / 1000:.1f}".replace(".", ",")
+    r2_txt = f"{r2 / 1000:.1f}".replace(".", ",")
+    r1_pct_txt = str(r1_pct).replace(".", ",")
+    r2_pct_txt = str(r2_pct).replace(".", ",")
+    demand_txt = str(demand).replace(".", ",")
+    return f"""Аренда в Уфе снова напомнила, что «временно сниму пару месяцев» часто превращается в год. Август по цифрам «Мир квартир»: однокомнатная +{r1_pct_txt}% и около {r1_txt} тыс. рублей в месяц, двухкомнатная +{r2_pct_txt}% и примерно {r2_txt} тыс. Параллельно Авито фиксирует спрос на долгосрок +{demand_txt}% за месяц. Это не абстрактная «инфляция», это конкретный платёж из зарплаты.
+
+Если вы ищете жильё в Сипайлово, Дёме, Инорсе или на вторичке в центре, картина одна: объявлений мало, хозяева реже устраивают конкурс из десяти анкет, а арендаторы чаще остаются на месте и не сдают «на лето».
+
+Что я вижу на показах и в переписке.
+
+Первое. Цифра в заголовке объявления и цена на встрече расходятся. «25 тысяч, но без мебели, но счётчики отдельно, но залог двойной» уже другая история. Считайте полный чек: депозит, коммуналка, интернет, мелкий ремонт, если что-то сломалось в первую неделю.
+
+Второе. Спрос +{demand_txt}% не значит, что любую однушку заберут за час. Заберут лот, где честные фото, нормальный двор и адекватный договор. Копипаст «идеальная квартира для семьи» без кухни на фото вызывает у меня только вопросы. 😅
+
+Третье. Если вы сдаёте, не гонитесь за максимумом в объявлении и потом сидите пустым месяц. Лучше чуть ниже рынка и живой арендатор с рекомендацией, чем красивая цифра и простой. Если снимаете, не подписывайте «на всякий случай» допсоглашения, которые не читали.
+
+Четвёртое. Покупка vs аренда сейчас не про лозунги. Сравните платёж по ипотеке на ваш реальный лот и аренду на похожий. Иногда аренда выигрывает год-два, иногда наоборот. Без таблицы это всегда эмоции.
+
+Я Руслан Мухтаров, «Самолет Плюс», Уфа. Офис: ул. Жукова, 39/1, офис 303, Сипайлово. Помогаю и снимающим, и сдающим: договор, приёмка, торг, проверка хозяина, а не только «найти объявление».
+
+Напишите в сообщения сообщества, если нужен разбор вашей ситуации по цифрам, без воды и без красивых обещаний."""
+
+
 def _mortgage_body(_news: dict) -> str:
     return """Семейную ипотеку уже резали, а к октябрю снова ждут ужесточение шкалы. Если вы в программу проходите – это не призыв "хватай любую двушку". Это призыв сесть и посчитать платёж на тех условиях, которые есть сейчас, а не на тех, которые обещает картинка в сторис.
 
@@ -148,24 +191,44 @@ def _fit_length(text: str, min_c: int, max_c: int) -> str:
     return body.strip()
 
 
+def cover_dek_for(news: dict) -> str:
+    angle = news.get("angle") or ""
+    if angle == "rent_spike":
+        numbers = news.get("numbers") or {}
+        r1 = numbers.get("rent_1k_rub", 25400)
+        demand = numbers.get("demand_mom_pct", 27)
+        r1_txt = f"{r1 / 1000:.1f}".replace(".", ",")
+        demand_txt = str(demand).replace(".", ",")
+        return f"Август: однушки ~{r1_txt} тыс, спрос +{demand_txt}%"
+    return "Уфа, честные цифры без паники"
+
+
 def render_post(news: dict, tenant: dict) -> str:
     angle = news.get("angle")
     if angle == "avg_ticket":
         raw = _avg_ticket_body(news)
     elif angle == "mortgage_window":
         raw = _mortgage_body(news)
+    elif angle == "rent_spike":
+        raw = _rent_spike_body(news)
     else:
         raw = _price_pulse_body(news)
     spec = tenant["post"]
     return _fit_length(raw, int(spec["min_chars"]), int(spec["max_chars"]))
 
 
-def generate(vk_root: Path, today: date, seed: str, used_compositions: list[str]) -> dict[str, Any]:
+def generate(
+    vk_root: Path,
+    today: date,
+    seed: str,
+    used_compositions: list[str],
+    news_id: str = "",
+) -> dict[str, Any]:
     tenant = load_tenant(vk_root)
     banned = load_banned(vk_root)
     news_bank = _load_json(vk_root / "data" / "news-bank.json")
     compositions = _load_json(vk_root / "data" / "compositions.json")["compositions"]
-    news = pick_news(news_bank["items"], today)
+    news = pick_news(news_bank["items"], today, news_id=news_id)
     composition = pick_composition(compositions, seed, used_compositions)
     headline = pick_headline(news, seed, tenant)
     post = render_post(news, tenant)
@@ -178,6 +241,7 @@ def generate(vk_root: Path, today: date, seed: str, used_compositions: list[str]
     return {
         "post": post,
         "headline": headline,
+        "cover_dek": cover_dek_for(news),
         "news": news,
         "composition": composition,
         "char_count": len(post),

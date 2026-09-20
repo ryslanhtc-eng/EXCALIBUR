@@ -44,8 +44,14 @@ def _write_json(path: Path, payload: dict) -> None:
 def main() -> int:
     ap = argparse.ArgumentParser(description="VK daily: one ready-to-publish post for Grok Bot")
     ap.add_argument("--date", default="", help="YYYY-MM-DD (default: today in Ufa)")
+    ap.add_argument("--news-id", default="", help="Force news-bank item id")
     ap.add_argument("--skip-cover", action="store_true")
     ap.add_argument("--force-new-composition", action="store_true")
+    ap.add_argument(
+        "--snapshot-name",
+        default="",
+        help="Copy latest/ to memory/vk-daily/<name>/ after run",
+    )
     args = ap.parse_args()
 
     root = repo_root()
@@ -68,7 +74,7 @@ def main() -> int:
     else:
         seed = f"{run_date.isoformat()}|{now.strftime('%Y-%m-%dT%H:%M')}|{uuid.uuid4()}"
 
-    artifact = generate(vk_root, run_date, seed, used)
+    artifact = generate(vk_root, run_date, seed, used, news_id=args.news_id.strip())
     composition_id = artifact["composition"]["id"]
     used.append(composition_id)
     # keep last full cycle
@@ -82,6 +88,8 @@ def main() -> int:
     out.mkdir(parents=True, exist_ok=True)
 
     (out / "post.txt").write_text(artifact["post"] + "\n", encoding="utf-8")
+    plain = artifact["post"].replace("\r\n", "\n").strip()
+    (out / "post-plain.txt").write_text(plain + "\n", encoding="utf-8")
 
     cover_meta: dict
     if args.skip_cover:
@@ -96,6 +104,7 @@ def main() -> int:
             root=root,
             out_dir=out,
             headline=artifact["headline"],
+            dek=artifact.get("cover_dek") or "",
             composition_prompt=artifact["composition"]["prompt"],
             accent=tenant["cover"]["accent_hex"],
             aspect_ratio=tenant["cover"]["aspect_ratio"],
@@ -122,12 +131,14 @@ def main() -> int:
         "city": tenant["city"],
         "char_count": artifact["char_count"],
         "cover_headline": artifact["headline"],
+        "cover_dek": artifact.get("cover_dek"),
         "composition_id": composition_id,
         "accent_hex": tenant["cover"]["accent_hex"],
         "news_id": artifact["news"].get("id"),
         "news_source_name": artifact["news"].get("source_name"),
         "artifacts": {
             "post": "memory/vk-daily/latest/post.txt",
+            "post_plain": "memory/vk-daily/latest/post-plain.txt",
             "meta": "memory/vk-daily/latest/meta.json",
             "cover": "memory/vk-daily/latest/cover.png",
             "cover_url": "memory/vk-daily/latest/cover-url.txt",
@@ -150,10 +161,17 @@ def main() -> int:
 
     run_copy = runs_dir(root) / run_date.isoformat()
     run_copy.mkdir(parents=True, exist_ok=True)
-    for name in ("post.txt", "meta.json", "cover.png", "cover.jpg", "cover-url.txt"):
+    for name in ("post.txt", "post-plain.txt", "meta.json", "cover.png", "cover.jpg", "cover-url.txt"):
         src = out / name
         if src.is_file():
             shutil.copy2(src, run_copy / name)
+
+    snap = (args.snapshot_name or "").strip()
+    if snap:
+        snap_dir = root / "memory" / "vk-daily" / snap
+        if snap_dir.exists():
+            shutil.rmtree(snap_dir)
+        shutil.copytree(out, snap_dir)
 
     state["used_compositions"] = used
     state["last_run"] = meta["generated_at"]

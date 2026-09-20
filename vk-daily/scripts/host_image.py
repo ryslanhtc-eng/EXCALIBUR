@@ -2,11 +2,33 @@
 
 Mirrors catbox / 0x0 flow from scripts/excalibur_blog_hero_reference_url.py
 without changing that blog helper (JPEG MIME is required for VK face refs).
+
+Fallback: raw GitHub URLs when ephemeral hosts fail (Cloud egress blocks).
 """
 from __future__ import annotations
 
+import os
 import urllib.request
 from pathlib import Path
+
+
+def raw_github_ref_url(image_path: Path) -> str | None:
+    """Public raw URL if this repo is on GitHub and the file is tracked."""
+    base = (os.environ.get("VK_DAILY_REF_RAW_BASE") or "").strip().rstrip("/")
+    if not base:
+        base = "https://raw.githubusercontent.com/ryslanhtc-eng/EXCALIBUR/master"
+    name = image_path.name
+    if name not in {"ruslan_selfie_blue.jpg", "ruslan_selfie_black.jpg"}:
+        return None
+    url = f"{base}/vk-daily/refs/{name}"
+    request = urllib.request.Request(url, method="HEAD", headers={"User-Agent": "ExcaliburVkDaily/1.0"})
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            if int(getattr(response, "status", 200)) == 200:
+                return url
+    except Exception:  # noqa: BLE001
+        return None
+    return url
 
 
 def _mime(path: Path) -> str:
@@ -82,10 +104,18 @@ def upload_0x0(image_path: Path) -> str:
     return url
 
 
-def host_image(image_path: Path, providers: tuple[str, ...] = ("catbox", "0x0")) -> str:
+def host_image(
+    image_path: Path,
+    providers: tuple[str, ...] = ("raw_github", "catbox", "0x0"),
+) -> str:
     last: Exception | None = None
     for provider in providers:
         try:
+            if provider == "raw_github":
+                url = raw_github_ref_url(image_path)
+                if url:
+                    return url
+                continue
             return upload_catbox(image_path) if provider == "catbox" else upload_0x0(image_path)
         except Exception as exc:  # noqa: BLE001 - try next host
             last = exc
