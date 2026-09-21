@@ -2,11 +2,11 @@
   "compositions": [
     {
       "id": "river-window-morning",
-      "prompt": "Medium shot of the same man by a wide apartment window at morning, pale Ufa river haze outside, no metro, no skyline of Moscow. He holds a paper floor plan. Soft daylight, light-blue crewneck optional. Blue #2F7BFF window frame accent."
+      "prompt": "Medium shot of the same man by a wide apartment window at morning, pale Ufa river haze outside, no metro, no skyline of Moscow. He holds a paper floor plan. Soft daylight. Blue #2F7BFF subtle accent."
     },
     {
       "id": "sipaylovo-yard-autumn",
-      "prompt": "Outdoor courtyard of typical Ufa panel/new-build houses (Sipaylovo vibe), autumn leaves, playground at distance. Man in dark jacket with a small blue #2F7BFF folder, standing three-quarter, talking to camera. Overcast, honest, not luxury."
+      "prompt": "Outdoor courtyard of modern comfortable Ufa houses in Sipaylovo, autumn trees, clean residential background. Man standing three-quarter, confident professional posture, talking to camera. Overcast soft lighting, blue #2F7BFF subtle folder."
     },
     {
       "id": "kitchen-whitebox",
@@ -22,7 +22,7 @@
     },
     {
       "id": "balcony-evening",
-      "prompt": "Narrow balcony, evening, courtyard lamps, distant nine-story houses. Man in black sweatshirt, blue #2F7BFF badge-like accent on clothing. City is Ufa residential, not Moscow high-rises."
+      "prompt": "Balcony view over the Belaya river embankment in Ufa, evening city lamps, modern residential skyline. Man in stylish coat, subtle blue #2F7BFF pin accent."
     },
     {
       "id": "car-hood-docs",
@@ -42,7 +42,7 @@
     },
     {
       "id": "dema-street",
-      "prompt": "Low-rise Dema street, private houses mixed with shops, man walking toward camera, light-blue sweatshirt, autumn. Blue #2F7BFF shop sign blur in background, no English."
+      "prompt": "Modern comfortable Ufa avenue street scene, autumn trees, clean architecture, man walking toward camera with confident friendly posture. Blue #2F7BFF subtle detail."
     },
     {
       "id": "window-blue-tape-collage",
