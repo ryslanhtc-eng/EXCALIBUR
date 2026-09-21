@@ -45,6 +45,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="VK daily: one ready-to-publish post for Grok Bot")
     ap.add_argument("--date", default="", help="YYYY-MM-DD (default: today in Ufa)")
     ap.add_argument("--skip-cover", action="store_true")
+    ap.add_argument("--reuse-cover", action="store_true", help="Keep existing cover from latest/")
     ap.add_argument("--force-new-composition", action="store_true")
     args = ap.parse_args()
 
@@ -77,14 +78,42 @@ def main() -> int:
         used = used[-comps_n:]
 
     out = latest_dir(root)
+    existing_cover_bytes = None
+    existing_cover_url = None
+    existing_meta = None
+    if args.reuse_cover and (out / "cover.png").is_file():
+        existing_cover_bytes = (out / "cover.png").read_bytes()
+        if (out / "cover-url.txt").is_file():
+            existing_cover_url = (out / "cover-url.txt").read_text(encoding="utf-8").strip()
+        if (out / "meta.json").is_file():
+            try:
+                existing_meta = json.loads((out / "meta.json").read_text(encoding="utf-8"))
+            except Exception:
+                pass
+
     if out.exists():
         shutil.rmtree(out)
     out.mkdir(parents=True, exist_ok=True)
 
     (out / "post.txt").write_text(artifact["post"] + "\n", encoding="utf-8")
+    (out / "post-plain.txt").write_text(artifact["post"] + "\n", encoding="utf-8")
 
     cover_meta: dict
-    if args.skip_cover:
+    if args.reuse_cover and existing_cover_bytes:
+        (out / "cover.png").write_bytes(existing_cover_bytes)
+        if existing_cover_url:
+            (out / "cover-url.txt").write_text(existing_cover_url + "\n", encoding="utf-8")
+        cover_meta = (existing_meta.get("cover") if existing_meta else None) or {
+            "status": "ok",
+            "blocker": None,
+            "blocker_message": None,
+            "model": tenant["cover"]["model"],
+            "cover_rel": "memory/vk-daily/latest/cover.png",
+            "cover_url": existing_cover_url or "",
+            "cover_sniff": "png",
+            "input_urls_count": 2,
+        }
+    elif args.skip_cover:
         cover_meta = {
             "status": "skipped",
             "blocker": "SKIP_COVER",
@@ -98,8 +127,11 @@ def main() -> int:
             headline=artifact["headline"],
             composition_prompt=artifact["composition"]["prompt"],
             accent=tenant["cover"]["accent_hex"],
-            aspect_ratio=tenant["cover"]["aspect_ratio"],
+            aspect_ratio="16:9",
             resolution=tenant["cover"]["resolution"],
+            dek=artifact.get("dek", "Чеклист оформления в Башкирии до индексации тарифов с 1 октября"),
+            masthead="УФА",
+            date_badge="СЕНТЯБРЬ 2026",
         )
 
     text_only = os.environ.get("VK_DAILY_ALLOW_TEXT_ONLY", "").strip().lower() == "yes"
@@ -122,12 +154,18 @@ def main() -> int:
         "city": tenant["city"],
         "char_count": artifact["char_count"],
         "cover_headline": artifact["headline"],
+        "cover_dek": artifact.get("dek", "Чеклист оформления в Башкирии до индексации тарифов с 1 октября"),
+        "masthead": "УФА",
+        "date_badge": "СЕНТЯБРЬ 2026",
+        "aspect": "16:9",
+        "office": "ул. Жукова 39/1, офис 303, Уфа (Сипайлово)",
         "composition_id": composition_id,
         "accent_hex": tenant["cover"]["accent_hex"],
         "news_id": artifact["news"].get("id"),
         "news_source_name": artifact["news"].get("source_name"),
         "artifacts": {
             "post": "memory/vk-daily/latest/post.txt",
+            "post_plain": "memory/vk-daily/latest/post-plain.txt",
             "meta": "memory/vk-daily/latest/meta.json",
             "cover": "memory/vk-daily/latest/cover.png",
             "cover_url": "memory/vk-daily/latest/cover-url.txt",
@@ -150,7 +188,7 @@ def main() -> int:
 
     run_copy = runs_dir(root) / run_date.isoformat()
     run_copy.mkdir(parents=True, exist_ok=True)
-    for name in ("post.txt", "meta.json", "cover.png", "cover.jpg", "cover-url.txt"):
+    for name in ("post.txt", "post-plain.txt", "meta.json", "cover.png", "cover.jpg", "cover-url.txt"):
         src = out / name
         if src.is_file():
             shutil.copy2(src, run_copy / name)

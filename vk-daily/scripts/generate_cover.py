@@ -33,20 +33,33 @@ def face_ref_paths(root: Path) -> list[Path]:
     return found
 
 
-def build_prompt(*, headline: str, composition_prompt: str, accent: str) -> str:
-    return (
-        "Photoreal editorial portrait of the SAME man as in the reference selfies. "
-        "Preserve exact facial identity: short dark hair faded on sides, light grey-blue eyes, "
-        "natural smile, light stubble, no glasses, no beautifying into another person. "
-        "Outfit may change. "
-        f"Scene: {composition_prompt} "
-        f"Brand accent color {accent} only (no pink highlighter, no red sale banner). "
-        f"Large readable Cyrillic headline on the image, exactly: «{headline}». "
-        "No period, no emoji, no URLs, no phone number, no extra slogans. "
-        "Setting is Ufa, Russia residential life. "
-        "NEGATIVE: metro / subway station in Ufa, Moscow, Red Square, English poster text, "
-        "watermark, extra fingers, stock luxury realtor, neon cyberpunk, different face."
-    )
+def build_prompt(
+    *,
+    headline: str,
+    composition_prompt: str,
+    accent: str,
+    dek: str = "",
+    masthead: str = "УФА",
+    date_badge: str = "СЕНТЯБРЬ 2026",
+) -> str:
+    prompt_parts = [
+        "Photoreal glossy editorial magazine cover format (16:9 landscape) of the SAME man as in the reference selfies.",
+        "Preserve exact facial identity: short dark hair faded on sides, light grey-blue eyes, natural smile, light stubble, no glasses, no beautifying into another person.",
+        "Character styling: stylish premium real estate broker wearing a tailored dark navy suit jacket and crisp white shirt (or elegant coat), refined and confident, NOT a hoodie or casual t-shirt.",
+        f"Scene: {composition_prompt}",
+        "Setting is recognizable modern beautiful Ufa residential setting: beautiful embankment or modern comfortable courtyard in Ufa, clean architecture.",
+        f"Brand accent color {accent} subtle touches.",
+        f"Top magazine masthead text clearly legible in Cyrillic: «{masthead}».",
+        f"Small date badge in corner: «{date_badge}».",
+        f"Large bold readable Cyrillic headline on the cover: «{headline}».",
+    ]
+    if dek:
+        prompt_parts.append(f"Subtitle dek line below headline: «{dek}».")
+    prompt_parts.extend([
+        "No period at the end of headline, no emoji, no URLs, no phone numbers, no extra fake slogans.",
+        "NEGATIVE: metro / subway station in Ufa, Moscow skyline, Red Square, English poster text, watermark, extra fingers, cartoonish look, neon cyberpunk, casual hoodie, different face.",
+    ])
+    return " ".join(prompt_parts)
 
 
 def generate_cover(
@@ -58,6 +71,9 @@ def generate_cover(
     accent: str,
     aspect_ratio: str,
     resolution: str,
+    dek: str = "",
+    masthead: str = "УФА",
+    date_badge: str = "СЕНТЯБРЬ 2026",
 ) -> dict:
     """Return cover meta. Never writes a fake raster if generation did not happen."""
     api_key = (os.environ.get("KIE_API_KEY") or "").strip()
@@ -94,7 +110,14 @@ def generate_cover(
             "model": MODEL,
         }
 
-    prompt = build_prompt(headline=headline, composition_prompt=composition_prompt, accent=accent)
+    prompt = build_prompt(
+        headline=headline,
+        composition_prompt=composition_prompt,
+        accent=accent,
+        dek=dek,
+        masthead=masthead,
+        date_badge=date_badge,
+    )
     try:
         task_id = create_i2i_task(
             api_key,
