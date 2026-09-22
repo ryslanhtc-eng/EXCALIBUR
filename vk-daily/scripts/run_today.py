@@ -82,8 +82,10 @@ def main() -> int:
     out.mkdir(parents=True, exist_ok=True)
 
     (out / "post.txt").write_text(artifact["post"] + "\n", encoding="utf-8")
+    (out / "post-plain.txt").write_text(artifact["post"] + "\n", encoding="utf-8")
 
     cover_meta: dict
+    dek = "Как правильно оформить документы чтобы не потерять квартиру в суде"
     if args.skip_cover:
         cover_meta = {
             "status": "skipped",
@@ -96,6 +98,7 @@ def main() -> int:
             root=root,
             out_dir=out,
             headline=artifact["headline"],
+            dek=dek,
             composition_prompt=artifact["composition"]["prompt"],
             accent=tenant["cover"]["accent_hex"],
             aspect_ratio=tenant["cover"]["aspect_ratio"],
@@ -120,16 +123,24 @@ def main() -> int:
         "vk_group_url": tenant["vk_group_url"],
         "vk_group_screen_name": tenant["vk_group_screen_name"],
         "city": tenant["city"],
+        "verified_office": tenant["verified_office"]["address"],
+        "masthead": "УФА",
+        "date_badge": "СЕНТЯБРЬ 2026",
+        "aspect": tenant["cover"]["aspect_ratio"],
         "char_count": artifact["char_count"],
         "cover_headline": artifact["headline"],
+        "cover_dek": dek,
         "composition_id": composition_id,
         "accent_hex": tenant["cover"]["accent_hex"],
         "news_id": artifact["news"].get("id"),
+        "news_title": artifact["news"].get("headline_fact"),
         "news_source_name": artifact["news"].get("source_name"),
         "artifacts": {
             "post": "memory/vk-daily/latest/post.txt",
+            "post_plain": "memory/vk-daily/latest/post-plain.txt",
             "meta": "memory/vk-daily/latest/meta.json",
             "cover": "memory/vk-daily/latest/cover.png",
+            "cover_preview": "memory/vk-daily/latest/cover-preview.jpg",
             "cover_url": "memory/vk-daily/latest/cover-url.txt",
         },
         "cover": cover_meta,
@@ -150,7 +161,17 @@ def main() -> int:
 
     run_copy = runs_dir(root) / run_date.isoformat()
     run_copy.mkdir(parents=True, exist_ok=True)
-    for name in ("post.txt", "meta.json", "cover.png", "cover.jpg", "cover-url.txt"):
+    if (out / "cover.png").is_file():
+        try:
+            from PIL import Image
+            with Image.open(out / "cover.png") as im:
+                im_rgb = im.convert("RGB")
+                im_rgb.thumbnail((800, 450))
+                im_rgb.save(out / "cover-preview.jpg", "JPEG", quality=85)
+        except Exception as e:
+            print(f"WARN preview generation failed: {e}")
+
+    for name in ("post.txt", "post-plain.txt", "meta.json", "cover.png", "cover-preview.jpg", "cover.jpg", "cover-url.txt"):
         src = out / name
         if src.is_file():
             shutil.copy2(src, run_copy / name)

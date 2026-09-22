@@ -1,6 +1,18 @@
 {
   "compositions": [
     {
+      "id": "ufa-embankment-panorama",
+      "prompt": "Elegant waist-up editorial portrait of Ruslan on the picturesque Ufa Belaya river embankment promenade, modern city panorama softly blurred behind him, autumn crisp light, dressed in a tailored charcoal coat over a navy suit."
+    },
+    {
+      "id": "center-modern-facade",
+      "prompt": "Stylish full-medium portrait of Ruslan standing near the sleek glass-and-brick facade of a prestigious residential building in Ufa city center, wearing a sharp dark suit with a crisp white shirt, confident warm smile."
+    },
+    {
+      "id": "sipaylovo-promenade-park",
+      "prompt": "Photoreal magazine editorial shot of Ruslan in Sipaylovo near Kashkadan park alley, golden autumn foliage, modern clean residential skyline behind, dressed in a stylish wool coat and cashmere turtleneck."
+    },
+    {
       "id": "river-window-morning",
       "prompt": "Medium shot of the same man by a wide apartment window at morning, pale Ufa river haze outside, no metro, no skyline of Moscow. He holds a paper floor plan. Soft daylight, light-blue crewneck optional. Blue #2F7BFF window frame accent."
     },

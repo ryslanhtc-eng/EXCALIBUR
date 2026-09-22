@@ -82,16 +82,17 @@ def _metro_as_existing(text: str, phrases: list[str]) -> list[str]:
         errors.append("metro-in-ufa fluff: claims metro exists")
     for phrase in phrases:
         p = _norm(phrase)
-        if p not in lowered:
+        if not re.search(r"\b" + re.escape(p) + r"\b", lowered):
             continue
         if p in {"метрополитен"} and "нет" in lowered:
             continue
         # denial nearby
-        idx = lowered.find(p)
-        window = lowered[max(0, idx - 40) : idx + len(p) + 40]
-        if "нет" in window or "не существует" in window or "копипаст" in window:
-            continue
-        errors.append(f"metro-in-ufa fluff: {phrase!r}")
+        for m in re.finditer(r"\b" + re.escape(p) + r"\b", lowered):
+            idx = m.start()
+            window = lowered[max(0, idx - 40) : idx + len(p) + 40]
+            if "нет" in window or "не существует" in window or "копипаст" in window:
+                continue
+            errors.append(f"metro-in-ufa fluff: {phrase!r}")
     return errors
 
 

@@ -19,7 +19,7 @@
     "центр Уфы"
   ],
   "verified_office": {
-    "address": "ул. Правды, 10, Уфа (Дёмский район)",
+    "address": "ул. Жукова 39/1, офис 303, Уфа (Сипайлово)",
     "hours": "ежедневно 10:00–20:00"
   },
   "timezone": "Asia/Yekaterinburg",
@@ -34,7 +34,7 @@
   "cover": {
     "accent_hex": "#2F7BFF",
     "accent_name": "blue",
-    "aspect_ratio": "3:4",
+    "aspect_ratio": "16:9",
     "resolution": "2K",
     "model": "gpt-image-2-image-to-image",
     "headline_words_min": 4,
