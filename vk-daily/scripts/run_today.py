@@ -85,7 +85,7 @@ def main() -> int:
     (out / "post-plain.txt").write_text(artifact["post"] + "\n", encoding="utf-8")
 
     cover_meta: dict
-    dek = "Договор дарения и безналичный след защитят долю от раздела"
+    dek = "Как правильно оформить документы чтобы не потерять квартиру в суде"
     if args.skip_cover:
         cover_meta = {
             "status": "skipped",
