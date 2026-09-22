@@ -86,7 +86,7 @@ class CoverBlockerTests(unittest.TestCase):
                     headline="Уфа снова в тройке",
                     composition_prompt="test",
                     accent="#2F7BFF",
-                    aspect_ratio="3:4",
+                    aspect_ratio="16:9",
                     resolution="2K",
                 )
             self.assertEqual(meta["status"], "blocked")
