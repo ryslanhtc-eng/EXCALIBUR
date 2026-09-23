@@ -82,11 +82,27 @@ def upload_0x0(image_path: Path) -> str:
     return url
 
 
-def host_image(image_path: Path, providers: tuple[str, ...] = ("catbox", "0x0")) -> str:
+def github_raw_url(image_path: Path, *, branch: str = "master") -> str:
+    """Public raw URL when ephemeral hosts fail (face-lock refs in repo)."""
+    root = Path(__file__).resolve().parents[2]
+    rel = image_path.resolve().relative_to(root.resolve()).as_posix()
+    return f"https://raw.githubusercontent.com/ryslanhtc-eng/EXCALIBUR/{branch}/{rel}"
+
+
+def host_image(
+    image_path: Path,
+    providers: tuple[str, ...] = ("catbox", "0x0", "github"),
+) -> str:
     last: Exception | None = None
     for provider in providers:
         try:
-            return upload_catbox(image_path) if provider == "catbox" else upload_0x0(image_path)
+            if provider == "catbox":
+                return upload_catbox(image_path)
+            if provider == "0x0":
+                return upload_0x0(image_path)
+            if provider == "github":
+                return github_raw_url(image_path)
+            raise ValueError(f"unknown provider {provider}")
         except Exception as exc:  # noqa: BLE001 - try next host
             last = exc
     raise RuntimeError(f"could not host {image_path.name}: {last}")

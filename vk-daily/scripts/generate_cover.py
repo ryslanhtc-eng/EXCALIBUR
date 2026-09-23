@@ -33,16 +33,27 @@ def face_ref_paths(root: Path) -> list[Path]:
     return found
 
 
-def build_prompt(*, headline: str, composition_prompt: str, accent: str) -> str:
+def build_prompt(
+    *,
+    headline: str,
+    composition_prompt: str,
+    accent: str,
+    dek: str = "",
+) -> str:
+    dek_line = ""
+    if dek.strip():
+        dek_line = f"Smaller Cyrillic dek line under headline, exactly: «{dek.strip()}». "
     return (
         "Photoreal editorial portrait of the SAME man as in the reference selfies. "
+        "Premium Ufa real-estate agent, face-lock identity. "
         "Preserve exact facial identity: short dark hair faded on sides, light grey-blue eyes, "
         "natural smile, light stubble, no glasses, no beautifying into another person. "
-        "Outfit may change. "
+        "Outfit may change. September 2026, Ufa Russia. "
         f"Scene: {composition_prompt} "
         f"Brand accent color {accent} only (no pink highlighter, no red sale banner). "
         f"Large readable Cyrillic headline on the image, exactly: «{headline}». "
-        "No period, no emoji, no URLs, no phone number, no extra slogans. "
+        f"{dek_line}"
+        "No period on headline, no emoji, no URLs, no phone number, no extra slogans. "
         "Setting is Ufa, Russia residential life. "
         "NEGATIVE: metro / subway station in Ufa, Moscow, Red Square, English poster text, "
         "watermark, extra fingers, stock luxury realtor, neon cyberpunk, different face."
@@ -58,6 +69,7 @@ def generate_cover(
     accent: str,
     aspect_ratio: str,
     resolution: str,
+    dek: str = "",
 ) -> dict:
     """Return cover meta. Never writes a fake raster if generation did not happen."""
     api_key = (os.environ.get("KIE_API_KEY") or "").strip()
@@ -94,7 +106,12 @@ def generate_cover(
             "model": MODEL,
         }
 
-    prompt = build_prompt(headline=headline, composition_prompt=composition_prompt, accent=accent)
+    prompt = build_prompt(
+        headline=headline,
+        composition_prompt=composition_prompt,
+        accent=accent,
+        dek=dek,
+    )
     try:
         task_id = create_i2i_task(
             api_key,
