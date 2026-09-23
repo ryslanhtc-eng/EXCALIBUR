@@ -54,13 +54,15 @@ class GenerateTests(unittest.TestCase):
         vk = vk_daily_root(ROOT)
         tenant = load_tenant(vk)
         banned = load_banned(vk)
-        art = generate(vk, date(2026, 9, 12), "seed-a", [])
+        art = generate(vk, date(2026, 9, 23), "seed-a", [])
         self.assertEqual([], validate_post(art["post"], tenant, banned))
         self.assertEqual([], validate_headline(art["headline"], tenant))
         self.assertGreaterEqual(art["char_count"], tenant["post"]["min_chars"])
         self.assertLessEqual(art["char_count"], tenant["post"]["max_chars"])
         self.assertNotIn("http://", art["post"].lower())
         self.assertNotIn("https://", art["post"].lower())
+        self.assertIn("НЕЛЬЗЯ", art["post"])
+        self.assertIn("НЕ ПРОЙДЕТ", art["post"])
 
     def test_composition_changes_with_seed(self) -> None:
         comps = json.loads((ROOT / "vk-daily/data/compositions.json").read_text(encoding="utf-8"))["compositions"]
@@ -86,8 +88,11 @@ class CoverBlockerTests(unittest.TestCase):
                     headline="Уфа снова в тройке",
                     composition_prompt="test",
                     accent="#2F7BFF",
-                    aspect_ratio="3:4",
+                    aspect_ratio="16:9",
                     resolution="2K",
+                    dek="Подзаголовок для теста",
+                    masthead="УФА",
+                    date_badge="СЕНТЯБРЬ 2026",
                 )
             self.assertEqual(meta["status"], "blocked")
             self.assertEqual(meta["blocker"], "KIE_API_KEY")

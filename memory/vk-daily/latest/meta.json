@@ -1,9 +1,10 @@
 {
   "pipeline": "vk-daily",
-  "status": "blocked",
-  "publish_ready": false,
-  "date": "2026-09-12",
-  "generated_at": "2026-09-12T16:08:40+05:00",
+  "status": "ready",
+  "blockers": "none",
+  "publish_ready": true,
+  "date": "2026-09-23",
+  "generated_at": "2026-09-23T11:38:50+05:00",
   "timezone": "Asia/Yekaterinburg",
   "tenant_id": "ruslan-mukhtarov-ufa",
   "person_name_ru": "Руслан Мухтаров",
@@ -11,23 +12,35 @@
   "vk_group_url": "https://vk.ru/samolet_plus_sipa",
   "vk_group_screen_name": "samolet_plus_sipa",
   "city": "Уфа",
-  "char_count": 1861,
-  "cover_headline": "Уфа снова в тройке",
-  "composition_id": "office-prints",
+  "verified_office": "ул. Жукова 39/1, офис 303, Уфа (Сипайлово)",
+  "masthead": "УФА",
+  "date_badge": "СЕНТЯБРЬ 2026",
+  "char_count": 1968,
+  "cover_headline": "Апартаменты дешевле ловушка с пропиской",
+  "cover_dek": "КС РФ и налоговый вычет без иллюзий",
+  "cover_aspect_ratio": "16:9",
+  "composition_id": "river-window-morning",
   "accent_hex": "#2F7BFF",
-  "news_id": "ufa-primary-aug-2026-rbc",
-  "news_source_name": "РБК Недвижимость / РБК Уфа",
+  "news_id": "apartments_propiska_risks_2026",
+  "news_source_name": "КС РФ №4-П от 03.02.2026; разбор рисков покупателя апартаментов",
   "artifacts": {
     "post": "memory/vk-daily/latest/post.txt",
     "meta": "memory/vk-daily/latest/meta.json",
     "cover": "memory/vk-daily/latest/cover.png",
-    "cover_url": "memory/vk-daily/latest/cover-url.txt"
+    "cover_url": "memory/vk-daily/latest/cover-url.txt",
+    "post_plain": "memory/vk-daily/latest/post-plain.txt"
   },
   "cover": {
-    "status": "blocked",
-    "blocker": "KIE_API_KEY",
-    "blocker_message": "❌ VK COVER BLOCKER: KIE_API_KEY is not set. Cover not generated. Do not publish a fake image.",
-    "model": "gpt-image-2-image-to-image"
+    "status": "ok",
+    "blocker": null,
+    "blocker_message": null,
+    "model": "gpt-image-2-image-to-image",
+    "task_id": "7898601324841eb5184371539cea30f4",
+    "cover_rel": "memory/vk-daily/latest/cover.png",
+    "cover_url": "https://tempfile.aiquickdraw.com/gpt-image-2-kie/1790145577200-k48e5yardzd.png",
+    "cover_sniff": "png",
+    "input_urls_count": 2,
+    "dek": "КС РФ и налоговый вычет без иллюзий"
   },
   "orchestrator": {
     "publisher": "Grok Bot",
@@ -36,7 +49,5 @@
     "publish_if": "cover.status == ok and files exist",
     "skip_if_blocker": true
   },
-  "links_in_post": false,
-  "blocker": "KIE_API_KEY",
-  "blocker_message": "❌ VK COVER BLOCKER: KIE_API_KEY is not set. Cover not generated. Do not publish a fake image."
+  "links_in_post": false
 }

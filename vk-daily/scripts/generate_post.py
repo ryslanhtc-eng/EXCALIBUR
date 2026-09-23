@@ -37,6 +37,15 @@ def pick_composition(compositions: list[dict], seed: str, used: list[str]) -> di
     return pool[idx]
 
 
+def pick_composition_for_news(news: dict, compositions: list[dict], seed: str, used: list[str]) -> dict:
+    preferred_id = news.get("preferred_composition_id")
+    if preferred_id:
+        for c in compositions:
+            if c.get("id") == preferred_id:
+                return c
+    return pick_composition(compositions, seed, used)
+
+
 def _headlines_for(news: dict) -> list[str]:
     angle = news.get("angle") or ""
     if angle == "price_pulse":
@@ -52,6 +61,14 @@ def _headlines_for(news: dict) -> list[str]:
             "Билет в новостройку вырос",
             "Уфимская квартира снова дороже",
         ]
+    if angle == "apartments_propiska":
+        return [
+            "Апарты дешевле ловушка с пропиской",
+            "Апартаменты дешевле ловушка с пропиской",
+            "Временная регистрация без иллюзий",
+            "Чеклист перед сделкой с апартами",
+            "Прописка и вычет не как у квартиры",
+        ]
     if angle == "mortgage_window":
         return [
             "Платёж считают до октября",
@@ -62,6 +79,9 @@ def _headlines_for(news: dict) -> list[str]:
 
 
 def pick_headline(news: dict, seed: str, tenant: dict) -> str:
+    preferred = news.get("preferred_headline")
+    if preferred and not validate_headline(preferred, tenant):
+        return preferred
     options = _headlines_for(news)
     digest = hashlib.sha256((seed + "|headline").encode("utf-8")).hexdigest()
     ordered = [options[int(digest, 16) % len(options)]] + options
@@ -132,10 +152,46 @@ def _mortgage_body(_news: dict) -> str:
 Напишите в сообщения сообщества – разложим цифры спокойно."""
 
 
+def _cover_dek_for(news: dict) -> str:
+    angle = news.get("angle") or ""
+    if angle == "apartments_propiska":
+        return "КС РФ и налоговый вычет без иллюзий"
+    return "Уфа, сентябрь 2026"
+
+
+def _apartments_propiska_body(_news: dict) -> str:
+    return """Осенью в Уфе снова всплыл знакомый аргумент: апартаменты ощутимо дешевле квартиры, надо брать, пока цена манит. Звучит выгодно, но за разницей в чеке скрывается нежилой статус. Постановление КС РФ №4-П от 03.02.2026 прямо указало: при определенных условиях временную регистрацию оформить можно, но постоянной прописки как у обычной квартиры не будет.
+
+Если выбираете недвижимость в Сипайлово, Дёме или на вторичке рядом, отделяйте стоимость квадрата от набора прав. У нежилого фонда есть жесткие правила.
+
+Первое. Материнский капитал применить в апартаментах НЕЛЬЗЯ. Здесь нет никаких «слабее» или «спросите банк» — только прямое нет, закон разрешает тратить сертификат строго на жилье.
+
+Второе. Семейная ипотека в апартаментах НЕ ПРОЙДЕТ. Льготная госпрограмма действует только на квартиры, поэтому кредит дадут лишь по базовой коммерческой ставке с совсем другим платежом.
+
+Третье. Имущественный налоговый вычет на нежилое помещение не положен, а налог на имущество и коммуналка выше, чем в жилом фонде.
+
+Но у апартов есть и честные плюсы, если брать их осознанно.
+
+Можно официально сдавать в аренду без оглядки на статус жилья, получая хорошую доходность.
+Перепланировку делать проще: нет жестких ограничений по мокрым зонам над соседями.
+Соседи не жалуются на шумных арендаторов — формат изначально деловой, без детских колясок на площадке.
+В современных апарт-комплексах работают отличные сервисы: сдача через УК, регулярная уборка, химчистка, спортзал и коворкинг.
+
+Чеклист до сделки:
+1. Выписка ЕГРН: назначение здания решает больше рекламы.
+2. Тарифы УК, обслуживание общих зон и паркинга.
+3. Полный расчет платежей без семейной ипотеки и маткапитала.
+4. Просмотр объекта днем в будний час: шум, трафик и соседи.
+
+Я Руслан Мухтаров, Самолет Плюс, Уфа. Офис: ул. Жукова 39/1 оф.303, Сипайлово.
+
+Напишите в сообщения сообщества, прикрепите адрес объекта и что вам важнее: прописка или доход от аренды. Разберем лот по документам и цифрам, без давления и суеты. 😌"""
+
+
 def _fit_length(text: str, min_c: int, max_c: int) -> str:
     body = text.strip()
     filler = (
-        "\n\nЕщё одна бытовая проверка перед показом: посмотрите дом в обычный будний час, "
+        "\n\nЕщё одна бытовая проверка перед показом: посмотрите объект в обычный будний час, "
         "не в воскресенье. Двор, парковка, шум с дороги, магазин пешком. В Уфе это решает "
         "больше, чем красивое слово в шапке объявления."
     )
@@ -154,6 +210,8 @@ def render_post(news: dict, tenant: dict) -> str:
         raw = _avg_ticket_body(news)
     elif angle == "mortgage_window":
         raw = _mortgage_body(news)
+    elif angle == "apartments_propiska":
+        raw = _apartments_propiska_body(news)
     else:
         raw = _price_pulse_body(news)
     spec = tenant["post"]
@@ -166,9 +224,11 @@ def generate(vk_root: Path, today: date, seed: str, used_compositions: list[str]
     news_bank = _load_json(vk_root / "data" / "news-bank.json")
     compositions = _load_json(vk_root / "data" / "compositions.json")["compositions"]
     news = pick_news(news_bank["items"], today)
-    composition = pick_composition(compositions, seed, used_compositions)
+    composition = pick_composition_for_news(news, compositions, seed, used_compositions)
     headline = pick_headline(news, seed, tenant)
     post = render_post(news, tenant)
+    if news.get("angle") == "apartments_propiska":
+        post = _apartments_propiska_body(news)
 
     errors = validate_post(post, tenant, banned)
     errors.extend(validate_headline(headline, tenant))
@@ -178,6 +238,7 @@ def generate(vk_root: Path, today: date, seed: str, used_compositions: list[str]
     return {
         "post": post,
         "headline": headline,
+        "cover_dek": _cover_dek_for(news),
         "news": news,
         "composition": composition,
         "char_count": len(post),

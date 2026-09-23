@@ -33,19 +33,34 @@ def face_ref_paths(root: Path) -> list[Path]:
     return found
 
 
-def build_prompt(*, headline: str, composition_prompt: str, accent: str) -> str:
+def build_prompt(
+    *,
+    headline: str,
+    composition_prompt: str,
+    accent: str,
+    dek: str = "",
+    masthead: str = "УФА",
+    date_badge: str = "СЕНТЯБРЬ 2026",
+) -> str:
+    dek_line = ""
+    if dek.strip():
+        dek_line = f"Smaller Cyrillic subheadline (dek) under headline, exactly: «{dek.strip()}». "
     return (
-        "Photoreal editorial portrait of the SAME man as in the reference selfies. "
-        "Preserve exact facial identity: short dark hair faded on sides, light grey-blue eyes, "
-        "natural smile, light stubble, no glasses, no beautifying into another person. "
-        "Outfit may change. "
-        f"Scene: {composition_prompt} "
-        f"Brand accent color {accent} only (no pink highlighter, no red sale banner). "
-        f"Large readable Cyrillic headline on the image, exactly: «{headline}». "
-        "No period, no emoji, no URLs, no phone number, no extra slogans. "
+        "High-end editorial magazine cover portrait (16:9 landscape aspect ratio) of the SAME man as in the reference selfies. "
+        "Preserve exact facial identity: oval face, short dark hair faded on sides, light grey-blue eyes, "
+        "natural warm smile, cheek dimples, light stubble, no glasses, no beautifying into another person. "
+        "Wardrobe & styling: premium Ufa real-estate agent, tailored dark wool overcoat or sharp blazer, clean expensive editorial vibe. "
+        "Strictly NO hoodie, NO casual sweatshirt, NO sportswear, NO cheap clothes. "
+        f"Scene: {composition_prompt}. "
+        f"Typography & layout: authentic magazine cover design with large bold Cyrillic masthead '{masthead}' at the top left in brand blue ({accent}), "
+        f"and date plate '{date_badge}' at top right. "
+        f"Large readable Cyrillic headline on the left side, exactly: «{headline}». "
+        f"{dek_line}"
+        "Brand blue accent (#2F7BFF). Strictly NO hex codes (#2F7BFF) or RAL color codes printed as text on props or clothing. "
+        "No period on headline, no emoji, no URLs, no phone number, no extra slogans. "
         "Setting is Ufa, Russia residential life. "
         "NEGATIVE: metro / subway station in Ufa, Moscow, Red Square, English poster text, "
-        "watermark, extra fingers, stock luxury realtor, neon cyberpunk, different face."
+        "watermark, extra fingers, stock luxury realtor, neon cyberpunk, different face, hoodie, sweatshirt."
     )
 
 
@@ -58,6 +73,9 @@ def generate_cover(
     accent: str,
     aspect_ratio: str,
     resolution: str,
+    dek: str = "",
+    masthead: str = "УФА",
+    date_badge: str = "СЕНТЯБРЬ 2026",
 ) -> dict:
     """Return cover meta. Never writes a fake raster if generation did not happen."""
     api_key = (os.environ.get("KIE_API_KEY") or "").strip()
@@ -94,7 +112,14 @@ def generate_cover(
             "model": MODEL,
         }
 
-    prompt = build_prompt(headline=headline, composition_prompt=composition_prompt, accent=accent)
+    prompt = build_prompt(
+        headline=headline,
+        composition_prompt=composition_prompt,
+        accent=accent,
+        dek=dek,
+        masthead=masthead,
+        date_badge=date_badge,
+    )
     try:
         task_id = create_i2i_task(
             api_key,
@@ -119,7 +144,7 @@ def generate_cover(
             cover_rel = cover_path.resolve().relative_to(root.resolve()).as_posix()
         except ValueError:
             cover_rel = cover_path.as_posix()
-        return {
+        res = {
             "status": "ok",
             "blocker": None,
             "blocker_message": None,
@@ -130,6 +155,9 @@ def generate_cover(
             "cover_sniff": kind,
             "input_urls_count": len(input_urls),
         }
+        if dek.strip():
+            res["dek"] = dek.strip()
+        return res
     except Exception as exc:  # noqa: BLE001
         return {
             "status": "blocked",
