@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 import sys
 import uuid
@@ -39,6 +40,13 @@ def _load_state(path: Path) -> dict:
 def _write_json(path: Path, payload: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def _post_plain(text: str) -> str:
+    plain = text.strip()
+    plain = re.sub(r"\*\*([^*]+)\*\*", r"\1", plain)
+    plain = re.sub(r"\*([^*]+)\*", r"\1", plain)
+    return plain.strip() + "\n"
 
 
 def main() -> int:
@@ -82,6 +90,9 @@ def main() -> int:
     out.mkdir(parents=True, exist_ok=True)
 
     (out / "post.txt").write_text(artifact["post"] + "\n", encoding="utf-8")
+    (out / "post-plain.txt").write_text(_post_plain(artifact["post"]), encoding="utf-8")
+
+    aspect_ratio = (os.environ.get("VK_DAILY_COVER_ASPECT") or "").strip() or tenant["cover"]["aspect_ratio"]
 
     cover_meta: dict
     if args.skip_cover:
@@ -98,8 +109,11 @@ def main() -> int:
             headline=artifact["headline"],
             composition_prompt=artifact["composition"]["prompt"],
             accent=tenant["cover"]["accent_hex"],
-            aspect_ratio=tenant["cover"]["aspect_ratio"],
+            aspect_ratio=aspect_ratio,
             resolution=tenant["cover"]["resolution"],
+            dek=artifact.get("cover_dek") or "",
+            masthead="УФА",
+            date_badge="СЕНТЯБРЬ 2026",
         )
 
     text_only = os.environ.get("VK_DAILY_ALLOW_TEXT_ONLY", "").strip().lower() == "yes"
@@ -110,6 +124,7 @@ def main() -> int:
     meta = {
         "pipeline": "vk-daily",
         "status": "ready" if cover_meta.get("status") == "ok" else cover_meta.get("status"),
+        "blockers": "none" if not cover_meta.get("blocker") else cover_meta.get("blocker"),
         "publish_ready": bool(publish_ready),
         "date": run_date.isoformat(),
         "generated_at": now.isoformat(timespec="seconds"),
@@ -120,8 +135,13 @@ def main() -> int:
         "vk_group_url": tenant["vk_group_url"],
         "vk_group_screen_name": tenant["vk_group_screen_name"],
         "city": tenant["city"],
+        "verified_office": "ул. Жукова 39/1, офис 303, Уфа (Сипайлово)",
+        "masthead": "УФА",
+        "date_badge": "СЕНТЯБРЬ 2026",
         "char_count": artifact["char_count"],
         "cover_headline": artifact["headline"],
+        "cover_dek": artifact.get("cover_dek"),
+        "cover_aspect_ratio": aspect_ratio,
         "composition_id": composition_id,
         "accent_hex": tenant["cover"]["accent_hex"],
         "news_id": artifact["news"].get("id"),
@@ -131,6 +151,7 @@ def main() -> int:
             "meta": "memory/vk-daily/latest/meta.json",
             "cover": "memory/vk-daily/latest/cover.png",
             "cover_url": "memory/vk-daily/latest/cover-url.txt",
+            "post_plain": "memory/vk-daily/latest/post-plain.txt",
         },
         "cover": cover_meta,
         "orchestrator": {
@@ -150,10 +171,19 @@ def main() -> int:
 
     run_copy = runs_dir(root) / run_date.isoformat()
     run_copy.mkdir(parents=True, exist_ok=True)
-    for name in ("post.txt", "meta.json", "cover.png", "cover.jpg", "cover-url.txt"):
+    for name in ("post.txt", "post-plain.txt", "meta.json", "cover.png", "cover.jpg", "cover-url.txt"):
         src = out / name
         if src.is_file():
             shutil.copy2(src, run_copy / name)
+
+    snapshot_name = os.environ.get("VK_DAILY_SNAPSHOT_DIR", "").strip()
+    if snapshot_name:
+        snap = root / "memory" / "vk-daily" / snapshot_name
+        snap.mkdir(parents=True, exist_ok=True)
+        for name in ("post.txt", "post-plain.txt", "meta.json", "cover.png", "cover-url.txt"):
+            src = out / name
+            if src.is_file():
+                shutil.copy2(src, snap / name)
 
     state["used_compositions"] = used
     state["last_run"] = meta["generated_at"]
