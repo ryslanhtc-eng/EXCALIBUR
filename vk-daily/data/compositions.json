@@ -1,6 +1,10 @@
 {
   "compositions": [
     {
+      "id": "studio-navy-suit-ufa",
+      "prompt": "Glossy magazine cover style, 16:9 landscape aspect ratio. Bold masthead 'УФА' across the top in royal blue and small badge 'СЕНТЯБРЬ 2026'. Photoreal editorial portrait of the SAME man as in the reference selfies, elegant posture inspired by a seated studio pose in a sharp tailored dark navy suit with crisp white dress shirt, open collar, seated confidently. Background features an elegant stylish warm interior overlooking a recognizable scenic view of Ufa (Belaya river embankment or modern Ufa city architecture softly out of focus in soft daylight). Large bold clean Cyrillic headline in white and blue depth typography with catchy dek description underneath. Sophisticated, trustworthy, premium real-estate expert. Do not add any fictional surname captions."
+    },
+    {
       "id": "river-window-morning",
       "prompt": "Medium shot of the same man by a wide apartment window at morning, pale Ufa river haze outside, no metro, no skyline of Moscow. He holds a paper floor plan. Soft daylight, light-blue crewneck optional. Blue #2F7BFF window frame accent."
     },

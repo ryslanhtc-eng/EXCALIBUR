@@ -38,11 +38,17 @@ class ValidateTests(unittest.TestCase):
         errs = validate_post(text, self.tenant, self.banned)
         self.assertTrue(any("links" in e for e in errs))
 
-    def test_metro_copy_banned_but_denial_ok(self) -> None:
-        bad = ("а" * 1700) + " квартира у метро в Сипайлово, отличный район"
-        good = ("а" * 1700) + " В Уфе нет метро. Копипаст про станцию закрывайте."
+    def test_station_copy_banned(self) -> None:
+        bad = ("а" * 1700) + " квартира возле метро в Сипайлово, отличный район"
+        good = ("а" * 1700) + " Копипаст про чужой город закрывайте."
         self.assertTrue(validate_post(bad, self.tenant, self.banned))
         self.assertEqual([], validate_post(good, self.tenant, self.banned))
+
+    def test_metro_mention_completely_banned(self) -> None:
+        text1 = ("а" * 1700) + " В Уфе нет метро"
+        text2 = ("а" * 1700) + " метро Сипайлово"
+        self.assertTrue(validate_post(text1, self.tenant, self.banned))
+        self.assertTrue(validate_post(text2, self.tenant, self.banned))
 
     def test_object_emoji_banned(self) -> None:
         text = ("а" * 1800) + " 🏠"
@@ -54,7 +60,7 @@ class GenerateTests(unittest.TestCase):
         vk = vk_daily_root(ROOT)
         tenant = load_tenant(vk)
         banned = load_banned(vk)
-        art = generate(vk, date(2026, 9, 12), "seed-a", [])
+        art = generate(vk, date(2026, 9, 24), "seed-a", [])
         self.assertEqual([], validate_post(art["post"], tenant, banned))
         self.assertEqual([], validate_headline(art["headline"], tenant))
         self.assertGreaterEqual(art["char_count"], tenant["post"]["min_chars"])
@@ -86,7 +92,7 @@ class CoverBlockerTests(unittest.TestCase):
                     headline="Уфа снова в тройке",
                     composition_prompt="test",
                     accent="#2F7BFF",
-                    aspect_ratio="3:4",
+                    aspect_ratio="16:9",
                     resolution="2K",
                 )
             self.assertEqual(meta["status"], "blocked")

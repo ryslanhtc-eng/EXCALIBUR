@@ -33,19 +33,22 @@ def face_ref_paths(root: Path) -> list[Path]:
     return found
 
 
-def build_prompt(*, headline: str, composition_prompt: str, accent: str) -> str:
+def build_prompt(*, headline: str, dek: str = "", composition_prompt: str, accent: str) -> str:
+    dek_clause = f" Small catchy Cyrillic subtitle/dek under headline: «{dek}»." if dek else ""
     return (
-        "Photoreal editorial portrait of the SAME man as in the reference selfies. "
+        "Glossy magazine cover, horizontal 16:9 layout. "
+        "Top of cover: prominent magazine masthead in bold Cyrillic typography 'УФА' in blue, with issue date badge 'СЕНТЯБРЬ 2026'. "
+        "Center/Main focus: Photoreal editorial portrait of the SAME man as in the reference selfies (Ruslan Mukhtarov). "
         "Preserve exact facial identity: short dark hair faded on sides, light grey-blue eyes, "
         "natural smile, light stubble, no glasses, no beautifying into another person. "
-        "Outfit may change. "
+        "Outfit and pose: professional premium real-estate agent in elegant tailored dark navy suit, open crisp white collar shirt, confident posture. "
         f"Scene: {composition_prompt} "
         f"Brand accent color {accent} only (no pink highlighter, no red sale banner). "
-        f"Large readable Cyrillic headline on the image, exactly: «{headline}». "
-        "No period, no emoji, no URLs, no phone number, no extra slogans. "
-        "Setting is Ufa, Russia residential life. "
-        "NEGATIVE: metro / subway station in Ufa, Moscow, Red Square, English poster text, "
-        "watermark, extra fingers, stock luxury realtor, neon cyberpunk, different face."
+        f"Large readable Cyrillic headline on the cover with depth typography: «{headline}».{dek_clause} "
+        "No period at end of headline, no emoji, no URLs, no phone number. "
+        "Setting is Ufa, Russia residential architecture and river view. "
+        "NEGATIVE: wrong surname, Khabibullin, extra written names, metro / subway station in Ufa, Moscow, Red Square, English poster text, "
+        "watermark, extra fingers, stock fake model, neon cyberpunk, different face."
     )
 
 
@@ -54,6 +57,7 @@ def generate_cover(
     root: Path,
     out_dir: Path,
     headline: str,
+    dek: str = "",
     composition_prompt: str,
     accent: str,
     aspect_ratio: str,
@@ -94,7 +98,7 @@ def generate_cover(
             "model": MODEL,
         }
 
-    prompt = build_prompt(headline=headline, composition_prompt=composition_prompt, accent=accent)
+    prompt = build_prompt(headline=headline, dek=dek, composition_prompt=composition_prompt, accent=accent)
     try:
         task_id = create_i2i_task(
             api_key,
