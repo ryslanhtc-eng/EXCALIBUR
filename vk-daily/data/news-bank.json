@@ -1,6 +1,35 @@
 {
-  "updated": "2026-09-12",
+  "updated": "2026-09-24",
   "items": [
+    {
+      "id": "family_mortgage_minfin_oct2026_rates",
+      "date": "2026-09-24",
+      "source_name": "Минфин России, пресс-центр",
+      "metric": "family_mortgage_oct2026",
+      "headline_fact": "С 1 октября 2026 для новых договоров семейной ипотеки ставка и лимит зависят от числа детей и региона; программа до 31.12.2030.",
+      "numbers": {
+        "effective_date": "2026-10-01",
+        "program_end": "2030-12-31",
+        "subsidy_max_years": 15,
+        "child_age_max": 7,
+        "izhs_rate_pct": 6,
+        "regions_other": {
+          "1_child": {"rate_pct": 10, "max_mln": 6},
+          "2_children": {"rate_pct": 8, "max_mln": 8},
+          "3_children": {"rate_pct": 6, "max_mln": 10},
+          "4_children": {"rate_pct": 4, "max_mln": 10},
+          "5_plus": {"rate_pct": 2, "max_mln": 10}
+        }
+      },
+      "notes": [
+        "Только новые договоры с 01.10.2026.",
+        "Москва, СПб, МО, ЛО — отдельная шкала, в посте для Уфы только как справочная колонка.",
+        "Хотя бы один ребёнок младше 7 лет.",
+        "ИЖС: 6% без привязки к региону и числу детей.",
+        "Не призывать «бегите оформлять», спокойный экспертный тон."
+      ],
+      "angle": "family_mortgage_oct2026"
+    },
     {
       "id": "ufa-primary-aug-2026-rbc",
       "date": "2026-09-11",
