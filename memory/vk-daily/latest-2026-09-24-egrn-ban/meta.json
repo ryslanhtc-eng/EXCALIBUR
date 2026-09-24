@@ -14,7 +14,7 @@
   "char_count": 1911,
   "cover_headline": "Защита жилья от чужих сделок",
   "cover_dek": "Бесплатная отметка в ЕГРН за пять рабочих дней",
-  "composition_id": "studio-navy-suit-ufa",
+  "composition_id": "03-black-suit-tie-formal",
   "masthead": "УФА",
   "date_badge": "СЕНТЯБРЬ 2026",
   "accent_hex": "#2F7BFF",
@@ -32,9 +32,9 @@
     "blocker": null,
     "blocker_message": null,
     "model": "gpt-image-2-image-to-image",
-    "task_id": "4dceeccf74f342c23fbb699297713f61",
+    "task_id": "b5142fa534f093e7003df43e1582f65d",
     "cover_rel": "memory/vk-daily/latest/cover.png",
-    "cover_url": "https://tempfile.aiquickdraw.com/gpt-image-2-kie/1790224942332-vc2uk7hjnrm.png",
+    "cover_url": "https://tempfile.aiquickdraw.com/gpt-image-2-kie/1790228532737-10gwm7hcevcj.png",
     "cover_sniff": "png",
     "input_urls_count": 2
   },
@@ -45,5 +45,6 @@
     "publish_if": "cover.status == ok and files exist",
     "skip_if_blocker": true
   },
-  "links_in_post": false
+  "links_in_post": false,
+  "cover_regen_reason": "wrong_name_khabibullin_and_face"
 }

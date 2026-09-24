@@ -108,6 +108,9 @@ def main() -> int:
             accent=tenant["cover"]["accent_hex"],
             aspect_ratio=tenant["cover"]["aspect_ratio"],
             resolution=tenant["cover"]["resolution"],
+            person_name=tenant["person_name_ru"].upper(),
+            masthead="УФА",
+            date_badge="СЕНТЯБРЬ 2026",
         )
 
     text_only = os.environ.get("VK_DAILY_ALLOW_TEXT_ONLY", "").strip().lower() == "yes"
