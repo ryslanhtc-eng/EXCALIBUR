@@ -72,26 +72,15 @@ def validate_headline(headline: str, tenant: dict) -> list[str]:
 
 
 def _metro_as_existing(text: str, phrases: list[str]) -> list[str]:
-    """Ban copy that treats Ufa metro as a real nearby amenity.
-
-    Allowed: explicit denial ('метро в Уфе нет', 'в Сипайлово нет метро').
-    """
+    """Ban any mention of metro (hard ban: never mention metro, not as fact, not as negation, not as comparison)."""
     errors: list[str] = []
     lowered = _norm(text)
-    if re.search(r"метро в уфе есть", lowered):
-        errors.append("metro-in-ufa fluff: claims metro exists")
+    if "метро" in lowered:
+        errors.append("metro mention forbidden: hard ban in Ufa contour")
     for phrase in phrases:
         p = _norm(phrase)
-        if p not in lowered:
-            continue
-        if p in {"метрополитен"} and "нет" in lowered:
-            continue
-        # denial nearby
-        idx = lowered.find(p)
-        window = lowered[max(0, idx - 40) : idx + len(p) + 40]
-        if "нет" in window or "не существует" in window or "копипаст" in window:
-            continue
-        errors.append(f"metro-in-ufa fluff: {phrase!r}")
+        if p in lowered:
+            errors.append(f"metro-in-ufa fluff: {phrase!r}")
     return errors
 
 

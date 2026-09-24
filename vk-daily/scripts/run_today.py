@@ -44,6 +44,7 @@ def _write_json(path: Path, payload: dict) -> None:
 def main() -> int:
     ap = argparse.ArgumentParser(description="VK daily: one ready-to-publish post for Grok Bot")
     ap.add_argument("--date", default="", help="YYYY-MM-DD (default: today in Ufa)")
+    ap.add_argument("--composition-id", default="", help="Force specific composition ID")
     ap.add_argument("--skip-cover", action="store_true")
     ap.add_argument("--force-new-composition", action="store_true")
     args = ap.parse_args()
@@ -69,6 +70,11 @@ def main() -> int:
         seed = f"{run_date.isoformat()}|{now.strftime('%Y-%m-%dT%H:%M')}|{uuid.uuid4()}"
 
     artifact = generate(vk_root, run_date, seed, used)
+    if args.composition_id:
+        comps = json.loads((vk_root / "data" / "compositions.json").read_text(encoding="utf-8"))["compositions"]
+        matching = [c for c in comps if c.get("id") == args.composition_id]
+        if matching:
+            artifact["composition"] = matching[0]
     composition_id = artifact["composition"]["id"]
     used.append(composition_id)
     # keep last full cycle
@@ -82,6 +88,7 @@ def main() -> int:
     out.mkdir(parents=True, exist_ok=True)
 
     (out / "post.txt").write_text(artifact["post"] + "\n", encoding="utf-8")
+    (out / "post-plain.txt").write_text(artifact["post"] + "\n", encoding="utf-8")
 
     cover_meta: dict
     if args.skip_cover:
@@ -96,6 +103,7 @@ def main() -> int:
             root=root,
             out_dir=out,
             headline=artifact["headline"],
+            dek=artifact.get("dek", ""),
             composition_prompt=artifact["composition"]["prompt"],
             accent=tenant["cover"]["accent_hex"],
             aspect_ratio=tenant["cover"]["aspect_ratio"],
@@ -122,12 +130,16 @@ def main() -> int:
         "city": tenant["city"],
         "char_count": artifact["char_count"],
         "cover_headline": artifact["headline"],
+        "cover_dek": artifact.get("dek", ""),
         "composition_id": composition_id,
+        "masthead": "УФА",
+        "date_badge": "СЕНТЯБРЬ 2026",
         "accent_hex": tenant["cover"]["accent_hex"],
         "news_id": artifact["news"].get("id"),
         "news_source_name": artifact["news"].get("source_name"),
         "artifacts": {
             "post": "memory/vk-daily/latest/post.txt",
+            "post_plain": "memory/vk-daily/latest/post-plain.txt",
             "meta": "memory/vk-daily/latest/meta.json",
             "cover": "memory/vk-daily/latest/cover.png",
             "cover_url": "memory/vk-daily/latest/cover-url.txt",
@@ -150,10 +162,13 @@ def main() -> int:
 
     run_copy = runs_dir(root) / run_date.isoformat()
     run_copy.mkdir(parents=True, exist_ok=True)
-    for name in ("post.txt", "meta.json", "cover.png", "cover.jpg", "cover-url.txt"):
+    snapshot_dir = root / "memory" / "vk-daily" / f"latest-{run_date.isoformat()}-egrn-ban"
+    snapshot_dir.mkdir(parents=True, exist_ok=True)
+    for name in ("post.txt", "post-plain.txt", "meta.json", "cover.png", "cover.jpg", "cover-url.txt"):
         src = out / name
         if src.is_file():
             shutil.copy2(src, run_copy / name)
+            shutil.copy2(src, snapshot_dir / name)
 
     state["used_compositions"] = used
     state["last_run"] = meta["generated_at"]
