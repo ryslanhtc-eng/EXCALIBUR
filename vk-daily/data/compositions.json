@@ -1,6 +1,10 @@
 {
   "compositions": [
     {
+      "id": "04-mono-shirt-editorial-poses",
+      "prompt": "Glossy magazine cover style, 16:9 landscape. Fitted monochrome crisp white dress shirt with unbuttoned collar, slim-cut dark trousers, minimalist leather watch. Editorial poses: relaxed confident wall-lean or three-quarter stance, arms folded naturally. Background is recognizable Ufa in September — Belaya river embankment and contemporary city architecture softly out of focus, autumn daylight. Premium property specialist. Not a river-window-morning apartment interior, no hoodie."
+    },
+    {
       "id": "river-window-morning",
       "prompt": "Medium shot of the same man by a wide apartment window at morning, pale Ufa river haze outside, no metro, no skyline of Moscow. He holds a paper floor plan. Soft daylight, light-blue crewneck optional. Blue #2F7BFF window frame accent."
     },

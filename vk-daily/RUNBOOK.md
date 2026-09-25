@@ -60,7 +60,13 @@ Headline обложки — 4–8 слов, без точки и эмодзи, �
 ## 4. Обложка
 
 Только KIE `gpt-image-2-image-to-image` + `input_urls` селфи.  
-Нет ключа / нет refs / ошибка хоста / ошибка KIE → блокер в `meta.json`, **никакой** заглушки.
+Селфи передавай **публичными HTTPS** (уже в репозитории):
+
+- `https://raw.githubusercontent.com/ryslanhtc-eng/EXCALIBUR/master/vk-daily/refs/ruslan_selfie_blue.jpg`
+- `https://raw.githubusercontent.com/ryslanhtc-eng/EXCALIBUR/master/vk-daily/refs/ruslan_selfie_black.jpg`
+
+**Не** вызывай `host_image.py` / catbox / 0x0 — из Cloud они дают `REF_HOST`.  
+Нет ключа / нет URL селфи / ошибка KIE → блокер в `meta.json`, **никакой** заглушки.
 
 Каждый run берёт новый id из `vk-daily/data/compositions.json`.
 
