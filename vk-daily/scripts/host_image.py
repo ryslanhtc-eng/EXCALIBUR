@@ -82,11 +82,45 @@ def upload_0x0(image_path: Path) -> str:
     return url
 
 
-def host_image(image_path: Path, providers: tuple[str, ...] = ("catbox", "0x0")) -> str:
+def upload_uguu(image_path: Path) -> str:
+    boundary = "----VkDailyHeroUguu"
+    body = _multipart(
+        image_path,
+        field="files[]",
+        extra=[],
+        boundary=boundary,
+    )
+    request = urllib.request.Request(
+        "https://uguu.se/upload",
+        data=body,
+        headers={
+            "Content-Type": f"multipart/form-data; boundary={boundary}",
+            "User-Agent": "ExcaliburVkDaily/1.0",
+        },
+        method="POST",
+    )
+    with urllib.request.urlopen(request, timeout=60) as response:
+        raw = response.read().decode("utf-8", errors="replace").strip()
+    import json
+    data = json.loads(raw)
+    if not data.get("success") or not data.get("files"):
+        raise RuntimeError(f"uguu upload failed: {raw[:200]}")
+    url = data["files"][0]["url"]
+    if not url.startswith("https://"):
+        raise RuntimeError(f"uguu invalid url: {url}")
+    return url
+
+
+def host_image(image_path: Path, providers: tuple[str, ...] = ("uguu", "catbox", "0x0")) -> str:
     last: Exception | None = None
     for provider in providers:
         try:
-            return upload_catbox(image_path) if provider == "catbox" else upload_0x0(image_path)
+            if provider == "uguu":
+                return upload_uguu(image_path)
+            elif provider == "catbox":
+                return upload_catbox(image_path)
+            else:
+                return upload_0x0(image_path)
         except Exception as exc:  # noqa: BLE001 - try next host
             last = exc
     raise RuntimeError(f"could not host {image_path.name}: {last}")

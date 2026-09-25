@@ -58,6 +58,13 @@ def _headlines_for(news: dict) -> list[str]:
             "Семейная не ждёт чуда",
             "Окно по семейной уже узкое",
         ]
+    if angle == "family_mortgage_reform":
+        return [
+            "Семейная ипотека меняет правила",
+            "Ставка теперь зависит от детей",
+            "Сентябрь делит семейную ипотеку",
+            "Новые правила семейной ипотеки",
+        ]
     return ["Уфа считает квартирный шаг", "Честный разбор без метро"]
 
 
@@ -148,36 +155,77 @@ def _fit_length(text: str, min_c: int, max_c: int) -> str:
     return body.strip()
 
 
+def _family_mortgage_reform_body(_news: dict) -> str:
+    return """Правительство утвердило новые условия по семейной ипотеке. Вокруг документа уже началась суматоха, поэтому разложим всё по полочкам: что действует прямо сейчас и что меняется с 1 октября.
+
+Главный рубеж — точная дата кредитного договора. Не дата бронирования квартиры и не одобрение заявки в банке, а именно подписанный кредитный договор.
+
+До 30 сентября включительно сохраняется прежний порядок: базовая ставка до 6% годовых, взнос от 20%, а компенсация банку идёт на весь срок кредита. В программе участвуют семьи с ребёнком младше 7 лет, с двумя несовершеннолетними детьми или с ребёнком-инвалидом.
+
+С 1 октября для новых договоров правила другие:
+1. Кто проходит. Родитель — гражданин РФ с ребёнком младше 7 лет (гражданином РФ) либо с ребёнком-инвалидом. Двое детей старше 7 лет отдельным основанием для нового кредита больше не служат.
+2. Лимиты и ставки зависят от региона и детей. Уфа и Башкортостан — это категория «остальные регионы». Лимит льготного кредита: 6 млн ₽ с одним ребёнком, 8 млн — с двумя, 10 млн — если детей трое и больше (для сравнения, в Москве и Петербурге планка от 12 до 18 млн).
+3. Ставки для Уфы по новым договорам: с одним ребёнком — до 10%, с двумя — до 8%, с тремя — до 6%, с четырьмя — до 4%, с пятью и более — до 2%.
+4. Срок субсидии банку по новым кредитам ограничен 15 годами, после чего ставка может вырасти.
+
+Где ставка останется до 6%:
+— семьи с ребёнком-инвалидом;
+— покупка или строительство индивидуального дома (ИЖС);
+— первоначальный взнос от 50% (либо если долг снижен до половины цены за первый год).
+
+И пара деталей: супруга обычно включают в созаёмщики, а заёмщик обязан оформить регистрацию в жилье с 271-го дня после права собственности.
+
+Вывод для Уфы: никакой паники «хватать что попало». Если подобрали отличную квартиру — фиксируйте кредитный договор до конца сентября. Если нет — спокойно считайте платежи. При взносе от 50% ставка 6% доступна и позже.
+
+Я Руслан Мухтаров, Самолет Плюс Уфа. Помогу посчитать цифры на калькуляторе и проверить документы. Наш офис: ул. Жукова 39/1, офис 303, Уфа (Сипайлово).
+
+Напишите в сообщения сообщества — разберём вашу ситуацию спокойно. 😌"""
+
+
 def render_post(news: dict, tenant: dict) -> str:
     angle = news.get("angle")
     if angle == "avg_ticket":
         raw = _avg_ticket_body(news)
     elif angle == "mortgage_window":
         raw = _mortgage_body(news)
+    elif angle == "family_mortgage_reform":
+        return _family_mortgage_reform_body(news).strip()
     else:
         raw = _price_pulse_body(news)
     spec = tenant["post"]
     return _fit_length(raw, int(spec["min_chars"]), int(spec["max_chars"]))
 
 
-def generate(vk_root: Path, today: date, seed: str, used_compositions: list[str]) -> dict[str, Any]:
+def generate(
+    vk_root: Path,
+    today: date,
+    seed: str,
+    used_compositions: list[str],
+    *,
+    composition_id: str = "",
+    headline: str = "",
+) -> dict[str, Any]:
     tenant = load_tenant(vk_root)
     banned = load_banned(vk_root)
     news_bank = _load_json(vk_root / "data" / "news-bank.json")
     compositions = _load_json(vk_root / "data" / "compositions.json")["compositions"]
     news = pick_news(news_bank["items"], today)
-    composition = pick_composition(compositions, seed, used_compositions)
-    headline = pick_headline(news, seed, tenant)
+    if composition_id:
+        matching = [c for c in compositions if c.get("id") == composition_id]
+        composition = matching[0] if matching else pick_composition(compositions, seed, used_compositions)
+    else:
+        composition = pick_composition(compositions, seed, used_compositions)
+    chosen_headline = headline or pick_headline(news, seed, tenant)
     post = render_post(news, tenant)
 
     errors = validate_post(post, tenant, banned)
-    errors.extend(validate_headline(headline, tenant))
+    errors.extend(validate_headline(chosen_headline, tenant))
     if errors:
         raise RuntimeError("post validation failed: " + "; ".join(errors))
 
     return {
         "post": post,
-        "headline": headline,
+        "headline": chosen_headline,
         "news": news,
         "composition": composition,
         "char_count": len(post),
