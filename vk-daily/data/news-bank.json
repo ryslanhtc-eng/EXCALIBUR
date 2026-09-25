@@ -1,6 +1,40 @@
 {
-  "updated": "2026-09-12",
+  "updated": "2026-09-25",
   "items": [
+    {
+      "id": "family_mortgage_minfin_oct2026_rates",
+      "date": "2026-09-25",
+      "source_name": "Минфин России / Решение Правительства от 22.09.2026 N 25-67381-01850-R",
+      "metric": "family_mortgage_rules_oct2026",
+      "headline_fact": "Правительство утвердило новые условия семейной ипотеки: до 30 сентября действует прежний порядок (до 6% на весь срок), с 1 октября для новых договоров вводятся шкала ставок и лимитов по детям и регионам, субсидия до 15 лет.",
+      "numbers": {
+        "rate_before_oct_max_pct": 6,
+        "rate_after_oct_ufa_1child_max_pct": 10,
+        "rate_after_oct_ufa_2children_max_pct": 8,
+        "rate_after_oct_ufa_3children_max_pct": 6,
+        "rate_after_oct_ufa_4children_max_pct": 4,
+        "rate_after_oct_ufa_5plus_max_pct": 2,
+        "limit_ufa_1child_mln": 6,
+        "limit_ufa_2children_mln": 8,
+        "limit_ufa_3plus_mln": 10,
+        "limit_moscow_1child_mln": 12,
+        "limit_moscow_2children_mln": 15,
+        "limit_moscow_3plus_mln": 18,
+        "subsidy_years_new": 15,
+        "down_payment_min_pct": 20,
+        "down_payment_cap_rate_pct": 50,
+        "registration_days": 271
+      },
+      "notes": [
+        "До 30 сентября 2026 включительно для заключённых договоров сохраняется прежний режим: ставка до 6%, возмещение банку на весь срок кредита.",
+        "С 1 октября 2026 для новых договоров: право имеют родители с ребёнком младше 7 лет или с ребёнком-инвалидом. Двое детей старше 7 лет больше не отдельное основание.",
+        "Субсидия банку по новым договорам ограничена 15 годами.",
+        "Исключения: ребёнок-инвалид, ИЖС, взнос от 50% — ставка не выше 6%.",
+        "Уфа и Башкортостан относятся к остальным регионам (лимиты 6/8/10 млн, ставки 10/8/6/4/2%).",
+        "Ключевая грань — дата именно кредитного договора, а не бронирования квартиры или одобрения заявки."
+      ],
+      "angle": "family_mortgage_reform"
+    },
     {
       "id": "ufa-primary-aug-2026-rbc",
       "date": "2026-09-11",

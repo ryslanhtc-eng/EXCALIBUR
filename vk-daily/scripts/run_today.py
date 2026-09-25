@@ -46,6 +46,12 @@ def main() -> int:
     ap.add_argument("--date", default="", help="YYYY-MM-DD (default: today in Ufa)")
     ap.add_argument("--skip-cover", action="store_true")
     ap.add_argument("--force-new-composition", action="store_true")
+    ap.add_argument("--composition-id", default="", help="Explicit composition ID")
+    ap.add_argument("--headline", default="", help="Explicit cover headline")
+    ap.add_argument("--dek", default="", help="Explicit cover dek")
+    ap.add_argument("--aspect-ratio", default="", help="Cover aspect ratio (default from tenant or 16:9)")
+    ap.add_argument("--masthead", default="УФА", help="Masthead on cover")
+    ap.add_argument("--date-badge", default="СЕНТЯБРЬ 2026", help="Date badge on cover")
     args = ap.parse_args()
 
     root = repo_root()
@@ -68,7 +74,14 @@ def main() -> int:
     else:
         seed = f"{run_date.isoformat()}|{now.strftime('%Y-%m-%dT%H:%M')}|{uuid.uuid4()}"
 
-    artifact = generate(vk_root, run_date, seed, used)
+    artifact = generate(
+        vk_root,
+        run_date,
+        seed,
+        used,
+        composition_id=args.composition_id,
+        headline=args.headline,
+    )
     composition_id = artifact["composition"]["id"]
     used.append(composition_id)
     # keep last full cycle
@@ -82,8 +95,10 @@ def main() -> int:
     out.mkdir(parents=True, exist_ok=True)
 
     (out / "post.txt").write_text(artifact["post"] + "\n", encoding="utf-8")
+    (out / "post-plain.txt").write_text(artifact["post"].replace("*", "") + "\n", encoding="utf-8")
 
     cover_meta: dict
+    aspect_ratio = args.aspect_ratio or tenant["cover"].get("aspect_ratio", "16:9")
     if args.skip_cover:
         cover_meta = {
             "status": "skipped",
@@ -98,8 +113,11 @@ def main() -> int:
             headline=artifact["headline"],
             composition_prompt=artifact["composition"]["prompt"],
             accent=tenant["cover"]["accent_hex"],
-            aspect_ratio=tenant["cover"]["aspect_ratio"],
+            aspect_ratio=aspect_ratio,
             resolution=tenant["cover"]["resolution"],
+            masthead=args.masthead,
+            date_badge=args.date_badge,
+            dek=args.dek,
         )
 
     text_only = os.environ.get("VK_DAILY_ALLOW_TEXT_ONLY", "").strip().lower() == "yes"
@@ -122,12 +140,17 @@ def main() -> int:
         "city": tenant["city"],
         "char_count": artifact["char_count"],
         "cover_headline": artifact["headline"],
+        "cover_dek": args.dek or "Новые ставки и лимиты для Уфы",
+        "masthead": args.masthead,
+        "date_badge": args.date_badge,
+        "rewrite_of": "2026-09-24",
         "composition_id": composition_id,
         "accent_hex": tenant["cover"]["accent_hex"],
         "news_id": artifact["news"].get("id"),
         "news_source_name": artifact["news"].get("source_name"),
         "artifacts": {
             "post": "memory/vk-daily/latest/post.txt",
+            "post_plain": "memory/vk-daily/latest/post-plain.txt",
             "meta": "memory/vk-daily/latest/meta.json",
             "cover": "memory/vk-daily/latest/cover.png",
             "cover_url": "memory/vk-daily/latest/cover-url.txt",
@@ -150,7 +173,7 @@ def main() -> int:
 
     run_copy = runs_dir(root) / run_date.isoformat()
     run_copy.mkdir(parents=True, exist_ok=True)
-    for name in ("post.txt", "meta.json", "cover.png", "cover.jpg", "cover-url.txt"):
+    for name in ("post.txt", "post-plain.txt", "meta.json", "cover.png", "cover.jpg", "cover-url.txt"):
         src = out / name
         if src.is_file():
             shutil.copy2(src, run_copy / name)

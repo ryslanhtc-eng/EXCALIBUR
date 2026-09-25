@@ -36,22 +36,27 @@ def import_refs(root: Path | None = None, *, blue: str = "", black: str = "") ->
     dest_dir = vk_daily_root(root) / "refs"
     dest_dir.mkdir(parents=True, exist_ok=True)
 
+    blue_target = dest_dir / "ruslan_selfie_blue.jpg"
+    black_target = dest_dir / "ruslan_selfie_black.jpg"
+    if blue_target.is_file() and black_target.is_file() and not blue and not black:
+        return 0
+
     blue_path = _first_existing(root, CANDIDATES_BLUE, blue)
     black_path = _first_existing(root, CANDIDATES_BLACK, black)
     copied = 0
     if blue_path:
-        shutil.copy2(blue_path, dest_dir / "ruslan_selfie_blue.jpg")
+        shutil.copy2(blue_path, blue_target)
         copied += 1
         print(f"OK blue={blue_path}")
-    else:
+    elif not blue_target.is_file():
         print("WARN missing blue selfie", file=sys.stderr)
     if black_path:
-        shutil.copy2(black_path, dest_dir / "ruslan_selfie_black.jpg")
+        shutil.copy2(black_path, black_target)
         copied += 1
         print(f"OK black={black_path}")
-    else:
+    elif not black_target.is_file():
         print("WARN missing black selfie", file=sys.stderr)
-    return 0 if copied else 1
+    return 0 if (copied or (blue_target.is_file() and black_target.is_file())) else 1
 
 
 def main() -> int:
