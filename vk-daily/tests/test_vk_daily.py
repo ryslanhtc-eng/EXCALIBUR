@@ -94,6 +94,19 @@ class CoverBlockerTests(unittest.TestCase):
             self.assertFalse((out / "cover.png").exists())
             self.assertFalse((out / "cover-url.txt").exists())
 
+    def test_no_person_t2i_prompt_has_no_people(self) -> None:
+        from generate_cover import build_prompt
+        prompt = build_prompt(
+            headline="Титул на вторичке спасает деньги",
+            composition_prompt="test scene",
+            accent="#2F7BFF",
+            dek="Когда полис защищает право собственности",
+            no_person=True,
+        )
+        self.assertIn("NO PEOPLE", prompt)
+        self.assertIn("Титул на вторичке спасает деньги", prompt)
+        self.assertNotIn("Photoreal editorial portrait of the SAME man", prompt)
+
 
 if __name__ == "__main__":
     unittest.main()

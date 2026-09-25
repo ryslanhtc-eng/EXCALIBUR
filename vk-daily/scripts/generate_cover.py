@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 from host_image import host_image
-from kie_client import KieError, MODEL, create_i2i_task, result_urls, wait_for_success
+from kie_client import KieError, MODEL, create_i2i_task, create_t2i_task, result_urls, wait_for_success
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 REPO_SCRIPTS = REPO_ROOT / "scripts"
@@ -33,7 +33,37 @@ def face_ref_paths(root: Path) -> list[Path]:
     return found
 
 
-def build_prompt(*, headline: str, composition_prompt: str, accent: str) -> str:
+def build_prompt(
+    *,
+    headline: str,
+    composition_prompt: str,
+    accent: str,
+    dek: str = "",
+    masthead: str = "УФА",
+    date_badge: str = "СЕНТЯБРЬ 2026",
+    no_person: bool = False,
+) -> str:
+    if no_person:
+        prompt_parts = [
+            "Glossy editorial magazine cover layout (16:9 landscape aspect ratio).",
+            "Atmospheric dark rich palette with golden and warm ambient lighting accents (DARK/Gilded luxury editorial style).",
+            "STRICT COMPOSITION REQUIREMENT: NO PEOPLE, NO HUMAN BEINGS, NO PORTRAITS, NO FACES, NO FIGURES, NO HANDS. Pure architectural and object still life editorial.",
+            f"Scene: {composition_prompt}",
+            "Setting: recognizable modern Ufa architecture and atmosphere (Ufa river embankment, Belaya river view, or modern premium residential district in Ufa with clean contemporary facades).",
+            f"Brand accent color {accent} in subtle refined touches.",
+            f"Top magazine masthead title clearly readable in bold Cyrillic: «{masthead}».",
+            f"Date badge in corner: «{date_badge}».",
+            f"Huge bold readable Cyrillic hook headline on the cover: «{headline}».",
+        ]
+        if dek:
+            prompt_parts.append(f"Sub-headline dek line in clean elegant Cyrillic typography below headline: «{dek}».")
+        prompt_parts.extend([
+            "Typography and layout: premium glossy magazine cover design, strong visual hierarchy, crisp lettering, perfectly balanced composition.",
+            "Metaphorical still-life props: property registration documents folder, official agreement paperwork, apartment keys on polished surface — abstract and clean, NO readable personal names, NO real addresses.",
+            "NEGATIVE: people, person, man, woman, face, hands, portrait, crowd, silhouette, human figure, metro / subway station in Ufa, Moscow skyline, Red Square, English text, watermark, logo, cartoon, neon cyberpunk, low quality.",
+        ])
+        return " ".join(prompt_parts)
+
     return (
         "Photoreal editorial portrait of the SAME man as in the reference selfies. "
         "Preserve exact facial identity: short dark hair faded on sides, light grey-blue eyes, "
@@ -58,6 +88,10 @@ def generate_cover(
     accent: str,
     aspect_ratio: str,
     resolution: str,
+    dek: str = "",
+    masthead: str = "УФА",
+    date_badge: str = "СЕНТЯБРЬ 2026",
+    no_person: bool = False,
 ) -> dict:
     """Return cover meta. Never writes a fake raster if generation did not happen."""
     api_key = (os.environ.get("KIE_API_KEY") or "").strip()
@@ -69,8 +103,62 @@ def generate_cover(
                 "❌ VK COVER BLOCKER: KIE_API_KEY is not set. "
                 "Cover not generated. Do not publish a fake image."
             ),
-            "model": MODEL,
+            "model": "gpt-image-2-text-to-image" if no_person else MODEL,
         }
+
+    prompt = build_prompt(
+        headline=headline,
+        composition_prompt=composition_prompt,
+        accent=accent,
+        dek=dek,
+        masthead=masthead,
+        date_badge=date_badge,
+        no_person=no_person,
+    )
+
+    if no_person:
+        model_name = "gpt-image-2-text-to-image"
+        try:
+            task_id = create_t2i_task(
+                api_key,
+                prompt=prompt,
+                aspect_ratio=aspect_ratio,
+                resolution=resolution,
+            )
+            task = wait_for_success(api_key, task_id)
+            urls = result_urls(task)
+            if not urls:
+                raise KieError("success without resultUrls")
+            cover_url = urls[0]
+            data, _evidence = download_url_bytes(cover_url)
+            kind = sniff_image_format(data)
+            if kind not in {"png", "jpeg", "webp"}:
+                raise KieError(f"downloaded cover is not an image: {kind!r}")
+            cover_path = out_dir / "cover.png"
+            cover_path.write_bytes(data)
+            (out_dir / "cover-url.txt").write_text(cover_url + "\n", encoding="utf-8")
+            try:
+                cover_rel = cover_path.resolve().relative_to(root.resolve()).as_posix()
+            except ValueError:
+                cover_rel = cover_path.as_posix()
+            return {
+                "status": "ok",
+                "blocker": None,
+                "blocker_message": None,
+                "model": model_name,
+                "task_id": task_id,
+                "cover_rel": cover_rel,
+                "cover_url": cover_url,
+                "cover_sniff": kind,
+                "no_person": True,
+            }
+        except Exception as exc:  # noqa: BLE001
+            return {
+                "status": "blocked",
+                "blocker": BLOCKER_KIE,
+                "blocker_message": f"❌ VK COVER BLOCKER: KIE t2i failed: {exc}",
+                "model": model_name,
+            }
 
     refs = face_ref_paths(root)
     if len(refs) < 1:
@@ -94,7 +182,6 @@ def generate_cover(
             "model": MODEL,
         }
 
-    prompt = build_prompt(headline=headline, composition_prompt=composition_prompt, accent=accent)
     try:
         task_id = create_i2i_task(
             api_key,

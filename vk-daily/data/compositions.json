@@ -47,6 +47,10 @@
     {
       "id": "window-blue-tape-collage",
       "prompt": "Indoor portrait, large readable Cyrillic headline integrated as a printed paper taped with blue #2F7BFF painter tape beside his shoulder. Plant and grey tile hint (from blue selfie room) but new framing. Still photoreal, not meme collage overload."
+    },
+    {
+      "id": "ufa-title-docs-noface",
+      "prompt": "Architectural and interior still life in modern Ufa: a sleek dark wooden table by a panoramic window overlooking the Ufa river embankment and modern residential skyline. On the table: property title agreement documents, a blue folder, polished metal apartment keys, and an insurance policy document. Warm morning sunlight, subtle deep blue and gold atmospheric accents. Completely uninhabited scene with NO people, NO faces, NO human figures."
     }
   ]
 }

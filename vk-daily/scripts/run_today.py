@@ -46,6 +46,11 @@ def main() -> int:
     ap.add_argument("--date", default="", help="YYYY-MM-DD (default: today in Ufa)")
     ap.add_argument("--skip-cover", action="store_true")
     ap.add_argument("--force-new-composition", action="store_true")
+    ap.add_argument("--no-person", action="store_true", help="Generate cover without person/face via text-to-image")
+    ap.add_argument("--dek", default="", help="Sub-headline / dek for cover")
+    ap.add_argument("--masthead", default="УФА", help="Masthead text")
+    ap.add_argument("--date-badge", default="СЕНТЯБРЬ 2026", help="Date badge on cover")
+    ap.add_argument("--aspect-ratio", default="", help="Override aspect ratio (e.g. 16:9)")
     args = ap.parse_args()
 
     root = repo_root()
@@ -82,6 +87,7 @@ def main() -> int:
     out.mkdir(parents=True, exist_ok=True)
 
     (out / "post.txt").write_text(artifact["post"] + "\n", encoding="utf-8")
+    (out / "post-plain.txt").write_text(artifact["post"] + "\n", encoding="utf-8")
 
     cover_meta: dict
     if args.skip_cover:
@@ -92,14 +98,19 @@ def main() -> int:
             "model": tenant["cover"]["model"],
         }
     else:
+        aspect_ratio = args.aspect_ratio or ("16:9" if args.no_person else tenant["cover"]["aspect_ratio"])
         cover_meta = generate_cover(
             root=root,
             out_dir=out,
             headline=artifact["headline"],
             composition_prompt=artifact["composition"]["prompt"],
             accent=tenant["cover"]["accent_hex"],
-            aspect_ratio=tenant["cover"]["aspect_ratio"],
+            aspect_ratio=aspect_ratio,
             resolution=tenant["cover"]["resolution"],
+            dek=args.dek,
+            masthead=args.masthead,
+            date_badge=args.date_badge,
+            no_person=args.no_person,
         )
 
     text_only = os.environ.get("VK_DAILY_ALLOW_TEXT_ONLY", "").strip().lower() == "yes"
@@ -122,12 +133,16 @@ def main() -> int:
         "city": tenant["city"],
         "char_count": artifact["char_count"],
         "cover_headline": artifact["headline"],
+        "cover_dek": args.dek if args.dek else None,
+        "masthead": args.masthead,
+        "date_badge": args.date_badge,
         "composition_id": composition_id,
         "accent_hex": tenant["cover"]["accent_hex"],
         "news_id": artifact["news"].get("id"),
         "news_source_name": artifact["news"].get("source_name"),
         "artifacts": {
             "post": "memory/vk-daily/latest/post.txt",
+            "post_plain": "memory/vk-daily/latest/post-plain.txt",
             "meta": "memory/vk-daily/latest/meta.json",
             "cover": "memory/vk-daily/latest/cover.png",
             "cover_url": "memory/vk-daily/latest/cover-url.txt",
@@ -150,7 +165,7 @@ def main() -> int:
 
     run_copy = runs_dir(root) / run_date.isoformat()
     run_copy.mkdir(parents=True, exist_ok=True)
-    for name in ("post.txt", "meta.json", "cover.png", "cover.jpg", "cover-url.txt"):
+    for name in ("post.txt", "post-plain.txt", "meta.json", "cover.png", "cover.jpg", "cover-url.txt"):
         src = out / name
         if src.is_file():
             shutil.copy2(src, run_copy / name)
