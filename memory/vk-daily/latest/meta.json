@@ -11,7 +11,7 @@
   "vk_group_url": "https://vk.ru/samolet_plus_sipa",
   "vk_group_screen_name": "samolet_plus_sipa",
   "city": "Уфа",
-  "char_count": 1989,
+  "char_count": 2203,
   "cover_headline": "Титул на вторичке спасает деньги",
   "cover_dek": "Когда полис защищает право собственности, а когда важнее юридическая проверка",
   "masthead": "УФА",
@@ -19,6 +19,7 @@
   "composition_id": "04-mono-shirt-editorial-poses",
   "accent_hex": "#2F7BFF",
   "news_id": "title_insurance_secondary",
+  "rewrite_of": "title_insurance_secondary_preview_v1",
   "news_source_name": "Практика вторички Уфа / ГК РФ (титульное страхование)",
   "artifacts": {
     "post": "memory/vk-daily/latest/post.txt",
