@@ -59,8 +59,9 @@ Headline обложки — 4–8 слов, без точки и эмодзи, �
 
 ## 4. Обложка
 
-Только KIE `gpt-image-2-image-to-image` + `input_urls` селфи.  
-Нет ключа / нет refs / ошибка хоста / ошибка KIE → блокер в `meta.json`, **никакой** заглушки.
+- Стандарт: KIE `gpt-image-2-image-to-image` + `input_urls` селфи (3:4 или 16:9).
+- Режим no-person (COVER-ONLY по спец-брифу без лица): KIE `gpt-image-2-text-to-image` (16:9, без `input_urls`, мастхед УФА, бейдж месяца).
+- Нет ключа / нет refs (для i2i) / ошибка хоста / ошибка KIE → блокер в `meta.json`, **никакой** заглушки.
 
 Каждый run берёт новый id из `vk-daily/data/compositions.json`.
 

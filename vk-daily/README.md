@@ -13,6 +13,7 @@ Cursor Cloud делает тяжёлую работу (факты, текст ~2
 |------|------------|
 | `memory/vk-daily/latest/meta.json` | статус, headline, blocker, `publish_ready` |
 | `memory/vk-daily/latest/post.txt` | текст поста (без ссылок) |
+| `memory/vk-daily/latest/post-plain.txt` | исходный текст поста без разметки |
 | `memory/vk-daily/latest/cover.png` | обложка, **только если KIE отработал** |
 | `memory/vk-daily/latest/cover-url.txt` | HTTPS URL той же картинки (если KIE отработал) |
 

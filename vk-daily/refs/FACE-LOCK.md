@@ -22,3 +22,10 @@
 ## Для KIE i2i
 
 В `input_urls` — **оба** селфи, если файлы на месте. Промпт: preserve exact facial identity from references, new scene.
+
+## COVER-ONLY (no person / no face)
+
+Если в брифе зафиксировано требование «без Руслана / без лица / без фигуры»:
+- **Запрещено** передавать selfie URLs в KIE.
+- **Запрещено** использовать image-to-image с лицом.
+- Использовать `gpt-image-2-text-to-image` с акцентом на архитектуру и предметный ряд Уфы.
