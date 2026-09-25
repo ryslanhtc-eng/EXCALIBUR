@@ -21,4 +21,9 @@
 
 ## Для KIE i2i
 
-В `input_urls` — **оба** селфи, если файлы на месте. Промпт: preserve exact facial identity from references, new scene.
+В `input_urls` — **оба** селфи как публичные GitHub raw URL (не catbox/0x0):
+
+- `https://raw.githubusercontent.com/ryslanhtc-eng/EXCALIBUR/master/vk-daily/refs/ruslan_selfie_blue.jpg`
+- `https://raw.githubusercontent.com/ryslanhtc-eng/EXCALIBUR/master/vk-daily/refs/ruslan_selfie_black.jpg`
+
+Промпт: preserve exact facial identity from references, new scene.

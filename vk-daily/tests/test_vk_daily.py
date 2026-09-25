@@ -14,7 +14,12 @@ ROOT = Path(__file__).resolve().parents[2]
 SCRIPTS = ROOT / "vk-daily" / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 
-from generate_cover import generate_cover  # noqa: E402
+from generate_cover import (  # noqa: E402
+    PUBLIC_FACE_REF_URLS,
+    build_prompt,
+    generate_cover,
+    resolve_face_ref_urls,
+)
 from generate_post import generate, pick_composition  # noqa: E402
 from paths import vk_daily_root  # noqa: E402
 from validate_post import load_banned, load_tenant, validate_headline, validate_post  # noqa: E402
@@ -93,6 +98,54 @@ class CoverBlockerTests(unittest.TestCase):
             self.assertEqual(meta["blocker"], "KIE_API_KEY")
             self.assertFalse((out / "cover.png").exists())
             self.assertFalse((out / "cover-url.txt").exists())
+
+    def test_public_github_urls_default(self) -> None:
+        urls = resolve_face_ref_urls()
+        self.assertEqual(list(PUBLIC_FACE_REF_URLS), urls)
+        self.assertTrue(all(u.startswith("https://raw.githubusercontent.com/") for u in urls))
+
+    def test_prompt_locks_mukhtarov_and_masthead(self) -> None:
+        prompt = build_prompt(
+            headline="Титул на вторичке спасает деньги",
+            composition_prompt="editorial mono shirt",
+            accent="#2F7BFF",
+            dek="Когда полис защищает право собственности, а когда важнее юридическая проверка",
+        )
+        self.assertIn("РУСЛАН МУХТАРОВ", prompt)
+        self.assertIn("УФА", prompt)
+        self.assertIn("СЕНТЯБРЬ 2026", prompt)
+        self.assertIn("Титул на вторичке спасает деньги", prompt)
+        self.assertIn("Never write Хабибуллин", prompt)
+
+    def test_kie_call_uses_github_raw_not_host_image(self) -> None:
+        fake_png = b"\x89PNG\r\n\x1a\n" + b"\x00" * 32
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp)
+            with patch.dict(os.environ, {"KIE_API_KEY": "test-key"}):
+                with patch("generate_cover.create_i2i_task", return_value="task-1") as create:
+                    with patch("generate_cover.wait_for_success", return_value={"state": "success"}):
+                        with patch(
+                            "generate_cover.result_urls",
+                            return_value=["https://example.com/cover.png"],
+                        ):
+                            with patch(
+                                "generate_cover.download_url_bytes",
+                                return_value=(fake_png, {}),
+                            ):
+                                meta = generate_cover(
+                                    root=ROOT,
+                                    out_dir=out,
+                                    headline="Титул на вторичке спасает деньги",
+                                    composition_prompt="editorial mono shirt",
+                                    accent="#2F7BFF",
+                                    aspect_ratio="16:9",
+                                    resolution="2K",
+                                )
+            self.assertEqual(meta["status"], "ok")
+            self.assertEqual(create.call_args.kwargs["input_urls"], list(PUBLIC_FACE_REF_URLS))
+            self.assertEqual(create.call_args.kwargs["aspect_ratio"], "16:9")
+            self.assertTrue((out / "cover.png").exists())
+            self.assertNotIn("host_image", generate_cover.__globals__)
 
 
 if __name__ == "__main__":
