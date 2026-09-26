@@ -33,17 +33,20 @@ def face_ref_paths(root: Path) -> list[Path]:
     return found
 
 
-def build_prompt(*, headline: str, composition_prompt: str, accent: str) -> str:
+def build_prompt(*, headline: str, dek: str = "", composition_prompt: str, accent: str) -> str:
+    dek_line = f"Secondary subheadline/dek under the main headline: «{dek}». " if dek else ""
     return (
-        "Photoreal editorial portrait of the SAME man as in the reference selfies. "
+        "16:9 glossy luxury editorial magazine cover of the SAME man as in the reference selfies. "
+        "Top magazine masthead title: «УФА», issue date badge: «СЕНТЯБРЬ 2026». "
         "Preserve exact facial identity: short dark hair faded on sides, light grey-blue eyes, "
         "natural smile, light stubble, no glasses, no beautifying into another person. "
-        "Outfit may change. "
+        "High-end premium wardrobe (elegant dark wool coat or tailored suit jacket), not casual hoodie. "
         f"Scene: {composition_prompt} "
         f"Brand accent color {accent} only (no pink highlighter, no red sale banner). "
-        f"Large readable Cyrillic headline on the image, exactly: «{headline}». "
-        "No period, no emoji, no URLs, no phone number, no extra slogans. "
-        "Setting is Ufa, Russia residential life. "
+        f"Large readable Cyrillic headline on the cover, exactly: «{headline}». "
+        f"{dek_line}"
+        "No period at the end of headline, no emoji, no URLs, no phone number, no extra slogans. "
+        "Setting is recognizable beautiful Ufa, Russia residential life and riverside vistas. "
         "NEGATIVE: metro / subway station in Ufa, Moscow, Red Square, English poster text, "
         "watermark, extra fingers, stock luxury realtor, neon cyberpunk, different face."
     )
@@ -54,10 +57,11 @@ def generate_cover(
     root: Path,
     out_dir: Path,
     headline: str,
+    dek: str = "",
     composition_prompt: str,
     accent: str,
-    aspect_ratio: str,
-    resolution: str,
+    aspect_ratio: str = "16:9",
+    resolution: str = "2K",
 ) -> dict:
     """Return cover meta. Never writes a fake raster if generation did not happen."""
     api_key = (os.environ.get("KIE_API_KEY") or "").strip()
@@ -94,7 +98,7 @@ def generate_cover(
             "model": MODEL,
         }
 
-    prompt = build_prompt(headline=headline, composition_prompt=composition_prompt, accent=accent)
+    prompt = build_prompt(headline=headline, dek=dek, composition_prompt=composition_prompt, accent=accent)
     try:
         task_id = create_i2i_task(
             api_key,

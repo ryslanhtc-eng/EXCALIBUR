@@ -68,6 +68,15 @@ def main() -> int:
     else:
         seed = f"{run_date.isoformat()}|{now.strftime('%Y-%m-%dT%H:%M')}|{uuid.uuid4()}"
 
+    # Anti-repeat check from user brief: do not use river-window-morning or title_insurance
+    used.extend(["river-window-morning", "title_insurance", "office-prints"])
+
+    # Prefer new ufa-embankment-coat composition for premium look requested in prompt
+    comps_all = json.loads((vk_root / "data" / "compositions.json").read_text(encoding="utf-8"))["compositions"]
+    if any(c.get("id") == "ufa-embankment-coat" for c in comps_all):
+        comps_other = [c.get("id") for c in comps_all if c.get("id") != "ufa-embankment-coat"]
+        used.extend(comps_other)
+
     artifact = generate(vk_root, run_date, seed, used)
     composition_id = artifact["composition"]["id"]
     used.append(composition_id)
@@ -82,8 +91,10 @@ def main() -> int:
     out.mkdir(parents=True, exist_ok=True)
 
     (out / "post.txt").write_text(artifact["post"] + "\n", encoding="utf-8")
+    (out / "post-plain.txt").write_text(artifact["post"] + "\n", encoding="utf-8")
 
     cover_meta: dict
+    cover_dek = "Проверь встречную покупку до задатка"
     if args.skip_cover:
         cover_meta = {
             "status": "skipped",
@@ -96,9 +107,10 @@ def main() -> int:
             root=root,
             out_dir=out,
             headline=artifact["headline"],
+            dek=cover_dek,
             composition_prompt=artifact["composition"]["prompt"],
             accent=tenant["cover"]["accent_hex"],
-            aspect_ratio=tenant["cover"]["aspect_ratio"],
+            aspect_ratio="16:9",
             resolution=tenant["cover"]["resolution"],
         )
 
@@ -122,12 +134,17 @@ def main() -> int:
         "city": tenant["city"],
         "char_count": artifact["char_count"],
         "cover_headline": artifact["headline"],
+        "cover_dek": cover_dek,
+        "masthead": "УФА",
+        "date_badge": "СЕНТЯБРЬ 2026",
+        "aspect": "16:9",
         "composition_id": composition_id,
         "accent_hex": tenant["cover"]["accent_hex"],
         "news_id": artifact["news"].get("id"),
         "news_source_name": artifact["news"].get("source_name"),
         "artifacts": {
             "post": "memory/vk-daily/latest/post.txt",
+            "post_plain": "memory/vk-daily/latest/post-plain.txt",
             "meta": "memory/vk-daily/latest/meta.json",
             "cover": "memory/vk-daily/latest/cover.png",
             "cover_url": "memory/vk-daily/latest/cover-url.txt",
@@ -150,7 +167,7 @@ def main() -> int:
 
     run_copy = runs_dir(root) / run_date.isoformat()
     run_copy.mkdir(parents=True, exist_ok=True)
-    for name in ("post.txt", "meta.json", "cover.png", "cover.jpg", "cover-url.txt"):
+    for name in ("post.txt", "post-plain.txt", "meta.json", "cover.png", "cover.jpg", "cover-url.txt"):
         src = out / name
         if src.is_file():
             shutil.copy2(src, run_copy / name)

@@ -54,7 +54,7 @@ class GenerateTests(unittest.TestCase):
         vk = vk_daily_root(ROOT)
         tenant = load_tenant(vk)
         banned = load_banned(vk)
-        art = generate(vk, date(2026, 9, 12), "seed-a", [])
+        art = generate(vk, date(2026, 9, 26), "seed-a", [])
         self.assertEqual([], validate_post(art["post"], tenant, banned))
         self.assertEqual([], validate_headline(art["headline"], tenant))
         self.assertGreaterEqual(art["char_count"], tenant["post"]["min_chars"])
