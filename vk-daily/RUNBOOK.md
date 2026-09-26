@@ -64,6 +64,8 @@ Headline обложки — 4–8 слов, без точки и эмодзи, �
 
 Каждый run берёт новый id из `vk-daily/data/compositions.json`.
 
+При запросе обложки без лица (no-person): флаг `--no-person`, text-to-image 16:9, без передачи selfie-файлов в KIE.
+
 ## 5. Отдать Grok Bot
 
 Не публикуй из Cloud. Оркестратор читает пути из `vk-daily/README.md`.
