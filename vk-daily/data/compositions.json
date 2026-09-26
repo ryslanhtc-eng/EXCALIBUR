@@ -1,6 +1,10 @@
 {
   "compositions": [
     {
+      "id": "ufa-embankment-coat",
+      "prompt": "Outdoor medium portrait of the same man in an elegant dark wool coat over a navy turtleneck, standing on the Ufa Belaya river embankment promenade with scenic river view and autumn trees in soft morning light. Confident warm smile, hands in coat pockets. Clean high-end editorial look, no metro, realistic Ufa."
+    },
+    {
       "id": "river-window-morning",
       "prompt": "Medium shot of the same man by a wide apartment window at morning, pale Ufa river haze outside, no metro, no skyline of Moscow. He holds a paper floor plan. Soft daylight, light-blue crewneck optional. Blue #2F7BFF window frame accent."
     },

@@ -22,11 +22,11 @@
   "news_id": "kids_share_buy_opeka",
   "news_source_name": "Телеканал Санкт-Петербург / Т-Ж / ВС РФ",
   "artifacts": {
-    "post": "memory/vk-daily/latest/post.txt",
-    "post_plain": "memory/vk-daily/latest/post-plain.txt",
-    "meta": "memory/vk-daily/latest/meta.json",
-    "cover": "memory/vk-daily/latest/cover.png",
-    "cover_url": "memory/vk-daily/latest/cover-url.txt"
+    "post": "memory/vk-daily/latest-2026-09-26-kids-opeka/post.txt",
+    "post_plain": "memory/vk-daily/latest-2026-09-26-kids-opeka/post-plain.txt",
+    "meta": "memory/vk-daily/latest-2026-09-26-kids-opeka/meta.json",
+    "cover": "memory/vk-daily/latest-2026-09-26-kids-opeka/cover.png",
+    "cover_url": "memory/vk-daily/latest-2026-09-26-kids-opeka/cover-url.txt"
   },
   "cover": {
     "status": "ok",
@@ -34,7 +34,7 @@
     "blocker_message": null,
     "model": "gpt-image-2-image-to-image",
     "task_id": "d345891231a166293b2ab756550951e3",
-    "cover_rel": "memory/vk-daily/latest/cover.png",
+    "cover_rel": "memory/vk-daily/latest-2026-09-26-kids-opeka/cover.png",
     "cover_url": "https://tempfile.aiquickdraw.com/a2/d345891231a166293b2ab756550951e3_1790397807685.png",
     "cover_sniff": "png",
     "input_urls_count": 2
