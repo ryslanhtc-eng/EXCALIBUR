@@ -2,7 +2,7 @@
   "tenant_id": "ruslan-mukhtarov-ufa",
   "person_name_ru": "Руслан Мухтаров",
   "brand_ru": "Самолет Плюс",
-  "office_ru": "Самолет Плюс Уфа / Сипайлово",
+    "office_ru": "ул. Жукова 39/1, офис 303, Уфа (Сипайлово)",
   "vk_group_url": "https://vk.ru/samolet_plus_sipa",
   "vk_group_screen_name": "samolet_plus_sipa",
   "city": "Уфа",
@@ -18,8 +18,8 @@
     "Шакша",
     "центр Уфы"
   ],
-  "verified_office": {
-    "address": "ул. Правды, 10, Уфа (Дёмский район)",
+    "verified_office": {
+    "address": "ул. Жукова 39/1, офис 303, Уфа (Сипайлово)",
     "hours": "ежедневно 10:00–20:00"
   },
   "timezone": "Asia/Yekaterinburg",

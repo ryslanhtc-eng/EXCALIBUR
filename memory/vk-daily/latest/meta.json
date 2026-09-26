@@ -1,33 +1,43 @@
 {
   "pipeline": "vk-daily",
-  "status": "blocked",
-  "publish_ready": false,
-  "date": "2026-09-12",
-  "generated_at": "2026-09-12T16:08:40+05:00",
+  "status": "ready",
+  "publish_ready": true,
+  "date": "2026-09-26",
+  "generated_at": "2026-09-26T10:25:18+05:00",
   "timezone": "Asia/Yekaterinburg",
   "tenant_id": "ruslan-mukhtarov-ufa",
   "person_name_ru": "Руслан Мухтаров",
   "brand_ru": "Самолет Плюс",
+  "office_ru": "ул. Жукова 39/1, офис 303, Уфа (Сипайлово)",
   "vk_group_url": "https://vk.ru/samolet_plus_sipa",
   "vk_group_screen_name": "samolet_plus_sipa",
   "city": "Уфа",
-  "char_count": 1861,
-  "cover_headline": "Уфа снова в тройке",
-  "composition_id": "office-prints",
+  "char_count": 2200,
+  "cover_headline": "Одного согласия опеки мало",
+  "cover_dek": "Проверь встречную покупку до задатка",
+  "masthead": "УФА",
+  "date_badge": "СЕНТЯБРЬ 2026",
+  "composition_id": "ufa-opeka-docs-noface",
   "accent_hex": "#2F7BFF",
-  "news_id": "ufa-primary-aug-2026-rbc",
-  "news_source_name": "РБК Недвижимость / РБК Уфа",
+  "news_id": "kids_share_buy_opeka",
+  "news_source_name": "Практика Самолет Плюс Уфа / Опека и попечительство / Судебная практика Верховного суда РФ",
   "artifacts": {
     "post": "memory/vk-daily/latest/post.txt",
+    "post_plain": "memory/vk-daily/latest/post-plain.txt",
     "meta": "memory/vk-daily/latest/meta.json",
     "cover": "memory/vk-daily/latest/cover.png",
     "cover_url": "memory/vk-daily/latest/cover-url.txt"
   },
   "cover": {
-    "status": "blocked",
-    "blocker": "KIE_API_KEY",
-    "blocker_message": "❌ VK COVER BLOCKER: KIE_API_KEY is not set. Cover not generated. Do not publish a fake image.",
-    "model": "gpt-image-2-image-to-image"
+    "status": "ok",
+    "blocker": null,
+    "blocker_message": null,
+    "model": "gpt-image-2-text-to-image",
+    "task_id": "7c4ad8284ce490a66444f0beadc9b304",
+    "cover_rel": "memory/vk-daily/latest/cover.png",
+    "cover_url": "https://tempfile.aiquickdraw.com/a2/7c4ad8284ce490a66444f0beadc9b304_1790400355361.png",
+    "cover_sniff": "png",
+    "no_person": true
   },
   "orchestrator": {
     "publisher": "Grok Bot",
@@ -36,7 +46,5 @@
     "publish_if": "cover.status == ok and files exist",
     "skip_if_blocker": true
   },
-  "links_in_post": false,
-  "blocker": "KIE_API_KEY",
-  "blocker_message": "❌ VK COVER BLOCKER: KIE_API_KEY is not set. Cover not generated. Do not publish a fake image."
+  "links_in_post": false
 }

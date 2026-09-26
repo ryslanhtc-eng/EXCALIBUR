@@ -85,6 +85,30 @@ def create_i2i_task(
     return task_id
 
 
+def create_t2i_task(
+    api_key: str,
+    *,
+    prompt: str,
+    aspect_ratio: str = "16:9",
+    resolution: str = "2K",
+) -> str:
+    input_payload: dict[str, Any] = {
+        "prompt": prompt,
+        "aspect_ratio": aspect_ratio,
+        "resolution": resolution,
+    }
+    payload = {"model": "gpt-image-2-text-to-image", "input": input_payload}
+    parsed = _request(CREATE_URL, api_key=api_key, method="POST", payload=payload, timeout=60)
+    code = parsed.get("code", 200)
+    if code not in (200, "200", 0, "0"):
+        raise KieError(f"KIE create_t2i_task failed: {parsed.get('msg') or parsed}")
+    data = parsed.get("data") or {}
+    task_id = str(data.get("taskId") or "").strip()
+    if not task_id:
+        raise KieError(f"KIE create_t2i_task missing taskId: {parsed}")
+    return task_id
+
+
 def get_task(api_key: str, task_id: str) -> dict[str, Any]:
     url = RECORD_URL + "?" + urllib.parse.urlencode({"taskId": task_id})
     parsed = _request(url, api_key=api_key, method="GET", timeout=30)

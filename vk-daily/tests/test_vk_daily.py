@@ -94,6 +94,27 @@ class CoverBlockerTests(unittest.TestCase):
             self.assertFalse((out / "cover.png").exists())
             self.assertFalse((out / "cover-url.txt").exists())
 
+    def test_missing_key_no_person_does_not_write_cover(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp)
+            env = {k: v for k, v in os.environ.items() if k != "KIE_API_KEY"}
+            with patch.dict(os.environ, env, clear=True):
+                meta = generate_cover(
+                    root=ROOT,
+                    out_dir=out,
+                    headline="Одного согласия опеки мало",
+                    composition_prompt="test no person",
+                    accent="#2F7BFF",
+                    aspect_ratio="16:9",
+                    resolution="2K",
+                    no_person=True,
+                )
+            self.assertEqual(meta["status"], "blocked")
+            self.assertEqual(meta["blocker"], "KIE_API_KEY")
+            self.assertEqual(meta["model"], "gpt-image-2-text-to-image")
+            self.assertFalse((out / "cover.png").exists())
+            self.assertFalse((out / "cover-url.txt").exists())
+
 
 if __name__ == "__main__":
     unittest.main()
