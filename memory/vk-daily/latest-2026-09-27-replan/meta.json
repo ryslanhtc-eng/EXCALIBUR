@@ -21,11 +21,11 @@
   "news_id": "replan_illegal_buyer_rg",
   "news_source_name": "Российская газета / Судебная практика кассации 2026 (ст. 29 ЖК РФ)",
   "artifacts": {
-    "post": "memory/vk-daily/latest/post.txt",
-    "post_plain": "memory/vk-daily/latest/post-plain.txt",
-    "meta": "memory/vk-daily/latest/meta.json",
-    "cover": "memory/vk-daily/latest/cover.png",
-    "cover_url": "memory/vk-daily/latest/cover-url.txt"
+    "post": "memory/vk-daily/latest-2026-09-27-replan/post.txt",
+    "post_plain": "memory/vk-daily/latest-2026-09-27-replan/post-plain.txt",
+    "meta": "memory/vk-daily/latest-2026-09-27-replan/meta.json",
+    "cover": "memory/vk-daily/latest-2026-09-27-replan/cover.png",
+    "cover_url": "memory/vk-daily/latest-2026-09-27-replan/cover-url.txt"
   },
   "cover": {
     "status": "ok",
@@ -33,7 +33,7 @@
     "blocker_message": null,
     "model": "gpt-image-2-image-to-image",
     "task_id": "3da97a180e5c1cb024ccb0f0f96df804",
-    "cover_rel": "memory/vk-daily/latest/cover.png",
+    "cover_rel": "memory/vk-daily/latest-2026-09-27-replan/cover.png",
     "cover_url": "https://tempfile.aiquickdraw.com/gpt-image-2-kie/1790488661322-vv1hxu45xta.png",
     "cover_sniff": "png",
     "input_urls_count": 2,
