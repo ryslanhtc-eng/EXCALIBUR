@@ -126,11 +126,18 @@ def main() -> int:
         print(f"OK reference_url_hosted={env_url}")
         return 0
 
-    providers = ["catbox", "0x0"] if args.provider == "auto" else [args.provider]
+    providers = ["uguu", "catbox", "0x0"] if args.provider == "auto" else [args.provider]
     last_error: Exception | None = None
     for provider in providers:
         try:
-            url = upload_catbox(ref_path) if provider == "catbox" else upload_0x0(ref_path)
+            if provider == "uguu":
+                sys.path.insert(0, str(root / "vk-daily" / "scripts"))
+                from host_image import upload_uguu
+                url = upload_uguu(ref_path)
+            elif provider == "catbox":
+                url = upload_catbox(ref_path)
+            else:
+                url = upload_0x0(ref_path)
             hero["reference_url_hosted"] = url
             hero["reference_url_source"] = provider
             hero["reference_url_updated_at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")

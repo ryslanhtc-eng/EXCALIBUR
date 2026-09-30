@@ -21,11 +21,11 @@
   "news_id": "ufa_secondary_top15_aug2026",
   "news_source_name": "РБК Недвижимость / МИР КВАРТИР / UfacityNews / Sobaka.ru",
   "artifacts": {
-    "post": "memory/vk-daily/latest/post.txt",
-    "post_plain": "memory/vk-daily/latest/post-plain.txt",
-    "meta": "memory/vk-daily/latest/meta.json",
-    "cover": "memory/vk-daily/latest/cover.png",
-    "cover_url": "memory/vk-daily/latest/cover-url.txt"
+    "post": "memory/vk-daily/latest-2026-09-30-ufa-secondary/post.txt",
+    "post_plain": "memory/vk-daily/latest-2026-09-30-ufa-secondary/post-plain.txt",
+    "meta": "memory/vk-daily/latest-2026-09-30-ufa-secondary/meta.json",
+    "cover": "memory/vk-daily/latest-2026-09-30-ufa-secondary/cover.png",
+    "cover_url": "memory/vk-daily/latest-2026-09-30-ufa-secondary/cover-url.txt"
   },
   "cover": {
     "status": "ok",
@@ -33,7 +33,7 @@
     "blocker_message": null,
     "model": "gpt-image-2-image-to-image",
     "task_id": "4f6eb0f6fe96532ef349005ee7a2634a",
-    "cover_rel": "memory/vk-daily/latest/cover.png",
+    "cover_rel": "memory/vk-daily/latest-2026-09-30-ufa-secondary/cover.png",
     "cover_url": "https://tempfile.aiquickdraw.com/gpt-image-2-kie/1790746274316-pr1igo4259q.png",
     "cover_sniff": "png",
     "input_urls_count": 2
