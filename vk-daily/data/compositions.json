@@ -1,6 +1,10 @@
 {
   "compositions": [
     {
+      "id": "02-office-navy-suit-lifestyle",
+      "prompt": "Premium editorial lifestyle portrait of the same man in an elegant modern Ufa office near a panoramic window overlooking Ufa city center and the Belaya river embankment in autumn daylight. He wears a tailored navy blue suit and crisp white shirt (no tie, open collar, premium realtor look, no hoodie). Relaxed confident posture, holding a neat leather folder with discreet blue #2F7BFF accent. Warm natural light, elegant architectural lines, modern Ufa cityscape softly blurred in background, no Moscow skyline, no metro."
+    },
+    {
       "id": "river-window-morning",
       "prompt": "Medium shot of the same man by a wide apartment window at morning, pale Ufa river haze outside, no metro, no skyline of Moscow. He holds a paper floor plan. Soft daylight, light-blue crewneck optional. Blue #2F7BFF window frame accent."
     },

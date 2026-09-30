@@ -33,20 +33,36 @@ def face_ref_paths(root: Path) -> list[Path]:
     return found
 
 
-def build_prompt(*, headline: str, composition_prompt: str, accent: str) -> str:
-    return (
-        "Photoreal editorial portrait of the SAME man as in the reference selfies. "
+def build_prompt(
+    *,
+    headline: str,
+    composition_prompt: str,
+    accent: str,
+    masthead: str = "УФА",
+    date_badge: str = "СЕНТЯБРЬ 2026",
+    dek: str = "",
+) -> str:
+    prompt_parts = [
+        "Glossy magazine editorial cover style, wide horizontal 16:9 composition.",
+        "Photoreal editorial portrait of the SAME man as in the reference selfies.",
         "Preserve exact facial identity: short dark hair faded on sides, light grey-blue eyes, "
-        "natural smile, light stubble, no glasses, no beautifying into another person. "
-        "Outfit may change. "
-        f"Scene: {composition_prompt} "
-        f"Brand accent color {accent} only (no pink highlighter, no red sale banner). "
-        f"Large readable Cyrillic headline on the image, exactly: «{headline}». "
-        "No period, no emoji, no URLs, no phone number, no extra slogans. "
-        "Setting is Ufa, Russia residential life. "
+        "natural smile, light stubble, no glasses, no beautifying into another person.",
+        "Outfit may change.",
+        f"Scene: {composition_prompt}",
+        f"Brand accent color {accent} only (no pink highlighter, no red sale banner).",
+        f"Magazine masthead at the top: «{masthead}».",
+        f"Small elegant issue date badge: «{date_badge}».",
+        f"Large readable Cyrillic headline on the cover, exactly: «{headline}».",
+    ]
+    if dek:
+        prompt_parts.append(f"Sub-headline description (dek) under the main headline, exactly: «{dek}».")
+    prompt_parts.extend([
+        "No period at the end of headline, no emoji, no URLs, no phone number, no extra slogans.",
+        "Setting is Ufa, Russia residential and city life.",
         "NEGATIVE: metro / subway station in Ufa, Moscow, Red Square, English poster text, "
-        "watermark, extra fingers, stock luxury realtor, neon cyberpunk, different face."
-    )
+        "watermark, extra fingers, stock luxury realtor, neon cyberpunk, different face.",
+    ])
+    return " ".join(prompt_parts)
 
 
 def generate_cover(
@@ -58,6 +74,9 @@ def generate_cover(
     accent: str,
     aspect_ratio: str,
     resolution: str,
+    masthead: str = "УФА",
+    date_badge: str = "СЕНТЯБРЬ 2026",
+    dek: str = "",
 ) -> dict:
     """Return cover meta. Never writes a fake raster if generation did not happen."""
     api_key = (os.environ.get("KIE_API_KEY") or "").strip()
@@ -85,7 +104,9 @@ def generate_cover(
         }
 
     try:
+        print("Hosting face reference images...")
         input_urls = [host_image(path) for path in refs]
+        print(f"Hosted face refs: {input_urls}")
     except Exception as exc:  # noqa: BLE001
         return {
             "status": "blocked",
@@ -94,7 +115,14 @@ def generate_cover(
             "model": MODEL,
         }
 
-    prompt = build_prompt(headline=headline, composition_prompt=composition_prompt, accent=accent)
+    prompt = build_prompt(
+        headline=headline,
+        composition_prompt=composition_prompt,
+        accent=accent,
+        masthead=masthead,
+        date_badge=date_badge,
+        dek=dek,
+    )
     try:
         task_id = create_i2i_task(
             api_key,
@@ -103,6 +131,7 @@ def generate_cover(
             aspect_ratio=aspect_ratio,
             resolution=resolution,
         )
+        print(f"KIE taskId={task_id}, waiting for completion...")
         task = wait_for_success(api_key, task_id)
         urls = result_urls(task)
         if not urls:
