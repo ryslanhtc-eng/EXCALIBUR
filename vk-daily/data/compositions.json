@@ -1,6 +1,10 @@
 {
   "compositions": [
     {
+      "id": "belaya-salavat-black-suit-tie",
+      "prompt": "Premium 16:9 glossy magazine cover of the SAME man on Ufa Belaya river embankment near the Salavat Yulaev monument at October golden hour. Pose 03-black-suit-tie-formal: classic black tailored suit, solid black slim tie, pristine white dress shirt, white pocket square, metal-strap watch; he gently adjusts the tie knot or buttons the jacket, three-quarter stance, calm expensive realtor vibe. Recognizable Ufa city panorama and river behind him, warm autumn light, elegant architectural depth. NO hoodie, NO Gostiny Dvor, NO indoor office window copy of previous cover, NO Moscow skyline, NO metro. Solid navy folder optional with NO hex codes printed on it."
+    },
+    {
       "id": "river-window-morning",
       "prompt": "Medium shot of the same man by a wide apartment window at morning, pale Ufa river haze outside, no metro, no skyline of Moscow. He holds a paper floor plan. Soft daylight, light-blue crewneck optional. Blue #2F7BFF window frame accent."
     },

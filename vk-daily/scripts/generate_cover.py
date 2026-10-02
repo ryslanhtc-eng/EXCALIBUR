@@ -5,8 +5,15 @@ import os
 import sys
 from pathlib import Path
 
+import urllib.request
+
 from host_image import host_image
 from kie_client import KieError, MODEL, create_i2i_task, result_urls, wait_for_success
+
+RAW_GITHUB_FACE_REFS = [
+    "https://raw.githubusercontent.com/ryslanhtc-eng/EXCALIBUR/master/vk-daily/refs/ruslan_selfie_blue.jpg",
+    "https://raw.githubusercontent.com/ryslanhtc-eng/EXCALIBUR/master/vk-daily/refs/ruslan_selfie_black.jpg",
+]
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 REPO_SCRIPTS = REPO_ROOT / "scripts"
@@ -23,6 +30,21 @@ BLOCKER_HOST = "REF_HOST"
 BLOCKER_KIE = "KIE_TASK"
 
 
+def resolve_face_ref_urls(root: Path, refs: list[Path]) -> list[str]:
+    """Prefer stable GitHub raw selfies; fall back to catbox/0x0 hosting."""
+    try:
+        req = urllib.request.Request(
+            RAW_GITHUB_FACE_REFS[0],
+            headers={"User-Agent": "ExcaliburVkDaily/1.0"},
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            if resp.status == 200:
+                return list(RAW_GITHUB_FACE_REFS)
+    except Exception:
+        pass
+    return [host_image(path) for path in refs]
+
+
 def face_ref_paths(root: Path) -> list[Path]:
     names = ("ruslan_selfie_blue.jpg", "ruslan_selfie_black.jpg")
     found: list[Path] = []
@@ -33,20 +55,39 @@ def face_ref_paths(root: Path) -> list[Path]:
     return found
 
 
-def build_prompt(*, headline: str, composition_prompt: str, accent: str) -> str:
-    return (
-        "Photoreal editorial portrait of the SAME man as in the reference selfies. "
-        "Preserve exact facial identity: short dark hair faded on sides, light grey-blue eyes, "
-        "natural smile, light stubble, no glasses, no beautifying into another person. "
-        "Outfit may change. "
-        f"Scene: {composition_prompt} "
-        f"Brand accent color {accent} only (no pink highlighter, no red sale banner). "
-        f"Large readable Cyrillic headline on the image, exactly: «{headline}». "
-        "No period, no emoji, no URLs, no phone number, no extra slogans. "
-        "Setting is Ufa, Russia residential life. "
-        "NEGATIVE: metro / subway station in Ufa, Moscow, Red Square, English poster text, "
-        "watermark, extra fingers, stock luxury realtor, neon cyberpunk, different face."
-    )
+def build_prompt(
+    *,
+    headline: str,
+    composition_prompt: str,
+    accent: str,
+    masthead: str = "УФА",
+    date_badge: str = "ОКТЯБРЬ 2026",
+    dek: str = "",
+) -> str:
+    parts = [
+        "Glossy magazine editorial cover, wide 16:9 photoreal portrait of the SAME man as in the reference selfies.",
+        "Preserve exact facial identity: oval face, short dark hair faded on sides, light grey-blue eyes, "
+        "natural warm smile showing upper teeth, cheek dimples, light neat stubble, no glasses, "
+        "no beautifying into another person.",
+        "Wardrobe: pose 03-black-suit-tie-formal — classic black tailored suit, solid black slim tie, "
+        "pristine white dress shirt, white pocket square, metal-strap watch. "
+        "Strictly NO hoodie, NO sweatshirt, NO casual sportswear.",
+        f"Scene: {composition_prompt}",
+        f"Magazine masthead top-left exactly: «{masthead}».",
+        f"Small elegant issue date badge top-right exactly: «{date_badge}».",
+        f"Large readable Cyrillic headline on the left third, exactly: «{headline}».",
+    ]
+    if dek:
+        parts.append(f"Sub-headline description (dek) under the main headline, exactly: «{dek}».")
+    parts.extend([
+        f"Brand accent color {accent} on typography and badges only (no pink highlighter, no red sale banner). "
+        "NO hex codes or RAL numbers printed on props, folders, or clothing.",
+        "No period at end of headline, no emoji, no URLs, no phone number, no extra slogans.",
+        "Setting is Ufa, Russia. Recognizable beautiful city location.",
+        "NEGATIVE: hoodie, metro / subway station in Ufa, Moscow, Red Square, English poster text, "
+        "watermark, extra fingers, stock luxury realtor, neon cyberpunk, Gostiny Dvor copy, different face.",
+    ])
+    return " ".join(parts)
 
 
 def generate_cover(
@@ -58,6 +99,9 @@ def generate_cover(
     accent: str,
     aspect_ratio: str,
     resolution: str,
+    masthead: str = "УФА",
+    date_badge: str = "ОКТЯБРЬ 2026",
+    dek: str = "",
 ) -> dict:
     """Return cover meta. Never writes a fake raster if generation did not happen."""
     api_key = (os.environ.get("KIE_API_KEY") or "").strip()
@@ -85,7 +129,8 @@ def generate_cover(
         }
 
     try:
-        input_urls = [host_image(path) for path in refs]
+        input_urls = resolve_face_ref_urls(root, refs)
+        print(f"Face ref URLs ({len(input_urls)}): using GitHub raw or hosted refs", flush=True)
     except Exception as exc:  # noqa: BLE001
         return {
             "status": "blocked",
@@ -94,7 +139,14 @@ def generate_cover(
             "model": MODEL,
         }
 
-    prompt = build_prompt(headline=headline, composition_prompt=composition_prompt, accent=accent)
+    prompt = build_prompt(
+        headline=headline,
+        composition_prompt=composition_prompt,
+        accent=accent,
+        masthead=masthead,
+        date_badge=date_badge,
+        dek=dek,
+    )
     try:
         task_id = create_i2i_task(
             api_key,
