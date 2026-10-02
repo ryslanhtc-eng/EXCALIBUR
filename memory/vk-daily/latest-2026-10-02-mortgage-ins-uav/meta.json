@@ -11,7 +11,7 @@
   "vk_group_url": "https://vk.ru/samolet_plus_sipa",
   "vk_group_screen_name": "samolet_plus_sipa",
   "city": "Уфа",
-  "char_count": 2039,
+  "char_count": 2112,
   "cover_headline": "Проверьте ипотечный полис до ноября",
   "cover_dek": "С 1 ноября Сбер примет только полис с риском БПЛА",
   "masthead": "УФА",
@@ -21,12 +21,13 @@
   "accent_hex": "#2F7BFF",
   "news_id": "mortgage_ins_uav_sber_oct2026",
   "news_source_name": "Ведомости / Независимая газета",
+  "model_used": "gemini-3.8-flash",
   "artifacts": {
-    "post": "memory/vk-daily/latest/post.txt",
-    "post_plain": "memory/vk-daily/latest/post-plain.txt",
-    "meta": "memory/vk-daily/latest/meta.json",
-    "cover": "memory/vk-daily/latest/cover.png",
-    "cover_url": "memory/vk-daily/latest/cover-url.txt"
+    "post": "memory/vk-daily/latest-2026-10-02-mortgage-ins-uav/post.txt",
+    "post_plain": "memory/vk-daily/latest-2026-10-02-mortgage-ins-uav/post-plain.txt",
+    "meta": "memory/vk-daily/latest-2026-10-02-mortgage-ins-uav/meta.json",
+    "cover": "memory/vk-daily/latest-2026-10-02-mortgage-ins-uav/cover.png",
+    "cover_url": "memory/vk-daily/latest-2026-10-02-mortgage-ins-uav/cover-url.txt"
   },
   "cover": {
     "status": "ok",
@@ -34,7 +35,7 @@
     "blocker_message": null,
     "model": "gpt-image-2-image-to-image",
     "task_id": "766134cf08f25cf828905ede9a34f7a9",
-    "cover_rel": "memory/vk-daily/latest/cover.png",
+    "cover_rel": "memory/vk-daily/latest-2026-10-02-mortgage-ins-uav/cover.png",
     "cover_url": "https://tempfile.aiquickdraw.com/a2/766134cf08f25cf828905ede9a34f7a9_1790920087055.png",
     "cover_sniff": "png",
     "input_urls_count": 2,
