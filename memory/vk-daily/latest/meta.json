@@ -1,9 +1,9 @@
 {
   "pipeline": "vk-daily",
-  "status": "blocked",
-  "publish_ready": false,
-  "date": "2026-09-12",
-  "generated_at": "2026-09-12T16:08:40+05:00",
+  "status": "ready",
+  "publish_ready": true,
+  "date": "2026-10-03",
+  "generated_at": "2026-10-03T10:20:28+05:00",
   "timezone": "Asia/Yekaterinburg",
   "tenant_id": "ruslan-mukhtarov-ufa",
   "person_name_ru": "Руслан Мухтаров",
@@ -11,23 +11,36 @@
   "vk_group_url": "https://vk.ru/samolet_plus_sipa",
   "vk_group_screen_name": "samolet_plus_sipa",
   "city": "Уфа",
-  "char_count": 1861,
-  "cover_headline": "Уфа снова в тройке",
-  "composition_id": "office-prints",
+  "char_count": 1992,
+  "cover_headline": "Банк при ипотеке не проверит квартиру за вас",
+  "cover_dek": "Банк оценивает только свой залог, а не юридическую чистоту сделки",
+  "masthead": "УФА",
+  "date_badge": "ОКТЯБРЬ 2026",
+  "composition_id": "ufa-showroom-consultation-duo",
+  "location_id": "ufa_residential_showroom",
+  "pose_id": "06-work-lifestyle-desk",
+  "emotion_id": "warm_insight_consultation",
   "accent_hex": "#2F7BFF",
-  "news_id": "ufa-primary-aug-2026-rbc",
-  "news_source_name": "РБК Недвижимость / РБК Уфа",
+  "news_id": "bank_not_full_check_myth_2026",
+  "news_source_name": "Двитекс / Неделько и партнеры",
   "artifacts": {
     "post": "memory/vk-daily/latest/post.txt",
+    "post_plain": "memory/vk-daily/latest/post-plain.txt",
     "meta": "memory/vk-daily/latest/meta.json",
     "cover": "memory/vk-daily/latest/cover.png",
     "cover_url": "memory/vk-daily/latest/cover-url.txt"
   },
   "cover": {
-    "status": "blocked",
-    "blocker": "KIE_API_KEY",
-    "blocker_message": "❌ VK COVER BLOCKER: KIE_API_KEY is not set. Cover not generated. Do not publish a fake image.",
-    "model": "gpt-image-2-image-to-image"
+    "status": "ok",
+    "blocker": null,
+    "blocker_message": null,
+    "model": "gpt-image-2-image-to-image",
+    "task_id": "9c68215f615e68f5bbe93f76af5dfda3",
+    "cover_rel": "memory/vk-daily/latest/cover.png",
+    "cover_url": "https://tempfile.aiquickdraw.com/a2/9c68215f615e68f5bbe93f76af5dfda3_1791004899463.png",
+    "cover_sniff": "png",
+    "input_urls_count": 2,
+    "aspect_ratio": "16:9"
   },
   "orchestrator": {
     "publisher": "Grok Bot",
@@ -36,7 +49,5 @@
     "publish_if": "cover.status == ok and files exist",
     "skip_if_blocker": true
   },
-  "links_in_post": false,
-  "blocker": "KIE_API_KEY",
-  "blocker_message": "❌ VK COVER BLOCKER: KIE_API_KEY is not set. Cover not generated. Do not publish a fake image."
+  "links_in_post": false
 }

@@ -1,6 +1,14 @@
 {
   "compositions": [
     {
+      "id": "ufa-showroom-consultation-duo",
+      "prompt": "Vibrant animation-style editorial illustration in wide 16:9 format set in a modern bright residential showroom in Ufa (panoramic windows showing autumn trees and modern Ufa residential towers). Two characters at a sleek wooden meeting table: on the left is Ruslan (the exact same male realtor as in reference selfies: 40-45 years old, clean-shaven, short buzz haircut, light grey-blue eyes, distinct small mole near bridge of nose, wearing a golden wedding band, stylish navy-blue blazer over white open-collar shirt). Across the table sits an attractive, curvaceous mother client with styled brown hair and subtle cleavage in a tasteful autumn wrap dress, listening attentively. On the desk between them are spread out apartment legal verification files, ownership transfer history documents, title checklists with clear Russian stamps (NOT military or UAV policies). Ruslan has a warm confident smile, gesturing with an open hand explaining legal insights. Subtle romantic/sensual undertone without any nudity, tasteful and polished modern graphic novel illustration aesthetic. Accent color #2F7BFF on branding folders and interior highlights. No metro logos, no Moscow landmarks."
+    },
+    {
+      "id": "belaya-salavat-black-suit-tie",
+      "prompt": "Premium 16:9 glossy magazine cover of the SAME man on Ufa Belaya river embankment near the Salavat Yulaev monument at October golden hour. Pose 03-black-suit-tie-formal: classic black tailored suit, solid black slim tie, pristine white dress shirt, white pocket square, metal-strap watch; he gently adjusts the tie knot or buttons the jacket, three-quarter stance, calm expensive realtor vibe. Recognizable Ufa city panorama and river behind him, warm autumn light, elegant architectural depth. NO hoodie, NO Gostiny Dvor, NO indoor office window copy of previous cover, NO Moscow skyline, NO metro. Solid navy folder optional with NO hex codes printed on it."
+    },
+    {
       "id": "river-window-morning",
       "prompt": "Medium shot of the same man by a wide apartment window at morning, pale Ufa river haze outside, no metro, no skyline of Moscow. He holds a paper floor plan. Soft daylight, light-blue crewneck optional. Blue #2F7BFF window frame accent."
     },
