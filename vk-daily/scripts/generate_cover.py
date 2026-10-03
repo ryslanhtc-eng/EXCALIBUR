@@ -62,13 +62,14 @@ def build_prompt(
     masthead: str = "УФА",
     date_badge: str = "ОКТЯБРЬ 2026",
     dek: str = "",
+    realtor_expression: str = "calm, serious, focused expert demeanor explaining real risks, no goofy grin, confident reassuring professional",
 ) -> str:
     parts = [
         "High quality editorial animation and graphic novel art style cover in 16:9 widescreen format.",
         "The scene features the SAME man as in the reference selfies.",
-        "Face identity and lock details: Russian man, 40-45 years old, very clean-shaven face (no heavy beard, no messy stubble),",
-        "short buzz cut faded on sides, light grey-blue eyes, genuine warm smile with insight, small distinct mole near bridge of nose,",
-        "golden wedding band on his finger. If any name is written, only РУСЛАН МУХТАРОВ or without name.",
+        "Face identity and lock details: Russian man, 45-50 years old, short buzz cut hair with subtle grey touches, very clean-shaven face (no beard, no mustache, no messy stubble),",
+        f"light grey-blue eyes, {realtor_expression}, small distinct mole near bridge of nose,",
+        "golden wedding band on his finger. Do not make him look too young. If any name is written, only РУСЛАН МУХТАРОВ or without name.",
         f"Scene and interaction: {composition_prompt}",
         f"Top-left magazine/editorial masthead text clearly readable, exactly: «{masthead}».",
         f"Top-right date badge clearly readable, exactly: «{date_badge}».",
@@ -79,9 +80,9 @@ def build_prompt(
     parts.extend([
         f"Brand accent color {accent} on typography, badge or interior accents (no pink highlighter, no cheap red banners).",
         "No period at end of headline, no emojis, no URLs, no phone numbers, no extra promotional text.",
-        "Setting is Ufa, Russia. Polished modern aesthetic.",
-        "NEGATIVE: photo of another man, metro / subway / underground station in Ufa, Moscow, Red Square, English poster text,",
-        "watermark, nudity, NSFW, extra limbs, deformed fingers, low resolution, dirty sketch, ugly face.",
+        "Setting is Ufa, Russia. Polished modern graphic novel aesthetic.",
+        "NEGATIVE: photo of another man, happy smiling laughing client, metro / subway / underground station in Ufa, Moscow, Red Square, English poster text,",
+        "watermark, bank logos, nudity, NSFW, extra limbs, deformed fingers, low resolution, dirty sketch, ugly face.",
     ])
     return " ".join(parts)
 
@@ -98,6 +99,7 @@ def generate_cover(
     masthead: str = "УФА",
     date_badge: str = "ОКТЯБРЬ 2026",
     dek: str = "",
+    realtor_expression: str = "calm, serious, focused expert demeanor explaining real risks, no goofy grin, confident reassuring professional",
 ) -> dict:
     """Return cover meta. Never writes a fake raster if generation did not happen."""
     api_key = (os.environ.get("KIE_API_KEY") or "").strip()
@@ -142,6 +144,7 @@ def generate_cover(
         masthead=masthead,
         date_badge=date_badge,
         dek=dek,
+        realtor_expression=realtor_expression,
     )
     try:
         task_id = create_i2i_task(
