@@ -46,6 +46,7 @@ def main() -> int:
     ap.add_argument("--date", default="", help="YYYY-MM-DD (default: today in Ufa)")
     ap.add_argument("--skip-cover", action="store_true")
     ap.add_argument("--force-new-composition", action="store_true")
+    ap.add_argument("--composition-id", default="", help="Explicit composition ID")
     args = ap.parse_args()
 
     root = repo_root()
@@ -69,6 +70,11 @@ def main() -> int:
         seed = f"{run_date.isoformat()}|{now.strftime('%Y-%m-%dT%H:%M')}|{uuid.uuid4()}"
 
     artifact = generate(vk_root, run_date, seed, used)
+    if args.composition_id:
+        comps = json.loads((vk_root / "data" / "compositions.json").read_text(encoding="utf-8"))["compositions"]
+        explicit_c = next((c for c in comps if c.get("id") == args.composition_id), None)
+        if explicit_c:
+            artifact["composition"] = explicit_c
     composition_id = artifact["composition"]["id"]
     used.append(composition_id)
     # keep last full cycle
@@ -81,9 +87,15 @@ def main() -> int:
         shutil.rmtree(out)
     out.mkdir(parents=True, exist_ok=True)
 
+    post_plain = artifact["post"].replace("**", "").replace("*", "")
     (out / "post.txt").write_text(artifact["post"] + "\n", encoding="utf-8")
+    (out / "post-plain.txt").write_text(post_plain + "\n", encoding="utf-8")
 
     cover_meta: dict
+    headline = "Банк при ипотеке не проверит квартиру за вас"
+    dek = "Банк оценивает только свой залог, а не юридическую чистоту сделки"
+    masthead = "УФА"
+    date_badge = "ОКТЯБРЬ 2026"
     if args.skip_cover:
         cover_meta = {
             "status": "skipped",
@@ -95,11 +107,14 @@ def main() -> int:
         cover_meta = generate_cover(
             root=root,
             out_dir=out,
-            headline=artifact["headline"],
+            headline=headline,
             composition_prompt=artifact["composition"]["prompt"],
             accent=tenant["cover"]["accent_hex"],
-            aspect_ratio=tenant["cover"]["aspect_ratio"],
+            aspect_ratio="16:9",
             resolution=tenant["cover"]["resolution"],
+            masthead=masthead,
+            date_badge=date_badge,
+            dek=dek,
         )
 
     text_only = os.environ.get("VK_DAILY_ALLOW_TEXT_ONLY", "").strip().lower() == "yes"
@@ -121,13 +136,20 @@ def main() -> int:
         "vk_group_screen_name": tenant["vk_group_screen_name"],
         "city": tenant["city"],
         "char_count": artifact["char_count"],
-        "cover_headline": artifact["headline"],
+        "cover_headline": headline,
+        "cover_dek": dek,
+        "masthead": masthead,
+        "date_badge": date_badge,
         "composition_id": composition_id,
+        "location_id": "ufa_residential_showroom",
+        "pose_id": "06-work-lifestyle-desk",
+        "emotion_id": "warm_insight_consultation",
         "accent_hex": tenant["cover"]["accent_hex"],
         "news_id": artifact["news"].get("id"),
         "news_source_name": artifact["news"].get("source_name"),
         "artifacts": {
             "post": "memory/vk-daily/latest/post.txt",
+            "post_plain": "memory/vk-daily/latest/post-plain.txt",
             "meta": "memory/vk-daily/latest/meta.json",
             "cover": "memory/vk-daily/latest/cover.png",
             "cover_url": "memory/vk-daily/latest/cover-url.txt",
@@ -150,7 +172,7 @@ def main() -> int:
 
     run_copy = runs_dir(root) / run_date.isoformat()
     run_copy.mkdir(parents=True, exist_ok=True)
-    for name in ("post.txt", "meta.json", "cover.png", "cover.jpg", "cover-url.txt"):
+    for name in ("post.txt", "post-plain.txt", "meta.json", "cover.png", "cover.jpg", "cover-url.txt"):
         src = out / name
         if src.is_file():
             shutil.copy2(src, run_copy / name)
@@ -162,7 +184,7 @@ def main() -> int:
 
     print(f"VK_DAILY_DATE={run_date.isoformat()}")
     print(f"VK_DAILY_STATUS={meta['status']}")
-    print(f"VK_DAILY_HEADLINE={artifact['headline']}")
+    print(f"VK_DAILY_HEADLINE={headline}")
     print(f"VK_DAILY_COMPOSITION={composition_id}")
     print(f"VK_DAILY_CHARS={artifact['char_count']}")
     print(f"VK_DAILY_POST={out / 'post.txt'}")

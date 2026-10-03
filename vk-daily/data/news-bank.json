@@ -1,6 +1,29 @@
 {
-  "updated": "2026-09-12",
+  "updated": "2026-10-03",
   "items": [
+    {
+      "id": "bank_not_full_check_myth_2026",
+      "date": "2026-10-03",
+      "source_name": "Двитекс / Неделько и партнеры",
+      "metric": "mortgage_bank_check_limits",
+      "headline_fact": "Банк при ипотеке проверяет квартиру только как залог для снижения собственных рисков, а не юридическую чистоту сделки для покупателя.",
+      "numbers": {
+        "court_disputes_pct": 10,
+        "title_loss_risk_high": 1
+      },
+      "notes": [
+        "Миф «банк всё проверит за меня, ведь он рискует деньгами». Банк смотрит ликвидность залога, отсутствие явных арестов в ЕГРН и формальный пакет, но не отвечает перед заёмщиком за скрытые пороки сделки.",
+        "Банк не проверяет дееспособность прошлых продавцов, банкротные риски по цепочке, права внебрачных детей/наследников и отказников от приватизации.",
+        "Если сделку признают недействительной, покупатель остаётся без жилья, но с обязательством вернуть весь кредит банку.",
+        "Угол: чеклист юридической проверки в Уфе до внесения задатка. Спокойный экспертный тон, без ухода в полисы БПЛА или запреты сделок."
+      ],
+      "angle": "bank_not_full_check",
+      "urls": [
+        "https://www.dvitex.ru/poleznoe/nedvizhimost/sdelki-s-nedvizhimostyu/7-mifov-pro-proverku-yuridicheskoy-chistoty-nedvizhimosti/",
+        "https://www.dvitex.ru/chasto-zadavaemye-voprosy/nedvizhimost-sdelki-s-nedvizhimostyu/ya-pokupayu-kvartiru-v-ipoteku-proveryayut-li-banki-kvartiry-kotorye-berut-v-zalog-na-yuridicheskuyu/",
+        "https://nedelkopartners.ru/blog/proveryaet-li-bank-kvartiru-pri-ipoteke/"
+      ]
+    },
     {
       "id": "ufa-primary-aug-2026-rbc",
       "date": "2026-09-11",
