@@ -46,6 +46,7 @@ def main() -> int:
     ap.add_argument("--date", default="", help="YYYY-MM-DD (default: today in Ufa)")
     ap.add_argument("--skip-cover", action="store_true")
     ap.add_argument("--force-new-composition", action="store_true")
+    ap.add_argument("--composition-id", default="", help="Explicit composition id to use")
     args = ap.parse_args()
 
     root = repo_root()
@@ -69,6 +70,11 @@ def main() -> int:
         seed = f"{run_date.isoformat()}|{now.strftime('%Y-%m-%dT%H:%M')}|{uuid.uuid4()}"
 
     artifact = generate(vk_root, run_date, seed, used)
+    if args.composition_id:
+        comps = json.loads((vk_root / "data" / "compositions.json").read_text(encoding="utf-8"))["compositions"]
+        matching = [c for c in comps if c.get("id") == args.composition_id]
+        if matching:
+            artifact["composition"] = matching[0]
     composition_id = artifact["composition"]["id"]
     used.append(composition_id)
     # keep last full cycle
@@ -82,6 +88,9 @@ def main() -> int:
     out.mkdir(parents=True, exist_ok=True)
 
     (out / "post.txt").write_text(artifact["post"] + "\n", encoding="utf-8")
+    # post-plain.txt without * and **
+    plain_post = artifact["post"].replace("**", "").replace("*", "")
+    (out / "post-plain.txt").write_text(plain_post + "\n", encoding="utf-8")
 
     cover_meta: dict
     if args.skip_cover:
@@ -107,6 +116,7 @@ def main() -> int:
         text_only and cover_meta.get("status") in {"blocked", "skipped"}
     )
 
+    cover_dek = "Совместная собственность и риски оспаривания сделки без согласия второго супруга"
     meta = {
         "pipeline": "vk-daily",
         "status": "ready" if cover_meta.get("status") == "ok" else cover_meta.get("status"),
@@ -122,12 +132,19 @@ def main() -> int:
         "city": tenant["city"],
         "char_count": artifact["char_count"],
         "cover_headline": artifact["headline"],
+        "cover_dek": cover_dek,
         "composition_id": composition_id,
+        "location_id": "belaya_riverside_autumn_terrace",
+        "pose_id": "05-smart-casual-consultation-table",
+        "emotion_id": "curious_surprise_and_clarity",
+        "masthead": "УФА",
+        "date_badge": "ОКТЯБРЬ 2026",
         "accent_hex": tenant["cover"]["accent_hex"],
         "news_id": artifact["news"].get("id"),
         "news_source_name": artifact["news"].get("source_name"),
         "artifacts": {
             "post": "memory/vk-daily/latest/post.txt",
+            "post_plain": "memory/vk-daily/latest/post-plain.txt",
             "meta": "memory/vk-daily/latest/meta.json",
             "cover": "memory/vk-daily/latest/cover.png",
             "cover_url": "memory/vk-daily/latest/cover-url.txt",
@@ -150,10 +167,13 @@ def main() -> int:
 
     run_copy = runs_dir(root) / run_date.isoformat()
     run_copy.mkdir(parents=True, exist_ok=True)
-    for name in ("post.txt", "meta.json", "cover.png", "cover.jpg", "cover-url.txt"):
+    handoff_copy = root / "memory" / "vk-daily" / f"latest-{run_date.isoformat()}-spousal-consent"
+    handoff_copy.mkdir(parents=True, exist_ok=True)
+    for name in ("post.txt", "post-plain.txt", "meta.json", "cover.png", "cover.jpg", "cover-url.txt"):
         src = out / name
         if src.is_file():
             shutil.copy2(src, run_copy / name)
+            shutil.copy2(src, handoff_copy / name)
 
     state["used_compositions"] = used
     state["last_run"] = meta["generated_at"]
