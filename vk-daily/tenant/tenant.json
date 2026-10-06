@@ -31,10 +31,10 @@
     "allow_links": false,
     "story_mode": true
   },
-  "cover": {
+    "cover": {
     "accent_hex": "#2F7BFF",
     "accent_name": "blue",
-    "aspect_ratio": "3:4",
+    "aspect_ratio": "16:9",
     "resolution": "2K",
     "model": "gpt-image-2-image-to-image",
     "headline_words_min": 4,
