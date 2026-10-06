@@ -38,14 +38,16 @@ def build_prompt(*, headline: str, composition_prompt: str, accent: str) -> str:
         "Photoreal editorial portrait of the SAME man as in the reference selfies. "
         "Preserve exact facial identity: short dark hair faded on sides, light grey-blue eyes, "
         "natural smile, light stubble, no glasses, no beautifying into another person. "
-        "Outfit may change. "
-        f"Scene: {composition_prompt} "
+        "Outfit may change. Aspect ratio 16:9 widescreen. "
+        "Scene: 16:9 animation consultation style, tax calculator on table or desk, keys, calculation of 13-22% property sale progressive tax. "
+        f"{composition_prompt} "
+        "Header masthead: «УФА». Badge: «ОКТЯБРЬ 2026». "
         f"Brand accent color {accent} only (no pink highlighter, no red sale banner). "
         f"Large readable Cyrillic headline on the image, exactly: «{headline}». "
         "No period, no emoji, no URLs, no phone number, no extra slogans. "
         "Setting is Ufa, Russia residential life. "
         "NEGATIVE: metro / subway station in Ufa, Moscow, Red Square, English poster text, "
-        "watermark, extra fingers, stock luxury realtor, neon cyberpunk, different face."
+        "watermark, extra fingers, stock luxury realtor, neon cyberpunk, different face, coats of arms, official emblems, logos."
     )
 
 

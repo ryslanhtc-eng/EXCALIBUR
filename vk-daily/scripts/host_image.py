@@ -82,11 +82,22 @@ def upload_0x0(image_path: Path) -> str:
     return url
 
 
-def host_image(image_path: Path, providers: tuple[str, ...] = ("catbox", "0x0")) -> str:
+def host_image(image_path: Path, providers: tuple[str, ...] = ("github", "catbox", "0x0")) -> str:
+    name = image_path.name
+    # Direct raw GitHub URLs for known reference selfies
+    github_urls = {
+        "ruslan_selfie_blue.jpg": "https://raw.githubusercontent.com/ryslanhtc-eng/EXCALIBUR/master/vk-daily/refs/ruslan_selfie_blue.jpg",
+        "ruslan_selfie_black.jpg": "https://raw.githubusercontent.com/ryslanhtc-eng/EXCALIBUR/master/vk-daily/refs/ruslan_selfie_black.jpg",
+    }
     last: Exception | None = None
     for provider in providers:
         try:
-            return upload_catbox(image_path) if provider == "catbox" else upload_0x0(image_path)
+            if provider == "github" and name in github_urls:
+                return github_urls[name]
+            if provider == "catbox":
+                return upload_catbox(image_path)
+            if provider == "0x0":
+                return upload_0x0(image_path)
         except Exception as exc:  # noqa: BLE001 - try next host
             last = exc
     raise RuntimeError(f"could not host {image_path.name}: {last}")

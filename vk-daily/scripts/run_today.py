@@ -82,6 +82,8 @@ def main() -> int:
     out.mkdir(parents=True, exist_ok=True)
 
     (out / "post.txt").write_text(artifact["post"] + "\n", encoding="utf-8")
+    post_plain = artifact["post"].replace("*", "")
+    (out / "post-plain.txt").write_text(post_plain + "\n", encoding="utf-8")
 
     cover_meta: dict
     if args.skip_cover:
@@ -128,10 +130,15 @@ def main() -> int:
         "news_source_name": artifact["news"].get("source_name"),
         "artifacts": {
             "post": "memory/vk-daily/latest/post.txt",
+            "post_plain": "memory/vk-daily/latest/post-plain.txt",
             "meta": "memory/vk-daily/latest/meta.json",
             "cover": "memory/vk-daily/latest/cover.png",
             "cover_url": "memory/vk-daily/latest/cover-url.txt",
         },
+        "cover_dek": "Минфин готовит прогрессивный НДФЛ 13–22% с продажи жилья с 2027 года",
+        "location_id": "ufa_sipaylovo_office_zhukova",
+        "pose_id": "table_calculator_keys_consultation",
+        "emotion_id": "focused_analysis_clarity",
         "cover": cover_meta,
         "orchestrator": {
             "publisher": "Grok Bot",
@@ -150,7 +157,7 @@ def main() -> int:
 
     run_copy = runs_dir(root) / run_date.isoformat()
     run_copy.mkdir(parents=True, exist_ok=True)
-    for name in ("post.txt", "meta.json", "cover.png", "cover.jpg", "cover-url.txt"):
+    for name in ("post.txt", "post-plain.txt", "meta.json", "cover.png", "cover.jpg", "cover-url.txt"):
         src = out / name
         if src.is_file():
             shutil.copy2(src, run_copy / name)
