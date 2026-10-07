@@ -12,5 +12,4 @@ canvases/
 node_modules/
 .cursor/canvases/
 memory/vk-daily/state.json
-memory/vk-daily/runs/
 
