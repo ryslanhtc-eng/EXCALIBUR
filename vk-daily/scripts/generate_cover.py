@@ -33,20 +33,37 @@ def face_ref_paths(root: Path) -> list[Path]:
     return found
 
 
-def build_prompt(*, headline: str, composition_prompt: str, accent: str) -> str:
-    return (
-        "Photoreal editorial portrait of the SAME man as in the reference selfies. "
-        "Preserve exact facial identity: short dark hair faded on sides, light grey-blue eyes, "
-        "natural smile, light stubble, no glasses, no beautifying into another person. "
-        "Outfit may change. "
-        f"Scene: {composition_prompt} "
-        f"Brand accent color {accent} only (no pink highlighter, no red sale banner). "
-        f"Large readable Cyrillic headline on the image, exactly: «{headline}». "
-        "No period, no emoji, no URLs, no phone number, no extra slogans. "
-        "Setting is Ufa, Russia residential life. "
-        "NEGATIVE: metro / subway station in Ufa, Moscow, Red Square, English poster text, "
-        "watermark, extra fingers, stock luxury realtor, neon cyberpunk, different face."
-    )
+def build_prompt(
+    *,
+    headline: str,
+    composition_prompt: str,
+    accent: str,
+    masthead: str = "УФА",
+    date_badge: str = "ОКТЯБРЬ 2026",
+    dek: str = "",
+    style: str = "anime",
+) -> str:
+    prompt_parts = [
+        "Vibrant anime cel-shaded illustration, 16:9 widescreen format, high quality 2D anime graphic art style, clean dynamic linework, rich flat cel-shading colors, not photographic, not photoreal, not realistic, not 3D render, not CGI.",
+        "REFERENCE FACE IDENTITY IN ANIME STYLE: Capture the recognizable facial likeness of the SAME man as in the reference selfies adapted into Japanese anime aesthetic: "
+        "Russian man ~45-50 years old, short dark buzz cut hair with distinguished grey touches at temples, light grey-blue eyes, "
+        "warm authentic confident smile, clean shaven with subtle mature facial lines, distinctive small beauty mark / mole near the bridge of nose, simple gold wedding ring on hand. "
+        "Do NOT make him look like a generic teenage anime boy, preserve his mature 45-50 age character while strictly in anime illustration drawing style.",
+        f"Scene: {composition_prompt}",
+        f"Brand accent color: {accent} touches (modern corporate blue).",
+        f"Prominent stylish magazine masthead in crisp Cyrillic letters at top: «{masthead}».",
+        f"Elegant issue date badge: «{date_badge}».",
+        f"Large bold readable Cyrillic headline on the cover, exactly: «{headline}».",
+    ]
+    if dek:
+        prompt_parts.append(f"Clear secondary Cyrillic sub-headline (dek) under the main headline: «{dek}».")
+    prompt_parts.extend([
+        "No period at end of headline, no emoji, no URLs, no phone number, no extra marketing slogans.",
+        "Setting is Ufa, Russia.",
+        "NEGATIVE: photorealistic, photo, real photography, 3D CGI render, realistic skin pore textures, metro / subway station in Ufa, Moscow, Red Square, English poster text, "
+        "watermark, bad anatomy, deformed hands, extra fingers, nudity, NSFW, neon cyberpunk, beard, different face.",
+    ])
+    return " ".join(prompt_parts)
 
 
 def generate_cover(
@@ -58,6 +75,10 @@ def generate_cover(
     accent: str,
     aspect_ratio: str,
     resolution: str,
+    masthead: str = "УФА",
+    date_badge: str = "ОКТЯБРЬ 2026",
+    dek: str = "",
+    cover_style: str = "anime",
 ) -> dict:
     """Return cover meta. Never writes a fake raster if generation did not happen."""
     api_key = (os.environ.get("KIE_API_KEY") or "").strip()
@@ -84,18 +105,35 @@ def generate_cover(
             "model": MODEL,
         }
 
-    try:
-        input_urls = [host_image(path) for path in refs]
-    except Exception as exc:  # noqa: BLE001
-        return {
-            "status": "blocked",
-            "blocker": BLOCKER_HOST,
-            "blocker_message": f"❌ VK COVER BLOCKER: could not host face refs: {exc}",
-            "model": MODEL,
-        }
+    direct_urls = [
+        "https://raw.githubusercontent.com/ryslanhtc-eng/EXCALIBUR/master/vk-daily/refs/ruslan_selfie_blue.jpg",
+        "https://raw.githubusercontent.com/ryslanhtc-eng/EXCALIBUR/master/vk-daily/refs/ruslan_selfie_black.jpg",
+    ]
+    if os.environ.get("VK_DAILY_DIRECT_INPUT_URLS", "yes").strip().lower() in {"yes", "true", "1"}:
+        input_urls = direct_urls
+    else:
+        try:
+            input_urls = [host_image(path) for path in refs]
+        except Exception as exc:  # noqa: BLE001
+            return {
+                "status": "blocked",
+                "blocker": BLOCKER_HOST,
+                "blocker_message": f"❌ VK COVER BLOCKER: could not host face refs: {exc}",
+                "model": MODEL,
+            }
 
-    prompt = build_prompt(headline=headline, composition_prompt=composition_prompt, accent=accent)
+    prompt = build_prompt(
+        headline=headline,
+        composition_prompt=composition_prompt,
+        accent=accent,
+        masthead=masthead,
+        date_badge=date_badge,
+        dek=dek,
+        style=cover_style,
+    )
     try:
+        print(f"Creating KIE i2i task with prompt: {prompt}")
+        print(f"Input URLs: {input_urls}")
         task_id = create_i2i_task(
             api_key,
             prompt=prompt,
@@ -103,6 +141,7 @@ def generate_cover(
             aspect_ratio=aspect_ratio,
             resolution=resolution,
         )
+        print(f"KIE task created: taskId={task_id}, waiting for completion...")
         task = wait_for_success(api_key, task_id)
         urls = result_urls(task)
         if not urls:
