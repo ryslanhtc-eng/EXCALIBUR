@@ -42,18 +42,20 @@ def build_prompt(
 ) -> str:
     if style == "anime":
         return (
-            "Anime and cel-shaded high-quality illustration, clean crisp line art, vibrant color grading. "
-            "NOT a photo, NOT photorealistic, NOT 3D render, purely illustrated anime style. "
+            "Authentic 2D anime illustration, cel-shaded animation art, crisp clean dark outlines, flat cel shading. "
+            "ABSOLUTELY NOT a photograph, NOT photorealistic, NOT 3D render, NOT semi-realistic digital painting. Strictly 2D cel anime aesthetic. "
             "Face lock on the reference selfies: male character, approx 45-50 years old, short buzz cut with greying temples, "
             "clean-shaven, light grey-blue eyes, small mole near bridge of nose, wedding band on ring finger, premium tailored navy suit. "
-            "Do not make him look like a teenager, maintain his mature age features. "
+            "Do not make him look like a teenager, maintain his mature age features, drawn in clean 2D anime style. "
             f"Scene: {composition_prompt} "
             f"Brand accent color {accent} only (no pink highlighter, no red sale banner). "
             f"Large readable Cyrillic headline on the image, exactly: «{headline}». "
+            "CRITICAL: Do NOT invent or put any random numbers, interest rates, or currency amounts on documents or papers. "
+            "Only the discount badge «до −17%» and «рассрочка до 24 мес» are permitted on the small promo card. Documents must have blank schematic lines without readable numbers or text. "
             "No period, no emoji, no URLs, no phone number, no extra slogans. "
             "Setting is Ufa, Russia residential life. "
-            "NEGATIVE: photo, photograph, photorealistic, 3D render, CGI, metro / subway station in Ufa, Moscow, Red Square, "
-            "English poster text, watermark, extra fingers, deformed hands, teenager face, beard."
+            "NEGATIVE: photo, photograph, photorealistic, semi-realistic, 3D render, CGI, fake numbers, random text on papers, "
+            "metro / subway station in Ufa, Moscow, Red Square, English poster text, watermark, extra fingers, deformed hands, teenager face, beard."
         )
     return (
         "Photoreal editorial portrait of the SAME man as in the reference selfies. "

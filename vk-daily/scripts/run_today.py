@@ -50,6 +50,8 @@ def main() -> int:
     ap.add_argument("--cover-style", default="photoreal", choices=["photoreal", "anime"])
     ap.add_argument("--aspect-ratio", default="")
     ap.add_argument("--direct-refs", action="store_true", help="Pass direct raw GitHub URLs to KIE")
+    ap.add_argument("--headline", default="", help="Override headline")
+    ap.add_argument("--dek", default="", help="Override dek")
     args = ap.parse_args()
 
     root = repo_root()
@@ -86,6 +88,8 @@ def main() -> int:
     if len(used) > comps_n:
         used = used[-comps_n:]
 
+    headline_to_use = args.headline.strip() if args.headline else artifact["headline"]
+
     out = latest_dir(root)
     if out.exists():
         shutil.rmtree(out)
@@ -112,7 +116,7 @@ def main() -> int:
         cover_meta = generate_cover(
             root=root,
             out_dir=out,
-            headline=artifact["headline"],
+            headline=headline_to_use,
             composition_prompt=artifact["composition"]["prompt"],
             accent=tenant["cover"]["accent_hex"],
             aspect_ratio=ar,
@@ -140,7 +144,7 @@ def main() -> int:
         "vk_group_screen_name": tenant["vk_group_screen_name"],
         "city": tenant["city"],
         "char_count": artifact["char_count"],
-        "cover_headline": artifact["headline"],
+        "cover_headline": headline_to_use,
         "composition_id": composition_id,
         "accent_hex": tenant["cover"]["accent_hex"],
         "cover_style": args.cover_style,
@@ -177,9 +181,11 @@ def main() -> int:
         if (out / name).is_file():
             shutil.copy2(out / name, specific_out / name)
 
+    dek_to_use = args.dek.strip() if args.dek else "Разбираем условия 24 месяцев рассрочки и реальный размер скидки"
     specific_meta = dict(meta)
     specific_meta.update({
-        "cover_dek": "Разбираем условия 24 месяцев рассрочки и реальный размер скидки",
+        "cover_headline": headline_to_use,
+        "cover_dek": dek_to_use,
         "location_id": "sipaylovo_sales_office_autumn",
         "pose_id": "04",
         "emotion_id": "excitement_turned_into_calculation",
