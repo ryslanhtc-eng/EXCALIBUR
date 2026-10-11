@@ -1,6 +1,10 @@
 {
   "compositions": [
     {
+      "id": "sipaylovo-sales-office-installment-consultation",
+      "prompt": "Anime cel-shaded illustration, crisp clean line art. Inside a modern sales office of new construction in Sipaylovo Ufa in autumn, visible through large floor-to-ceiling panoramic windows showing park and autumn trees. Pose 04: Ruslan Mukhtarov in premium tailored dark navy suit and blue #2F7BFF tie, sitting across a stylish wooden desk with an attractive busty female client in elegant modest autumn business attire (PG-13, fully clothed, subtle friendly rapport). On the desk between them: architectural scale model of new-build towers, open contract papers, digital calculator, and a clear promo card with price tag «-17%» and 24-month installment payment schedule. Her expression shifts from initial excitement about the discount into sober, thoughtful calculation and focus. Clear masthead text banner at top: «УФА», and badge in corner: «ОКТЯБРЬ 2026». Clean vibrant colors, blue accent details."
+    },
+    {
       "id": "river-window-morning",
       "prompt": "Medium shot of the same man by a wide apartment window at morning, pale Ufa river haze outside, no metro, no skyline of Moscow. He holds a paper floor plan. Soft daylight, light-blue crewneck optional. Blue #2F7BFF window frame accent."
     },
