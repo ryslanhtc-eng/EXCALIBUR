@@ -46,6 +46,12 @@ def main() -> int:
     ap.add_argument("--date", default="", help="YYYY-MM-DD (default: today in Ufa)")
     ap.add_argument("--skip-cover", action="store_true")
     ap.add_argument("--force-new-composition", action="store_true")
+    ap.add_argument("--composition-id", default="", help="Explicit composition ID")
+    ap.add_argument("--cover-style", default="photoreal", choices=["photoreal", "anime"])
+    ap.add_argument("--aspect-ratio", default="")
+    ap.add_argument("--direct-refs", action="store_true", help="Pass direct raw GitHub URLs to KIE")
+    ap.add_argument("--headline", default="", help="Override headline")
+    ap.add_argument("--dek", default="", help="Override dek")
     args = ap.parse_args()
 
     root = repo_root()
@@ -69,12 +75,20 @@ def main() -> int:
         seed = f"{run_date.isoformat()}|{now.strftime('%Y-%m-%dT%H:%M')}|{uuid.uuid4()}"
 
     artifact = generate(vk_root, run_date, seed, used)
+    if args.composition_id:
+        comps = json.loads((vk_root / "data" / "compositions.json").read_text(encoding="utf-8"))["compositions"]
+        matching = [c for c in comps if c.get("id") == args.composition_id]
+        if matching:
+            artifact["composition"] = matching[0]
+
     composition_id = artifact["composition"]["id"]
     used.append(composition_id)
     # keep last full cycle
     comps_n = len(json.loads((vk_root / "data" / "compositions.json").read_text(encoding="utf-8"))["compositions"])
     if len(used) > comps_n:
         used = used[-comps_n:]
+
+    headline_to_use = args.headline.strip() if args.headline else artifact["headline"]
 
     out = latest_dir(root)
     if out.exists():
@@ -92,14 +106,23 @@ def main() -> int:
             "model": tenant["cover"]["model"],
         }
     else:
+        direct_urls = None
+        if args.direct_refs:
+            direct_urls = [
+                "https://raw.githubusercontent.com/ryslanhtc-eng/EXCALIBUR/master/vk-daily/refs/ruslan_selfie_blue.jpg",
+                "https://raw.githubusercontent.com/ryslanhtc-eng/EXCALIBUR/master/vk-daily/refs/ruslan_selfie_black.jpg",
+            ]
+        ar = args.aspect_ratio or tenant["cover"]["aspect_ratio"]
         cover_meta = generate_cover(
             root=root,
             out_dir=out,
-            headline=artifact["headline"],
+            headline=headline_to_use,
             composition_prompt=artifact["composition"]["prompt"],
             accent=tenant["cover"]["accent_hex"],
-            aspect_ratio=tenant["cover"]["aspect_ratio"],
+            aspect_ratio=ar,
             resolution=tenant["cover"]["resolution"],
+            style=args.cover_style,
+            direct_input_urls=direct_urls,
         )
 
     text_only = os.environ.get("VK_DAILY_ALLOW_TEXT_ONLY", "").strip().lower() == "yes"
@@ -121,9 +144,10 @@ def main() -> int:
         "vk_group_screen_name": tenant["vk_group_screen_name"],
         "city": tenant["city"],
         "char_count": artifact["char_count"],
-        "cover_headline": artifact["headline"],
+        "cover_headline": headline_to_use,
         "composition_id": composition_id,
         "accent_hex": tenant["cover"]["accent_hex"],
+        "cover_style": args.cover_style,
         "news_id": artifact["news"].get("id"),
         "news_source_name": artifact["news"].get("source_name"),
         "artifacts": {
@@ -147,6 +171,28 @@ def main() -> int:
         meta["blocker_message"] = cover_meta["blocker_message"]
 
     _write_json(out / "meta.json", meta)
+
+    # Specific requested directory for today:
+    specific_out = root / "memory/vk-daily/latest-2026-10-11-discount-installment"
+    specific_out.mkdir(parents=True, exist_ok=True)
+    (specific_out / "post.txt").write_text(artifact["post"] + "\n", encoding="utf-8")
+    (specific_out / "post-plain.txt").write_text(artifact["post"] + "\n", encoding="utf-8")
+    for name in ("cover.png", "cover-url.txt"):
+        if (out / name).is_file():
+            shutil.copy2(out / name, specific_out / name)
+
+    dek_to_use = args.dek.strip() if args.dek else "Разбираем условия 24 месяцев рассрочки и реальный размер скидки"
+    specific_meta = dict(meta)
+    specific_meta.update({
+        "cover_headline": headline_to_use,
+        "cover_dek": dek_to_use,
+        "location_id": "sipaylovo_sales_office_autumn",
+        "pose_id": "04",
+        "emotion_id": "excitement_turned_into_calculation",
+        "masthead": "УФА",
+        "date_badge": "ОКТЯБРЬ 2026",
+    })
+    _write_json(specific_out / "meta.json", specific_meta)
 
     run_copy = runs_dir(root) / run_date.isoformat()
     run_copy.mkdir(parents=True, exist_ok=True)
