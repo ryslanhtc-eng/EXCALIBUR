@@ -1,6 +1,10 @@
 {
   "compositions": [
     {
+      "id": "ufa_modern_quarter_autumn_park_inheritance_consultation",
+      "prompt": "Outdoor peaceful real estate consultation scene on a park bench in an autumn courtyard of a modern Ufa residential quarter, golden yellow and orange maple leaves in crisp daylight. Ruslan Mukhtarov (stylish male realtor, around 45-50 years old with mature buzz haircut and greying temples, clean-shaven, light grey-blue eyes, mole near bridge of nose, wearing a sharp tailored suit with crisp open-collar shirt and wedding band) conducts a personal outdoor property consultation. Sitting beside him is an attractive stylish woman client with lush feminine curves, wearing a fashionable autumn coat and silk scarf. Ruslan points with calm confidence at a paper folder labeled «НАСЛЕДСТВО» and a tablet showing a family inheritance tree scheme and checklist. The woman listens attentively, her anxious expression relaxing into clarity and trust. Brand blue #2F7BFF accent details on folder and accessories. Blurred contemporary Ufa residential architecture in background, no cars, no metro."
+    },
+    {
       "id": "river-window-morning",
       "prompt": "Medium shot of the same man by a wide apartment window at morning, pale Ufa river haze outside, no metro, no skyline of Moscow. He holds a paper floor plan. Soft daylight, light-blue crewneck optional. Blue #2F7BFF window frame accent."
     },

@@ -33,7 +33,39 @@ def face_ref_paths(root: Path) -> list[Path]:
     return found
 
 
-def build_prompt(*, headline: str, composition_prompt: str, accent: str) -> str:
+def build_prompt(
+    *,
+    headline: str,
+    composition_prompt: str,
+    accent: str,
+    masthead: str = "УФА",
+    date_badge: str = "ОКТЯБРЬ 2026",
+    dek: str = "",
+    style: str = "anime",
+) -> str:
+    if style == "anime":
+        prompt_parts = [
+            "Authentic 2D anime illustration, cel-shaded animation art, crisp clean dark outlines, flat cel shading. "
+            "16:9 widescreen horizontal format. ABSOLUTELY NOT a photograph, NOT photorealistic, NOT 3D render, NOT semi-realistic digital painting. Strictly 2D cel anime aesthetic. "
+            "Face lock on the reference selfies: male character, approx 45-50 years old, short buzz cut with greying temples, "
+            "clean-shaven, light grey-blue eyes, small mole near bridge of nose, wedding band on ring finger, premium tailored navy suit or stylish realtor attire. "
+            "Do not make him look like a teenager, maintain his mature age features, drawn in clean 2D anime style. "
+            f"Scene: {composition_prompt} "
+            f"Brand accent color: {accent} details. "
+            f"Prominent stylish magazine masthead in crisp Cyrillic letters at top: «{masthead}». "
+            f"Issue date badge: «{date_badge}». "
+            f"Large bold readable Cyrillic headline on the cover, exactly: «{headline}».",
+        ]
+        if dek:
+            prompt_parts.append(f"Clear secondary Cyrillic sub-headline (dek) under the main headline: «{dek}».")
+        prompt_parts.extend([
+            "No period at end of headline, no emoji, no URLs, no phone number, no extra slogans, no fake interest rates.",
+            "Setting is Ufa, Russia residential life.",
+            "NEGATIVE: photorealistic, photo, real photography, 3D CGI render, realistic skin pore textures, metro / subway station in Ufa, Moscow, Red Square, English poster text, "
+            "watermark, bad anatomy, deformed hands, extra fingers, nudity, NSFW, neon cyberpunk, beard, teenager face, different face.",
+        ])
+        return " ".join(prompt_parts)
+
     return (
         "Photoreal editorial portrait of the SAME man as in the reference selfies. "
         "Preserve exact facial identity: short dark hair faded on sides, light grey-blue eyes, "
@@ -58,6 +90,11 @@ def generate_cover(
     accent: str,
     aspect_ratio: str,
     resolution: str,
+    masthead: str = "УФА",
+    date_badge: str = "ОКТЯБРЬ 2026",
+    dek: str = "",
+    style: str = "anime",
+    direct_input_urls: list[str] | None = None,
 ) -> dict:
     """Return cover meta. Never writes a fake raster if generation did not happen."""
     api_key = (os.environ.get("KIE_API_KEY") or "").strip()
@@ -84,17 +121,36 @@ def generate_cover(
             "model": MODEL,
         }
 
-    try:
-        input_urls = [host_image(path) for path in refs]
-    except Exception as exc:  # noqa: BLE001
-        return {
-            "status": "blocked",
-            "blocker": BLOCKER_HOST,
-            "blocker_message": f"❌ VK COVER BLOCKER: could not host face refs: {exc}",
-            "model": MODEL,
-        }
+    input_urls: list[str] = []
+    if direct_input_urls:
+        input_urls = list(direct_input_urls)
+    else:
+        direct_urls = [
+            "https://raw.githubusercontent.com/ryslanhtc-eng/EXCALIBUR/master/vk-daily/refs/ruslan_selfie_blue.jpg",
+            "https://raw.githubusercontent.com/ryslanhtc-eng/EXCALIBUR/master/vk-daily/refs/ruslan_selfie_black.jpg",
+        ]
+        if os.environ.get("VK_DAILY_DIRECT_INPUT_URLS", "yes").strip().lower() in {"yes", "true", "1"}:
+            input_urls = direct_urls
+        else:
+            try:
+                input_urls = [host_image(path) for path in refs]
+            except Exception as exc:  # noqa: BLE001
+                return {
+                    "status": "blocked",
+                    "blocker": BLOCKER_HOST,
+                    "blocker_message": f"❌ VK COVER BLOCKER: could not host face refs: {exc}",
+                    "model": MODEL,
+                }
 
-    prompt = build_prompt(headline=headline, composition_prompt=composition_prompt, accent=accent)
+    prompt = build_prompt(
+        headline=headline,
+        composition_prompt=composition_prompt,
+        accent=accent,
+        masthead=masthead,
+        date_badge=date_badge,
+        dek=dek,
+        style=style,
+    )
     try:
         task_id = create_i2i_task(
             api_key,
