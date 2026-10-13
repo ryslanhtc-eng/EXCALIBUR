@@ -4,6 +4,7 @@ from __future__ import annotations
 import os
 import sys
 from pathlib import Path
+from typing import Any
 
 from host_image import host_image
 from kie_client import KieError, MODEL, create_i2i_task, result_urls, wait_for_success
@@ -35,17 +36,21 @@ def face_ref_paths(root: Path) -> list[Path]:
 
 def build_prompt(*, headline: str, composition_prompt: str, accent: str) -> str:
     return (
-        "Photoreal editorial portrait of the SAME man as in the reference selfies. "
-        "Preserve exact facial identity: short dark hair faded on sides, light grey-blue eyes, "
-        "natural smile, light stubble, no glasses, no beautifying into another person. "
-        "Outfit may change. "
+        "Photoreal editorial 16:9 magazine cover in Russian style. "
+        "Top masthead in bold clean Cyrillic typography: «УФА». "
+        "Small corner date badge: «ОКТЯБРЬ 2026». "
+        "Central subject: photoreal portrait of the SAME man as in the reference selfies (Ruslan Mukhtarov). "
+        "Exact face lock: male around 40-45 years old, short buzz cut dark hair with subtle natural grey at temples, "
+        "clean-shaven (no beard), light grey-blue eyes, distinct small mole near bridge of nose, wearing a simple wedding band on ring finger. "
+        "Natural skin texture, mature masculine handsome look, do NOT make him younger or airbrushed. "
+        "Outfit: stylish premium autumn dark wool coat over navy knitwear, real estate agent look. "
         f"Scene: {composition_prompt} "
-        f"Brand accent color {accent} only (no pink highlighter, no red sale banner). "
-        f"Large readable Cyrillic headline on the image, exactly: «{headline}». "
-        "No period, no emoji, no URLs, no phone number, no extra slogans. "
-        "Setting is Ufa, Russia residential life. "
-        "NEGATIVE: metro / subway station in Ufa, Moscow, Red Square, English poster text, "
-        "watermark, extra fingers, stock luxury realtor, neon cyberpunk, different face."
+        f"Brand accent color {accent} only (clean blue accents on folder trim, badge, subtle architectural line; no pink highlighter, no red sale banner). "
+        f"Large readable crisp Cyrillic headline hook integrated elegantly: «{headline}». "
+        "Sub-headline dek under the headline in smaller clean font: «Кто ответит за пожар и что проверить покупателю». "
+        "No trailing period, no emojis, no URLs, no phone numbers, no corporate logos or coats of arms. "
+        "Atmosphere: realistic autumn in Ufa, crisp overcast daylight, golden autumn foliage on street. "
+        "NEGATIVE: metro, subway station, train in Ufa, Moscow skyline, Red Square, open fire flames, smoke, human victims, emergency disaster panic, nudity, NSFW, extra fingers, cartoon, 3D render, anime, neon cyberpunk, distorted faces."
     )
 
 
@@ -58,6 +63,8 @@ def generate_cover(
     accent: str,
     aspect_ratio: str,
     resolution: str,
+    override_input_urls: list[str] | None = None,
+    prompt_builder: Any | None = None,
 ) -> dict:
     """Return cover meta. Never writes a fake raster if generation did not happen."""
     api_key = (os.environ.get("KIE_API_KEY") or "").strip()
@@ -72,29 +79,35 @@ def generate_cover(
             "model": MODEL,
         }
 
-    refs = face_ref_paths(root)
-    if len(refs) < 1:
-        return {
-            "status": "blocked",
-            "blocker": BLOCKER_REFS,
-            "blocker_message": (
-                "❌ VK REFS BLOCKER: missing vk-daily/refs/ruslan_selfie_{blue,black}.jpg. "
-                "Cover not generated. Do not invent a face."
-            ),
-            "model": MODEL,
-        }
+    if override_input_urls:
+        input_urls = list(override_input_urls)
+    else:
+        refs = face_ref_paths(root)
+        if len(refs) < 1:
+            return {
+                "status": "blocked",
+                "blocker": BLOCKER_REFS,
+                "blocker_message": (
+                    "❌ VK REFS BLOCKER: missing vk-daily/refs/ruslan_selfie_{blue,black}.jpg. "
+                    "Cover not generated. Do not invent a face."
+                ),
+                "model": MODEL,
+            }
 
-    try:
-        input_urls = [host_image(path) for path in refs]
-    except Exception as exc:  # noqa: BLE001
-        return {
-            "status": "blocked",
-            "blocker": BLOCKER_HOST,
-            "blocker_message": f"❌ VK COVER BLOCKER: could not host face refs: {exc}",
-            "model": MODEL,
-        }
+        try:
+            input_urls = [host_image(path) for path in refs]
+        except Exception as exc:  # noqa: BLE001
+            return {
+                "status": "blocked",
+                "blocker": BLOCKER_HOST,
+                "blocker_message": f"❌ VK COVER BLOCKER: could not host face refs: {exc}",
+                "model": MODEL,
+            }
 
-    prompt = build_prompt(headline=headline, composition_prompt=composition_prompt, accent=accent)
+    if prompt_builder:
+        prompt = prompt_builder(headline=headline, composition_prompt=composition_prompt, accent=accent)
+    else:
+        prompt = build_prompt(headline=headline, composition_prompt=composition_prompt, accent=accent)
     try:
         task_id = create_i2i_task(
             api_key,

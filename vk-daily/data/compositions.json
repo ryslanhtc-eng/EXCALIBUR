@@ -1,6 +1,10 @@
 {
   "compositions": [
     {
+      "id": "ufa_zorge_roof_renovation_inspection_consultation",
+      "prompt": "Editorial photoreal scene in Ufa autumn. A confident male realtor looking exactly like the reference man (around 40-45, buzz cut hair with subtle silver on temples, clean-shaven, light grey-blue eyes, mole near nose bridge, wedding band on ring finger, stylish premium autumn coat and dark knitwear) conducting a property consultation outdoors with an attractive curvaceous female client in an autumn trench coat. They are standing near an older multi-story brick residential building on an Ufa street with scaffolding visible along the upper floor and roof under capital renovation. The realtor holds a folder labeled 'КАПРЕМОНТ' and an inspection report sheet, explaining key details. Subtle sensual tension, perfectly professional, zero nudity. Golden-orange autumn leaves, crisp Ufa street atmosphere, cloudy autumn daylight. Brand accent color #2F7BFF on the realtor's folder trim and document badge. Top-floor roofline visible in background with honest repair scaffolding, no actual fire, no smoke, no victims. Authentic Ufa architecture."
+    },
+    {
       "id": "river-window-morning",
       "prompt": "Medium shot of the same man by a wide apartment window at morning, pale Ufa river haze outside, no metro, no skyline of Moscow. He holds a paper floor plan. Soft daylight, light-blue crewneck optional. Blue #2F7BFF window frame accent."
     },
