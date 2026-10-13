@@ -35,9 +35,9 @@
     "blocker": null,
     "blocker_message": null,
     "model": "gpt-image-2-image-to-image",
-    "task_id": "809c13e105d83828c98309f35bc7c1e7",
+    "task_id": "49c81bf3e084746f83f6957acc13501d",
     "cover_rel": "memory/vk-daily/latest/cover.png",
-    "cover_url": "https://tempfile.aiquickdraw.com/a2/809c13e105d83828c98309f35bc7c1e7_1791867589511.png",
+    "cover_url": "https://tempfile.aiquickdraw.com/a2/49c81bf3e084746f83f6957acc13501d_1791868067010.png",
     "cover_sniff": "png",
     "input_urls_count": 2
   },
