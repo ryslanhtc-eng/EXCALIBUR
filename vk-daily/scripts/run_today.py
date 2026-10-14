@@ -1,4 +1,4 @@
-"""Produce memory/vk-daily/latest/{post.txt, cover.png|cover-url.txt, meta.json}."""
+"""Produce memory/vk-daily/latest/{post.txt, post-plain.txt, cover.png|cover-url.txt, meta.json}."""
 from __future__ import annotations
 
 import argparse
@@ -46,6 +46,16 @@ def main() -> int:
     ap.add_argument("--date", default="", help="YYYY-MM-DD (default: today in Ufa)")
     ap.add_argument("--skip-cover", action="store_true")
     ap.add_argument("--force-new-composition", action="store_true")
+    ap.add_argument("--composition-id", default="", help="Force specific composition id")
+    ap.add_argument("--location-id", default="", help="Location identifier for meta")
+    ap.add_argument("--pose-id", default="", help="Pose catalog identifier for meta")
+    ap.add_argument("--emotion-id", default="", help="Emotion identifier for meta")
+    ap.add_argument("--headline", default="", help="Force specific headline")
+    ap.add_argument("--dek", default="", help="Sub-headline dek")
+    ap.add_argument("--masthead", default="УФА", help="Masthead on cover")
+    ap.add_argument("--date-badge", default="ОКТЯБРЬ 2026", help="Date badge on cover")
+    ap.add_argument("--aspect-ratio", default="16:9", help="Aspect ratio for cover")
+    ap.add_argument("--public-ref-urls", nargs="*", default=None, help="Direct HTTPS URLs for face refs")
     args = ap.parse_args()
 
     root = repo_root()
@@ -69,6 +79,16 @@ def main() -> int:
         seed = f"{run_date.isoformat()}|{now.strftime('%Y-%m-%dT%H:%M')}|{uuid.uuid4()}"
 
     artifact = generate(vk_root, run_date, seed, used)
+
+    if args.composition_id:
+        all_comps = json.loads((vk_root / "data" / "compositions.json").read_text(encoding="utf-8"))["compositions"]
+        matching = [c for c in all_comps if c.get("id") == args.composition_id]
+        if matching:
+            artifact["composition"] = matching[0]
+
+    if args.headline:
+        artifact["headline"] = args.headline
+
     composition_id = artifact["composition"]["id"]
     used.append(composition_id)
     # keep last full cycle
@@ -81,7 +101,11 @@ def main() -> int:
         shutil.rmtree(out)
     out.mkdir(parents=True, exist_ok=True)
 
-    (out / "post.txt").write_text(artifact["post"] + "\n", encoding="utf-8")
+    post_text = artifact["post"]
+    post_plain = post_text.replace("*", "")
+
+    (out / "post.txt").write_text(post_text + "\n", encoding="utf-8")
+    (out / "post-plain.txt").write_text(post_plain + "\n", encoding="utf-8")
 
     cover_meta: dict
     if args.skip_cover:
@@ -92,20 +116,31 @@ def main() -> int:
             "model": tenant["cover"]["model"],
         }
     else:
+        aspect_ratio = args.aspect_ratio or tenant["cover"]["aspect_ratio"]
         cover_meta = generate_cover(
             root=root,
             out_dir=out,
             headline=artifact["headline"],
             composition_prompt=artifact["composition"]["prompt"],
             accent=tenant["cover"]["accent_hex"],
-            aspect_ratio=tenant["cover"]["aspect_ratio"],
+            aspect_ratio=aspect_ratio,
             resolution=tenant["cover"]["resolution"],
+            masthead=args.masthead,
+            date_badge=args.date_badge,
+            dek=args.dek,
+            style="anime",
+            override_input_urls=args.public_ref_urls,
         )
 
     text_only = os.environ.get("VK_DAILY_ALLOW_TEXT_ONLY", "").strip().lower() == "yes"
     publish_ready = cover_meta.get("status") == "ok" or (
         text_only and cover_meta.get("status") in {"blocked", "skipped"}
     )
+
+    location_id = args.location_id or "ufa_zaki_validi_uunit_university_quarter"
+    pose_id = args.pose_id or "06-work-lifestyle-desk-poses-grid"
+    emotion_id = args.emotion_id or "mother_future_anxiety_turns_to_warm_confidence_realtor_attentive"
+    dek = args.dek or "Как семейная недвижимость в Уфе защищает капитал и готовит надёжный старт к студенчеству"
 
     meta = {
         "pipeline": "vk-daily",
@@ -122,12 +157,19 @@ def main() -> int:
         "city": tenant["city"],
         "char_count": artifact["char_count"],
         "cover_headline": artifact["headline"],
+        "cover_dek": dek,
+        "masthead": args.masthead,
+        "date_badge": args.date_badge,
         "composition_id": composition_id,
+        "location_id": location_id,
+        "pose_id": pose_id,
+        "emotion_id": emotion_id,
         "accent_hex": tenant["cover"]["accent_hex"],
         "news_id": artifact["news"].get("id"),
         "news_source_name": artifact["news"].get("source_name"),
         "artifacts": {
             "post": "memory/vk-daily/latest/post.txt",
+            "post_plain": "memory/vk-daily/latest/post-plain.txt",
             "meta": "memory/vk-daily/latest/meta.json",
             "cover": "memory/vk-daily/latest/cover.png",
             "cover_url": "memory/vk-daily/latest/cover-url.txt",
@@ -150,7 +192,7 @@ def main() -> int:
 
     run_copy = runs_dir(root) / run_date.isoformat()
     run_copy.mkdir(parents=True, exist_ok=True)
-    for name in ("post.txt", "meta.json", "cover.png", "cover.jpg", "cover-url.txt"):
+    for name in ("post.txt", "post-plain.txt", "meta.json", "cover.png", "cover.jpg", "cover-url.txt"):
         src = out / name
         if src.is_file():
             shutil.copy2(src, run_copy / name)
